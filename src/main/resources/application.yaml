@@ -1,0 +1,28 @@
+server:
+  servlet:
+    context-path: /api
+    encoding:
+      charset: UTF-8
+  port: 8080
+  error:
+    include-stacktrace: never
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: dominikella
+    url: jdbc:postgresql://localhost:5432/unifier
+  liquibase:
+    change-log: db/db.changelog-master.xml
+    default-schema: public
+    liquibase-schema: public
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: public
+
