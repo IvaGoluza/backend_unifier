@@ -1,13 +1,13 @@
 package hr.fer.unifier.backend.service.impl;
 
 
-import hr.fer.unifier.backend.model.DTO.UserLoginDTO;
-import hr.fer.unifier.backend.model.DTO.UserProfileDTO;
-import hr.fer.unifier.backend.model.DTO.UserRegistrationDTO;
-import hr.fer.unifier.backend.model.DTO.UserResponseDTO;
-import hr.fer.unifier.backend.model.User;
-import hr.fer.unifier.backend.model.enums.Role;
-import hr.fer.unifier.backend.repository.UserRepository;
+import hr.fer.unifier.backend.api.user.UserLoginDTO;
+import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
+import hr.fer.unifier.backend.api.user.UserRegistrationDTO;
+import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.db.entity.User;
+import hr.fer.unifier.backend.enums.Role;
+import hr.fer.unifier.backend.db.UserRepository;
 import hr.fer.unifier.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;

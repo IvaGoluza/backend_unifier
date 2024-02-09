@@ -1,15 +1,15 @@
 package hr.fer.unifier.backend.service.impl;
 
 
-import hr.fer.unifier.backend.model.Advert;
-import hr.fer.unifier.backend.model.DTO.*;
-import hr.fer.unifier.backend.model.Deal;
-import hr.fer.unifier.backend.model.Request;
-import hr.fer.unifier.backend.model.enums.Sender;
-import hr.fer.unifier.backend.repository.AdvertRepository;
-import hr.fer.unifier.backend.repository.DealRepository;
-import hr.fer.unifier.backend.repository.RequestRepository;
-import hr.fer.unifier.backend.repository.UserRepository;
+import hr.fer.unifier.backend.api.deal.*;
+import hr.fer.unifier.backend.db.entity.Advert;
+import hr.fer.unifier.backend.db.entity.Deal;
+import hr.fer.unifier.backend.db.entity.Request;
+import hr.fer.unifier.backend.enums.Sender;
+import hr.fer.unifier.backend.db.AdvertRepository;
+import hr.fer.unifier.backend.db.DealRepository;
+import hr.fer.unifier.backend.db.RequestRepository;
+import hr.fer.unifier.backend.db.UserRepository;
 import hr.fer.unifier.backend.service.DealService;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;

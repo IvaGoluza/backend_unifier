@@ -11,8 +11,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: dominikella
-    url: jdbc:postgresql://localhost:5432/unifier
+    password: bazepodataka
+    url: jdbc:postgresql://localhost:5433/unifier
   liquibase:
     change-log: db/db.changelog-master.xml
     default-schema: public

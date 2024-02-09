@@ -1,11 +1,11 @@
 package hr.fer.unifier.backend.service.impl;
 
-import hr.fer.unifier.backend.model.DTO.RequestDTO;
-import hr.fer.unifier.backend.model.DTO.RequestResponseDTO;
-import hr.fer.unifier.backend.model.Request;
-import hr.fer.unifier.backend.model.User;
-import hr.fer.unifier.backend.repository.RequestRepository;
-import hr.fer.unifier.backend.repository.UserRepository;
+import hr.fer.unifier.backend.api.request.RequestDTO;
+import hr.fer.unifier.backend.api.request.RequestResponseDTO;
+import hr.fer.unifier.backend.db.entity.Request;
+import hr.fer.unifier.backend.db.entity.User;
+import hr.fer.unifier.backend.db.RequestRepository;
+import hr.fer.unifier.backend.db.UserRepository;
 import hr.fer.unifier.backend.service.RequestService;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
