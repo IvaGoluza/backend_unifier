@@ -3,6 +3,7 @@ package hr.fer.unifier.backend.resource;
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.service.AdvertService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class AdvertResource {
 
   private final AdvertService advertService;
-
-  @Autowired
-  public AdvertResource(AdvertService advertService) {
-    this.advertService = advertService;
-  }
 
   @PostMapping("/my-adverts")
   public ResponseEntity<AdvertResponseDTO> saveAdvert(@RequestBody AdvertDTO advertDTO) {

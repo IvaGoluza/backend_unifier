@@ -3,6 +3,7 @@ package hr.fer.unifier.backend.resource;
 import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.service.RequestService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class RequestResource {
 
   private final RequestService requestService;
-
-  @Autowired
-  public RequestResource(RequestService requestService) {
-    this.requestService = requestService;
-  }
 
   @PostMapping("/my-requests")
   public ResponseEntity<RequestResponseDTO> saveRequest(@RequestBody RequestDTO requestDTO) {

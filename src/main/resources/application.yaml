@@ -19,10 +19,11 @@ spring:
     liquibase-schema: public
   jpa:
     database: POSTGRESQL
-    show-sql: true
+    ##show-sql: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
+        ##format_sql: true
         default_schema: public
 

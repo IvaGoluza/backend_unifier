@@ -4,72 +4,71 @@ import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.db.entity.User;
-import hr.fer.unifier.backend.db.AdvertRepository;
-import hr.fer.unifier.backend.db.UserRepository;
+import hr.fer.unifier.backend.db.AdvertDao;
+import hr.fer.unifier.backend.db.UserDao;
 import hr.fer.unifier.backend.service.AdvertService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AdvertServiceImpl implements AdvertService {
 
-  private final AdvertRepository advertRepository;
+  private final AdvertDao advertDao;
 
-  private final UserRepository userRepository;
+  private final UserDao userDao;
 
   private final ModelMapper modelMapper;
 
-
-  @Autowired
-  public AdvertServiceImpl(AdvertRepository advertRepository, UserRepository userRepository, ModelMapper modelMapper) {
-    this.advertRepository = advertRepository;
-    this.userRepository = userRepository;
-    this.modelMapper = modelMapper;
-  }
-
+  @Transactional
   @Override
   public AdvertResponseDTO saveAdvert(AdvertDTO advertDTO) {
     Advert advert = modelMapper.map(advertDTO, Advert.class);
-    User advertUser = userRepository.findById(advertDTO.getUserId()).orElseThrow(() ->
+    User advertUser = userDao.findById(advertDTO.getUserId()).orElseThrow(() ->
             new EntityNotFoundException("User with id " + advertDTO.getUserId() + " does not exist.")
     );
     advert.setUser(advertUser);
     advert.setDeleted(false);
-    advert = advertRepository.save(advert);
+    advert = advertDao.save(advert);
     return modelMapper.map(advert, AdvertResponseDTO.class);
   }
 
+  @Transactional
   @Override
   public void deleteAdvert(Long id) {
-    if (!advertRepository.existsById(id)) {
-      throw new EntityNotFoundException("Advert with id:" + id + " does not exist.");
-    }
-    Advert advert = advertRepository.findById(id).get();
+    Advert advert = advertDao.findById(id).orElseThrow(() ->  new EntityNotFoundException("Advert with id:" + id + " does not exist."));
     advert.setDeleted(true);
-    advertRepository.save(advert);
+    advertDao.save(advert);
   }
 
+  @Transactional(readOnly = true)
   @Override
   public List<AdvertResponseDTO> getAdverts(Long userId) {
-    userRepository.findById(userId).orElseThrow(() ->
+    final User user = userDao.findById(userId).orElseThrow(() ->
       new EntityNotFoundException("User with id " + userId + " does not exist.")
     );
 
-    List<Advert> adverts = advertRepository.findAdvertsByUserIdAndDeletedFalse(userId);
+    List<Advert> adverts = advertDao.findByUserAndDeletedFalse(user).orElse(Collections.emptyList());
 
     return adverts.stream().map(advert -> modelMapper.map(advert, AdvertResponseDTO.class)).collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   @Override
   public List<AdvertResponseDTO> getAllAdverts() {
-    List<Advert> adverts = advertRepository.findAdvertsByDeletedFalse();
-    return adverts.stream().map(advert -> modelMapper.map(advert, AdvertResponseDTO.class)).collect(Collectors.toList());
+    return advertDao.findAdvertsByDeletedFalse()
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(advert -> modelMapper.map(advert, AdvertResponseDTO.class))
+            .toList();
   }
 
 }

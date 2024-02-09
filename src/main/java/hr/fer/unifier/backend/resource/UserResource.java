@@ -6,6 +6,7 @@ import hr.fer.unifier.backend.api.user.UserRegistrationDTO;
 import hr.fer.unifier.backend.api.user.UserResponseDTO;
 import hr.fer.unifier.backend.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/")
 @CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class UserResource {
 
   private final UserService userService;
-
-  @Autowired
-  public UserResource(UserService userService) {
-    this.userService = userService;
-  }
 
   @PostMapping("/registration")
   public ResponseEntity<UserResponseDTO> saveUser(@RequestBody @Valid UserRegistrationDTO userRegistrationDto) {
