@@ -1,11 +1,8 @@
 package hr.fer.unifier.backend.service;
 
 
-import hr.fer.unifier.backend.model.DTO.AdvertDTO;
-import hr.fer.unifier.backend.model.DTO.AdvertResponseDTO;
-import hr.fer.unifier.backend.model.enums.Category;
-import hr.fer.unifier.backend.model.enums.HelpType;
-import hr.fer.unifier.backend.model.enums.Town;
+import hr.fer.unifier.backend.api.advert.AdvertDTO;
+import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 
 import java.util.List;
 

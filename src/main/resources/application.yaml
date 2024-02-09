@@ -11,18 +11,19 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: dominikella
-    url: jdbc:postgresql://localhost:5432/unifier
+    password: bazepodataka
+    url: jdbc:postgresql://localhost:5433/unifier
   liquibase:
     change-log: db/db.changelog-master.xml
     default-schema: public
     liquibase-schema: public
   jpa:
     database: POSTGRESQL
-    show-sql: true
+    ##show-sql: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
+        ##format_sql: true
         default_schema: public
 

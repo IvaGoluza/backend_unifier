@@ -1,10 +1,10 @@
 package hr.fer.unifier.backend.service;
 
 
-import hr.fer.unifier.backend.model.DTO.UserLoginDTO;
-import hr.fer.unifier.backend.model.DTO.UserProfileDTO;
-import hr.fer.unifier.backend.model.DTO.UserRegistrationDTO;
-import hr.fer.unifier.backend.model.DTO.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.UserLoginDTO;
+import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
+import hr.fer.unifier.backend.api.user.UserRegistrationDTO;
+import hr.fer.unifier.backend.api.user.UserResponseDTO;
 
 import java.util.List;
 

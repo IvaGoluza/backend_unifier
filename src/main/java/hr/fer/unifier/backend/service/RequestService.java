@@ -1,8 +1,8 @@
 package hr.fer.unifier.backend.service;
 
 
-import hr.fer.unifier.backend.model.DTO.RequestDTO;
-import hr.fer.unifier.backend.model.DTO.RequestResponseDTO;
+import hr.fer.unifier.backend.api.request.RequestDTO;
+import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 
 import java.util.List;
 

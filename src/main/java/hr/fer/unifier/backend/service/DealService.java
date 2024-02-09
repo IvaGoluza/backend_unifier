@@ -1,6 +1,6 @@
 package hr.fer.unifier.backend.service;
 
-import hr.fer.unifier.backend.model.DTO.*;
+import hr.fer.unifier.backend.api.deal.*;
 
 import java.util.List;
 
