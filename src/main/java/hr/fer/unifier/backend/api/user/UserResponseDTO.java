@@ -2,17 +2,10 @@ package hr.fer.unifier.backend.api.user;
 
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.enums.UserType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class UserResponseDTO {
-
   private Long id;
 
   private String firstName;
@@ -34,4 +27,8 @@ public class UserResponseDTO {
   private String password;
 
   private boolean blocked;
+
+  private String authToken;
+
+  private String refreshToken;
 }

@@ -1,13 +1,9 @@
 package hr.fer.unifier.backend.resource;
 
-import hr.fer.unifier.backend.api.user.UserLoginDTO;
-import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
-import hr.fer.unifier.backend.api.user.UserRegistrationDTO;
 import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
 import hr.fer.unifier.backend.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +18,6 @@ import java.util.List;
 public class UserResource {
 
   private final UserService userService;
-
-  @PostMapping("/registration")
-  public ResponseEntity<UserResponseDTO> saveUser(@RequestBody @Valid UserRegistrationDTO userRegistrationDto) {
-    return ResponseEntity.ok(userService.saveUser(userRegistrationDto));
-  }
-
-  @PostMapping("/login")
-  public ResponseEntity<UserResponseDTO> checkUser(@RequestBody @Valid UserLoginDTO userLoginDTO) {
-    return ResponseEntity.ok(userService.checkUser(userLoginDTO));
-  }
 
   @GetMapping("/my-profile/{userId}")
   public ResponseEntity<UserResponseDTO> getProfile(@PathVariable Long userId) {
