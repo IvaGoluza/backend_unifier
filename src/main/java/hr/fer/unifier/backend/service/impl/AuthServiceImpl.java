@@ -81,8 +81,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return new AuthResponseDTO(
-                createAuthToken(user),
-                createRefreshToken(user)
+                createAuthToken(user)
         );
     }
 

@@ -32,6 +32,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .cors()
+                .and()
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -45,6 +47,8 @@ public class SecurityConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     SecurityFilterChain tokenSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .cors()
+                .and()
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityMatcher(new AntPathRequestMatcher("/auth/**"))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())

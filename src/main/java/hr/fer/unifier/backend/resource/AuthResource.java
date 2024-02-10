@@ -7,14 +7,12 @@ import hr.fer.unifier.backend.api.user.auth.AuthRequestDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthResponseDTO;
 import hr.fer.unifier.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthResource {
     private final AuthService authService;
 
