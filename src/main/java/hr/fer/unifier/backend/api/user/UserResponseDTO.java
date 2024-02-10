@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.api.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.enums.UserType;
 import lombok.*;
@@ -28,7 +29,9 @@ public class UserResponseDTO {
 
   private boolean blocked;
 
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String authToken;
 
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private String refreshToken;
 }

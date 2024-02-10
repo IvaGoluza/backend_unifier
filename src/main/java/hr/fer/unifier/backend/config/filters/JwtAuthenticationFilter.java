@@ -34,24 +34,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-         final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
-         if (Objects.isNull(authHeader) || !authHeader.startsWith("Bearer ")){
-             filterChain.doFilter(request,response);
-             return;
-         }
+        if (Objects.isNull(authHeader) || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-         final String jwt = authHeader.substring(7);
-         final String username = jwtService.extractUsername(jwt);
+        final String jwt = authHeader.substring(7);
+        final String username = jwtService.extractUsername(jwt, false);
 
-        if (!Objects.isNull(username) && SecurityContextHolder.getContext().getAuthentication() == null){
+        if (!Objects.isNull(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (Objects.isNull(userDetails)){
+            if (Objects.isNull(userDetails)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "");
             }
 
-            if(jwtService.isTokenValid(jwt,userDetails)){
+            if (jwtService.isAuthTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-            filterChain.doFilter(request,response);
+            filterChain.doFilter(request, response);
         }
 
     }

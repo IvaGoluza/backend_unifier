@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.config.security;
 
+import hr.fer.unifier.backend.config.filters.ExceptionFilter;
 import hr.fer.unifier.backend.config.filters.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,8 @@ public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
 
+    private final ExceptionFilter exceptionFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -33,6 +36,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(exceptionFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

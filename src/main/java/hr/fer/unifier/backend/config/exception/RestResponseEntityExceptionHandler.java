@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.config.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,11 +13,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(value = {EntityNotFoundException.class, ResponseStatusException.class})
+    @ExceptionHandler(value = {EntityNotFoundException.class, ResponseStatusException.class, ExpiredJwtException.class})
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
         if (ex instanceof ResponseStatusException re)
             return handleExceptionInternal(re, re.getMessage(), re.getHeaders(), re.getStatusCode(), request);
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
 }

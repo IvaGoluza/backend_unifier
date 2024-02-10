@@ -3,11 +3,14 @@ package hr.fer.unifier.backend.service.impl;
 import hr.fer.unifier.backend.api.user.UserLoginDTO;
 import hr.fer.unifier.backend.api.user.UserRegistrationDTO;
 import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.auth.AuthRequestDTO;
+import hr.fer.unifier.backend.api.user.auth.AuthResponseDTO;
 import hr.fer.unifier.backend.db.UserDao;
 import hr.fer.unifier.backend.db.entity.User;
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.service.AuthService;
 import hr.fer.unifier.backend.service.JwtService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -68,16 +71,43 @@ public class AuthServiceImpl implements AuthService {
         return createUserResponseDTO(user);
     }
 
-    private UserResponseDTO createUserResponseDTO(final User user) {
-        final HashMap<String, Object> claims = new HashMap<>();
-        claims.put("id", user.getId());
+    @Override
+    public AuthResponseDTO refreshToken(AuthRequestDTO authRequestDTO) {
+        Long userId = jwtService.extractRefreshUserId(authRequestDTO.getRefreshToken());
+        final User user = userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId)));
 
-        String authJwtToken = jwtService.generateAuthToken(claims, user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        if(!jwtService.isRefreshTokenValid(authRequestDTO.getRefreshToken(), user)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+
+        return new AuthResponseDTO(
+                createAuthToken(user),
+                createRefreshToken(user)
+        );
+    }
+
+    private UserResponseDTO createUserResponseDTO(final User user) {
+        String authJwtToken = createAuthToken(user);
+        String refreshToken = createRefreshToken(user);
 
         UserResponseDTO userResponseDTO = modelMapper.map(user, UserResponseDTO.class);
         userResponseDTO.setAuthToken(authJwtToken);
         userResponseDTO.setRefreshToken(refreshToken);
+
         return userResponseDTO;
+    }
+
+    private String createAuthToken(final User user){
+        final HashMap<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+
+        return jwtService.generateAuthToken(claims, user);
+    }
+
+    private String createRefreshToken(final User user){
+        final HashMap<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+
+        return jwtService.generateRefreshToken(claims, user);
     }
 }

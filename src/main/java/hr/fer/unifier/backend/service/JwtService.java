@@ -2,15 +2,14 @@ package hr.fer.unifier.backend.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public interface JwtService {
-    String extractUsername(String jwt);
-    String generateAuthToken(UserDetails userDetails);
+    String extractUsername(String jwt,boolean isRefreshToken);
     String generateAuthToken(Map<String, Object> extraClaims, UserDetails userDetails);
-    boolean isTokenValid(String jwt, UserDetails userDetails);
-    Long extractUserId(String jwt);
-    String generateRefreshToken(UserDetails userDetails);
+    boolean isAuthTokenValid(String jwt, UserDetails userDetails);
+    boolean isRefreshTokenValid(String jwt, UserDetails userDetails);
+    boolean isTokenExpired(String jwt, boolean isRefreshToken);
+    Long extractRefreshUserId(String jwt);
     String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails);
 }
