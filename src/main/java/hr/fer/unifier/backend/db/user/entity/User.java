@@ -1,13 +1,10 @@
-package hr.fer.unifier.backend.db.entity;
+package hr.fer.unifier.backend.db.user.entity;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
+import hr.fer.unifier.backend.db.entity.Advert;
+import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.enums.UserType;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +12,11 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -24,14 +26,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -39,17 +35,14 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String mobilePhone;
 
-    @Column(nullable = false, length = 1000)
+    @Column(length = 1000)
     private String profileDescription;
-
-    @Column(unique = true, nullable = false)
-    private String oib;
 
     @Column(nullable = false)
     private String password;
 
     @Column
-    private boolean blocked;
+    private boolean blocked = false;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

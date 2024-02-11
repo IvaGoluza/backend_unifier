@@ -1,6 +1,6 @@
 package hr.fer.unifier.backend.resource;
 
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
 import hr.fer.unifier.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

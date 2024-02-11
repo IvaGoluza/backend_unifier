@@ -1,7 +1,7 @@
 package hr.fer.unifier.backend.service;
 
 
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
 
 import java.util.List;
 

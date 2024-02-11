@@ -2,7 +2,7 @@ package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.deal.NoteResponseDTO;
 import hr.fer.unifier.backend.api.deal.RecensionResponseDTO;
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
 import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
 import hr.fer.unifier.backend.service.ProfileService;
 import lombok.RequiredArgsConstructor;

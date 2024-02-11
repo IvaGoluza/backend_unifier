@@ -1,6 +1,6 @@
 package hr.fer.unifier.backend.api.request;
 
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
 import hr.fer.unifier.backend.enums.Category;
 import hr.fer.unifier.backend.enums.HelpType;
 import hr.fer.unifier.backend.enums.Town;

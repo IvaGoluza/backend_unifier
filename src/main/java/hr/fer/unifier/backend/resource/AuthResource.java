@@ -1,10 +1,13 @@
 package hr.fer.unifier.backend.resource;
 
-import hr.fer.unifier.backend.api.user.UserLoginDTO;
-import hr.fer.unifier.backend.api.user.UserRegistrationDTO;
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthRequestDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthResponseDTO;
+import hr.fer.unifier.backend.api.user.login.UserLoginDTO;
+import hr.fer.unifier.backend.api.user.login.UserLoginResponseDTO;
+import hr.fer.unifier.backend.api.user.register.OrganizationRegisterDTO;
+import hr.fer.unifier.backend.api.user.register.OrganizationResponseDTO;
+import hr.fer.unifier.backend.api.user.register.PersonRegisterDTO;
+import hr.fer.unifier.backend.api.user.register.PersonResponseDTO;
 import hr.fer.unifier.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +19,18 @@ import org.springframework.web.bind.annotation.*;
 public class AuthResource {
     private final AuthService authService;
 
-    @PostMapping("/registration")
-    public UserResponseDTO registration(@RequestBody UserRegistrationDTO userRegistrationDTO){
-        return authService.registration(userRegistrationDTO);
+    @PostMapping("/person-registration")
+    public PersonResponseDTO registration(@RequestBody PersonRegisterDTO personRegisterDTO){
+        return authService.registerPerson(personRegisterDTO);
+    }
+
+    @PostMapping("/organization-registration")
+    public OrganizationResponseDTO registration(@RequestBody OrganizationRegisterDTO organizationRegisterDTO){
+        return authService.registerOrganization(organizationRegisterDTO);
     }
 
     @PostMapping("/login")
-    public UserResponseDTO login(@RequestBody UserLoginDTO userLoginDTO){
+    public UserLoginResponseDTO login(@RequestBody UserLoginDTO userLoginDTO){
         return authService.login(userLoginDTO);
     }
 

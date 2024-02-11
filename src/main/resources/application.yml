@@ -13,10 +13,6 @@ spring:
     username: postgres
     password: bazepodataka
     url: jdbc:postgresql://localhost:5433/unifier
-  liquibase:
-    change-log: db/db.changelog-master.xml
-    default-schema: public
-    liquibase-schema: public
   jpa:
     database: POSTGRESQL
     ##show-sql: true

@@ -1,7 +1,7 @@
 package hr.fer.unifier.backend.db;
 
 import hr.fer.unifier.backend.db.entity.Advert;
-import hr.fer.unifier.backend.db.entity.User;
+import hr.fer.unifier.backend.db.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

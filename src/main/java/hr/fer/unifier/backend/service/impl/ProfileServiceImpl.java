@@ -2,11 +2,11 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.deal.NoteResponseDTO;
 import hr.fer.unifier.backend.api.deal.RecensionResponseDTO;
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
 import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
 import hr.fer.unifier.backend.db.DealDao;
-import hr.fer.unifier.backend.db.UserDao;
-import hr.fer.unifier.backend.db.entity.User;
+import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.service.ProfileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
