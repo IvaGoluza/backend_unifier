@@ -1,18 +1,17 @@
 package hr.fer.unifier.backend.service.impl;
 
-import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
-import hr.fer.unifier.backend.db.entity.User;
 import hr.fer.unifier.backend.db.AdvertDao;
-import hr.fer.unifier.backend.db.UserDao;
+import hr.fer.unifier.backend.db.entity.Advert;
+import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.service.AdvertService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.Collections;
 import java.util.List;

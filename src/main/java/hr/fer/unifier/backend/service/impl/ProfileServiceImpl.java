@@ -2,11 +2,16 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.deal.NoteResponseDTO;
 import hr.fer.unifier.backend.api.deal.RecensionResponseDTO;
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
 import hr.fer.unifier.backend.db.DealDao;
-import hr.fer.unifier.backend.db.UserDao;
-import hr.fer.unifier.backend.db.entity.User;
+import hr.fer.unifier.backend.db.user.OrganizationDao;
+import hr.fer.unifier.backend.db.user.PersonDao;
+import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.Organization;
+import hr.fer.unifier.backend.db.user.entity.Person;
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.service.ProfileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,18 +30,13 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final UserDao userDao;
 
+    private final PersonDao personDao;
+
+    private final OrganizationDao organizationDao;
+
     private final DealDao dealDao;
 
 
-    @Transactional(readOnly = true)
-    @Override
-    public UserResponseDTO getProfile(Long userId) {
-        final User user = userDao.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User with id " + userId + " does not exist.")
-        );
-
-        return modelMapper.map(user, UserResponseDTO.class);
-    }
 
     @Transactional
     @Override
@@ -73,5 +73,23 @@ public class ProfileServiceImpl implements ProfileService {
                 .stream()
                 .map(deal -> modelMapper.map(deal, NoteResponseDTO.class))
                 .toList();
+    }
+    @Transactional(readOnly = true)
+    @Override
+    public PersonProfileDTO getPersonProfile(Long userId) {
+        final Person person = (Person) personDao.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId))
+        );
+
+        return modelMapper.map(person, PersonProfileDTO.class);
+    }
+    @Transactional(readOnly = true)
+    @Override
+    public OrganizationProfileDTO getOrganizationProfile(Long userId) {
+        final Organization organization = (Organization) organizationDao.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Organization with id %d doesn't exists", userId))
+        );
+
+        return modelMapper.map(organization, OrganizationProfileDTO.class);
     }
 }

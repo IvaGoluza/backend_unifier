@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.db.entity;
 
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Category;
 import hr.fer.unifier.backend.enums.HelpType;
 import hr.fer.unifier.backend.enums.Town;

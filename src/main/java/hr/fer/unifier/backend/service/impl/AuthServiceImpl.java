@@ -1,12 +1,18 @@
 package hr.fer.unifier.backend.service.impl;
 
-import hr.fer.unifier.backend.api.user.UserLoginDTO;
-import hr.fer.unifier.backend.api.user.UserRegistrationDTO;
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthRequestDTO;
-import hr.fer.unifier.backend.api.user.auth.AuthResponseDTO;
-import hr.fer.unifier.backend.db.UserDao;
-import hr.fer.unifier.backend.db.entity.User;
+import hr.fer.unifier.backend.api.user.auth.AuthTokenDTO;
+import hr.fer.unifier.backend.api.user.auth.AuthenticationResponseDTO;
+import hr.fer.unifier.backend.api.user.UserLoginDTO;
+import hr.fer.unifier.backend.api.user.register.OrganizationRegisterDTO;
+import hr.fer.unifier.backend.api.user.register.PersonRegisterDTO;
+import hr.fer.unifier.backend.db.entity.Address;
+import hr.fer.unifier.backend.db.user.OrganizationDao;
+import hr.fer.unifier.backend.db.user.PersonDao;
+import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.Organization;
+import hr.fer.unifier.backend.db.user.entity.Person;
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.service.AuthService;
 import hr.fer.unifier.backend.service.JwtService;
@@ -26,8 +32,11 @@ import java.util.HashMap;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
     private final UserDao userDao;
+
+    private final OrganizationDao organizationDao;
+
+    private final PersonDao personDao;
 
     private final ModelMapper modelMapper;
 
@@ -39,25 +48,34 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public UserResponseDTO registration(final UserRegistrationDTO userRegistrationDto) {
-       userDao.findByEmail(userRegistrationDto.getEmail())
+    public AuthenticationResponseDTO registerPerson(final PersonRegisterDTO personRegisterDTO) {
+        userDao.findByEmail(personRegisterDTO.getBaseUserDetails().getEmail())
                 .ifPresent(user -> {
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", userRegistrationDto.getEmail()));
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", personRegisterDTO.getBaseUserDetails().getEmail()));
                 });
 
-        User user = modelMapper.map(userRegistrationDto, User.class);
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setBlocked(false);
-        user.setRole(Role.USER);
-        user = userDao.save(user);
-
-        return createUserResponseDTO(user);
+        final Person person = createPerson(personRegisterDTO);
+        return createAuthenticationResponseDTO(person);
     }
+
+
+    @Transactional
+    @Override
+    public AuthenticationResponseDTO registerOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
+        userDao.findByEmail(organizationRegisterDTO.getBaseUserDetails().getEmail())
+                .ifPresent(user -> {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", organizationRegisterDTO.getBaseUserDetails().getEmail()));
+                });
+
+        final Organization organization = createOrganization(organizationRegisterDTO);
+        return createAuthenticationResponseDTO(organization);
+    }
+
+
 
     @Transactional(readOnly = true)
     @Override
-    public UserResponseDTO login(UserLoginDTO userLoginDTO) {
+    public AuthenticationResponseDTO login(UserLoginDTO userLoginDTO) {
         final User user = userDao.findByEmail(userLoginDTO.getEmail()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email or password is incorrect.")
         );
@@ -68,11 +86,12 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        return createUserResponseDTO(user);
+        return createAuthenticationResponseDTO(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public AuthResponseDTO refreshToken(AuthRequestDTO authRequestDTO) {
+    public AuthTokenDTO refreshToken(AuthRequestDTO authRequestDTO) {
         Long userId = jwtService.extractRefreshUserId(authRequestDTO.getRefreshToken());
         final User user = userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId)));
 
@@ -80,20 +99,31 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        return new AuthResponseDTO(
-                createAuthToken(user)
+        return new AuthTokenDTO(
+                createAuthToken(user),
+                null
         );
     }
 
-    private UserResponseDTO createUserResponseDTO(final User user) {
-        String authJwtToken = createAuthToken(user);
+    private AuthenticationResponseDTO createAuthenticationResponseDTO(User user) {
+        return new AuthenticationResponseDTO(
+                user.getId(),
+                user.getEmail(),
+                user.getMobilePhone(),
+                user.getRole(),
+                user.getUserType(),
+                user.isBlocked(),
+                createAuthTokens(user)
+        );
+    }
+
+    private AuthTokenDTO createAuthTokens(final User user){
+        String accessToken = createAuthToken(user);
         String refreshToken = createRefreshToken(user);
 
-        UserResponseDTO userResponseDTO = modelMapper.map(user, UserResponseDTO.class);
-        userResponseDTO.setAuthToken(authJwtToken);
-        userResponseDTO.setRefreshToken(refreshToken);
-
-        return userResponseDTO;
+        return new AuthTokenDTO(
+                accessToken,refreshToken
+        );
     }
 
     private String createAuthToken(final User user){
@@ -108,5 +138,30 @@ public class AuthServiceImpl implements AuthService {
         claims.put("id", user.getId());
 
         return jwtService.generateRefreshToken(claims, user);
+    }
+
+    private Person createPerson(final PersonRegisterDTO personRegisterDTO) {
+        final Person person = modelMapper.map(personRegisterDTO.getBaseUserDetails(), Person.class);
+
+        person.setPassword(passwordEncoder.encode(personRegisterDTO.getBaseUserDetails().getPassword()));
+        person.setFirstName(personRegisterDTO.getFirstName());
+        person.setLastName(personRegisterDTO.getLastName());
+        person.setRole(Role.USER);
+
+        return personDao.save(person);
+    }
+
+    private Organization createOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
+        final Organization organization = modelMapper.map(organizationRegisterDTO.getBaseUserDetails(), Organization.class);
+
+        organization.setPassword(passwordEncoder.encode(organizationRegisterDTO.getBaseUserDetails().getPassword()));
+        organization.setAddress(modelMapper.map(organizationRegisterDTO.getAddress(), Address.class));
+        organization.setName(organizationRegisterDTO.getName());
+        organization.setUrl(organizationRegisterDTO.getUrl());
+        organization.setOib(organizationRegisterDTO.getOib());
+        organization.setType(organizationRegisterDTO.getType());
+        organization.setRole(Role.USER);
+
+        return organizationDao.save(organization);
     }
 }

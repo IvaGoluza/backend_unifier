@@ -2,10 +2,10 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
-import hr.fer.unifier.backend.db.entity.Request;
-import hr.fer.unifier.backend.db.entity.User;
 import hr.fer.unifier.backend.db.RequestDao;
-import hr.fer.unifier.backend.db.UserDao;
+import hr.fer.unifier.backend.db.entity.Request;
+import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.service.RequestService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

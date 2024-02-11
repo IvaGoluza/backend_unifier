@@ -1,9 +1,13 @@
 package hr.fer.unifier.backend.service.impl;
 
 
-import hr.fer.unifier.backend.api.user.UserResponseDTO;
-import hr.fer.unifier.backend.db.UserDao;
-import hr.fer.unifier.backend.db.entity.User;
+import hr.fer.unifier.backend.api.user.AllUsersDTO;
+import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
+import hr.fer.unifier.backend.db.user.OrganizationDao;
+import hr.fer.unifier.backend.db.user.PersonDao;
+import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +24,28 @@ public class UserServiceImpl implements UserService {
 
   private final UserDao userDao;
 
+  private final PersonDao personDao;
+
+  private final OrganizationDao organizationDao;
+
   private final ModelMapper modelMapper;
 
   @Transactional(readOnly = true)
   @Override
-  public List<UserResponseDTO> getAllUsers() {
-    return userDao.findAll()
+  public AllUsersDTO getAllUsers() {
+    final List<PersonProfileDTO> volunteers = personDao.findAll()
             .stream()
-            .sorted(Comparator.comparing(User::getId)).map(user -> modelMapper.map(user, UserResponseDTO.class))
+            .sorted(Comparator.comparing(User::getId))
+            .map(volunteer -> modelMapper.map(volunteer, PersonProfileDTO.class))
             .toList();
+
+    final List<OrganizationProfileDTO> organizations = organizationDao.findAll()
+            .stream()
+            .sorted(Comparator.comparing(User::getId))
+            .map(organization -> modelMapper.map(organization, OrganizationProfileDTO.class))
+            .toList();
+
+    return new AllUsersDTO(volunteers, organizations);
   }
 
   @Transactional
