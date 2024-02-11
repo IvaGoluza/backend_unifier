@@ -43,10 +43,9 @@ public class AdvertServiceImpl implements AdvertService {
 
   @Transactional
   @Override
-  public void deleteAdvert(Long id) {
+  public void changeDeleteStatus(Long id) {
     Advert advert = advertDao.findById(id).orElseThrow(() ->  new EntityNotFoundException("Advert with id:" + id + " does not exist."));
     advert.setDeleted(true);
-    advertDao.save(advert);
   }
 
   @Transactional(readOnly = true)

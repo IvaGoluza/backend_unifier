@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RequestService {
   RequestResponseDTO saveRequest(RequestDTO requestDTO);
-  void deleteRequest(Long id);
+  void changeDeleteStatus(Long id);
   List<RequestResponseDTO> getRequests(Long userId);
   List<RequestResponseDTO> getAllRequests();
 

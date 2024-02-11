@@ -12,29 +12,29 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/user")
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class UserResource {
 
   private final UserService userService;
 
-  @GetMapping("/my-profile/{userId}")
+  @GetMapping("/{userId}")
   public ResponseEntity<UserResponseDTO> getProfile(@PathVariable Long userId) {
     return ResponseEntity.ok(userService.getProfile(userId));
   }
 
-  @PutMapping("/my-profile")
+  @PutMapping("/edit-profile")
   public void updateProfile(@RequestBody UserProfileDTO userProfileDTO) {
     userService.updateProfile(userProfileDTO);
   }
 
-  @GetMapping("/users")
+  @GetMapping("/all-users")
   public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
     return ResponseEntity.ok(userService.getAllUsers());
   }
 
-  @PutMapping("/user/{userId}")
+  @PutMapping("/change-block-status/{userId}")
   public ResponseEntity<HttpStatus> changeBlockStatus(@PathVariable Long userId) {
     userService.changeBlockStatus(userId);
     return ResponseEntity.ok(HttpStatus.NO_CONTENT);

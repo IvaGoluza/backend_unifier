@@ -43,7 +43,7 @@ public class RequestServiceImpl implements RequestService {
 
   @Transactional
   @Override
-  public void deleteRequest(Long id) {
+  public void changeDeleteStatus(Long id) {
     final Request request = requestDao.findById(id).orElseThrow(
             () -> new EntityNotFoundException("Request with id: " + id + " doesn't exists.")
     );
