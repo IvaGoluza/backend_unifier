@@ -35,7 +35,7 @@ public class ProfileResource {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/recessions/{userId}")
+    @GetMapping("/recensions/{userId}")
     public ResponseEntity<List<RecensionResponseDTO>> getRecensions(@PathVariable Long userId) {
         return ResponseEntity.ok(profileService.getRecensions(userId));
     }

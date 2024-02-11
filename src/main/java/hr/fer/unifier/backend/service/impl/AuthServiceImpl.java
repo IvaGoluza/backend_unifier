@@ -108,6 +108,8 @@ public class AuthServiceImpl implements AuthService {
     private AuthenticationResponseDTO createAuthenticationResponseDTO(User user) {
         return new AuthenticationResponseDTO(
                 user.getId(),
+                user.getEmail(),
+                user.getMobilePhone(),
                 user.getRole(),
                 user.getUserType(),
                 user.isBlocked(),

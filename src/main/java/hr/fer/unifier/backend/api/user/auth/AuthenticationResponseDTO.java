@@ -10,6 +10,10 @@ import lombok.Data;
 public class AuthenticationResponseDTO {
     private Long id;
 
+    private String email;
+
+    private String mobilePhone;
+
     private Role role;
 
     private UserType userType;
