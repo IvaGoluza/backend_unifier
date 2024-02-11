@@ -2,7 +2,8 @@ package hr.fer.unifier.backend.service;
 
 import hr.fer.unifier.backend.api.deal.NoteResponseDTO;
 import hr.fer.unifier.backend.api.deal.RecensionResponseDTO;
-import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
+import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
 
 import java.util.List;
@@ -14,5 +15,6 @@ public interface ProfileService {
 
     List<NoteResponseDTO> getNotes(Long userId);
 
-    UserResponseDTO getProfile(Long userId);
+    PersonProfileDTO getPersonProfile(Long userId);
+    OrganizationProfileDTO getOrganizationProfile(Long userId);
 }

@@ -1,4 +1,4 @@
-package hr.fer.unifier.backend.api.user.login;
+package hr.fer.unifier.backend.api.user;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

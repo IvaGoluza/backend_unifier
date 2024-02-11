@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AuthResponseDTO {
+public class AuthTokenDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String authToken;
+    private String accessToken;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String refreshToken;

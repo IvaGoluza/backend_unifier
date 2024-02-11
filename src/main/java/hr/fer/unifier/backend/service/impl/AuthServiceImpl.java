@@ -1,11 +1,11 @@
 package hr.fer.unifier.backend.service.impl;
 
-import hr.fer.unifier.backend.api.location.AddressResponseDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthRequestDTO;
-import hr.fer.unifier.backend.api.user.auth.AuthResponseDTO;
-import hr.fer.unifier.backend.api.user.login.UserLoginDTO;
-import hr.fer.unifier.backend.api.user.login.UserLoginResponseDTO;
-import hr.fer.unifier.backend.api.user.register.*;
+import hr.fer.unifier.backend.api.user.auth.AuthTokenDTO;
+import hr.fer.unifier.backend.api.user.auth.AuthenticationResponseDTO;
+import hr.fer.unifier.backend.api.user.UserLoginDTO;
+import hr.fer.unifier.backend.api.user.register.OrganizationRegisterDTO;
+import hr.fer.unifier.backend.api.user.register.PersonRegisterDTO;
 import hr.fer.unifier.backend.db.entity.Address;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
@@ -48,34 +48,34 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public PersonResponseDTO registerPerson(final PersonRegisterDTO personRegisterDTO) {
+    public AuthenticationResponseDTO registerPerson(final PersonRegisterDTO personRegisterDTO) {
         userDao.findByEmail(personRegisterDTO.getBaseUserDetails().getEmail())
                 .ifPresent(user -> {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", personRegisterDTO.getBaseUserDetails().getEmail()));
                 });
 
         final Person person = createPerson(personRegisterDTO);
-        return createPersonResponse(person);
+        return createAuthenticationResponseDTO(person);
     }
 
 
     @Transactional
     @Override
-    public OrganizationResponseDTO registerOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
+    public AuthenticationResponseDTO registerOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
         userDao.findByEmail(organizationRegisterDTO.getBaseUserDetails().getEmail())
                 .ifPresent(user -> {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", organizationRegisterDTO.getBaseUserDetails().getEmail()));
                 });
 
         final Organization organization = createOrganization(organizationRegisterDTO);
-        return createOrganizationResponse(organization);
+        return createAuthenticationResponseDTO(organization);
     }
 
 
 
     @Transactional(readOnly = true)
     @Override
-    public UserLoginResponseDTO login(UserLoginDTO userLoginDTO) {
+    public AuthenticationResponseDTO login(UserLoginDTO userLoginDTO) {
         final User user = userDao.findByEmail(userLoginDTO.getEmail()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email or password is incorrect.")
         );
@@ -86,14 +86,12 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        return new UserLoginResponseDTO(
-                modelMapper.map(user, UserResponseDTO.class),
-                createAuthResponse(user)
-        );
+        return createAuthenticationResponseDTO(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public AuthResponseDTO refreshToken(AuthRequestDTO authRequestDTO) {
+    public AuthTokenDTO refreshToken(AuthRequestDTO authRequestDTO) {
         Long userId = jwtService.extractRefreshUserId(authRequestDTO.getRefreshToken());
         final User user = userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId)));
 
@@ -101,18 +99,28 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        return new AuthResponseDTO(
+        return new AuthTokenDTO(
                 createAuthToken(user),
                 null
         );
     }
 
-    private AuthResponseDTO createAuthResponse(final User user){
-        String authJwtToken = createAuthToken(user);
+    private AuthenticationResponseDTO createAuthenticationResponseDTO(User user) {
+        return new AuthenticationResponseDTO(
+                user.getId(),
+                user.getRole(),
+                user.getUserType(),
+                user.isBlocked(),
+                createAuthTokens(user)
+        );
+    }
+
+    private AuthTokenDTO createAuthTokens(final User user){
+        String accessToken = createAuthToken(user);
         String refreshToken = createRefreshToken(user);
 
-        return new AuthResponseDTO(
-                authJwtToken,refreshToken
+        return new AuthTokenDTO(
+                accessToken,refreshToken
         );
     }
 
@@ -153,25 +161,5 @@ public class AuthServiceImpl implements AuthService {
         organization.setRole(Role.USER);
 
         return organizationDao.save(organization);
-    }
-
-    private OrganizationResponseDTO createOrganizationResponse(Organization organization) {
-        return new OrganizationResponseDTO(
-                modelMapper.map(organization, UserResponseDTO.class),
-                organization.getName(),
-                organization.getType(),
-                modelMapper.map(organization.getAddress(), AddressResponseDTO.class),
-                organization.getUrl(),
-                createAuthResponse(organization)
-        );
-    }
-
-    private PersonResponseDTO createPersonResponse(Person person) {
-        return new PersonResponseDTO(
-                modelMapper.map(person, UserResponseDTO.class),
-                person.getFirstName(),
-                person.getLastName(),
-                createAuthResponse(person)
-        );
     }
 }
