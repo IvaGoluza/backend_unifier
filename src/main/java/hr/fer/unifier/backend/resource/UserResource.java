@@ -1,7 +1,6 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.user.UserResponseDTO;
-import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
 import hr.fer.unifier.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,16 +17,6 @@ import java.util.List;
 public class UserResource {
 
   private final UserService userService;
-
-  @GetMapping("/{userId}")
-  public ResponseEntity<UserResponseDTO> getProfile(@PathVariable Long userId) {
-    return ResponseEntity.ok(userService.getProfile(userId));
-  }
-
-  @PutMapping("/edit-profile")
-  public void updateProfile(@RequestBody UserProfileDTO userProfileDTO) {
-    userService.updateProfile(userProfileDTO);
-  }
 
   @GetMapping("/all-users")
   public ResponseEntity<List<UserResponseDTO>> getAllUsers() {

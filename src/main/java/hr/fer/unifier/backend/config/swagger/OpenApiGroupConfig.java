@@ -57,11 +57,21 @@ public class OpenApiGroupConfig {
     }
 
     @Bean
+    public GroupedOpenApi profileOpenApi() {
+        final String[] paths =  {"/profile/**"};
+        return GroupedOpenApi
+                .builder()
+                .group("Profile")
+                .pathsToMatch(paths)
+                .build();
+    }
+
+    @Bean
     public GroupedOpenApi allOpenApi() {
         final String[] paths =  {"/**"};
         return GroupedOpenApi
                 .builder()
-                .group("All")
+                .group("*")
                 .pathsToMatch(paths)
                 .build();
     }

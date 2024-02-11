@@ -62,15 +62,4 @@ public class DealResource {
     return ResponseEntity.ok(dealService.getAdvertDeals(userId));
   }
 
-  //TODO: Staviti u profil resurs?
-  @GetMapping("/profile/recessions/{userId}")
-  public ResponseEntity<List<RecensionResponseDTO>> getRecessions(@PathVariable Long userId) {
-    return ResponseEntity.ok(dealService.getRecensions(userId));
-  }
-
-  @GetMapping("/profile/notes/{userId}")
-  public ResponseEntity<List<NoteResponseDTO>> getNotes(@PathVariable Long userId) {
-    return ResponseEntity.ok(dealService.getNotes(userId));
-  }
-
 }

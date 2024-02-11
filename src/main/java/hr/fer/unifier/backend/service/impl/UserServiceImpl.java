@@ -2,7 +2,6 @@ package hr.fer.unifier.backend.service.impl;
 
 
 import hr.fer.unifier.backend.api.user.UserResponseDTO;
-import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
 import hr.fer.unifier.backend.db.UserDao;
 import hr.fer.unifier.backend.db.entity.User;
 import hr.fer.unifier.backend.service.UserService;
@@ -41,28 +40,4 @@ public class UserServiceImpl implements UserService {
 
     user.setBlocked(!user.isBlocked());
   }
-
-  @Transactional(readOnly = true)
-  @Override
-  public UserResponseDTO getProfile(Long userId) {
-    final User user = userDao.findById(userId).orElseThrow(
-            () -> new EntityNotFoundException("User with id " + userId + " does not exist.")
-    );
-
-    return modelMapper.map(user, UserResponseDTO.class);
-  }
-
-  @Transactional
-  @Override
-  public void updateProfile(UserProfileDTO userProfileDTO) {
-    final User user = userDao.findById(userProfileDTO.getId()).orElseThrow(
-            () -> new EntityNotFoundException("User with id " + userProfileDTO.getId() + " does not exist.")
-    );
-
-    user.setProfileDescription(userProfileDTO.getProfileDescription());
-    user.setMobilePhone(userProfileDTO.getMobilePhone());
-  }
-
-
-
 }
