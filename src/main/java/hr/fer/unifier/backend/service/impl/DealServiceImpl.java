@@ -149,32 +149,6 @@ public class DealServiceImpl implements DealService {
   }
 
   @Override
-  public List<RecensionResponseDTO> getRecensions(Long userId) {
-    final User user = userDao.findById(userId).orElseThrow(
-            () -> new EntityNotFoundException("User with id " + userId + " does not exist.")
-    );
-
-    return dealDao.findByAdvert_UserAndRecensionNotNull(user)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(deal -> modelMapper.map(deal, RecensionResponseDTO.class))
-            .toList();
-  }
-
-  @Override
-  public List<NoteResponseDTO> getNotes(Long userId) {
-    final User user = userDao.findById(userId).orElseThrow(
-            () -> new EntityNotFoundException("User with id " + userId + " does not exist.")
-    );
-
-    return dealDao.findByRequest_UserAndNoteNotNull(user)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(deal -> modelMapper.map(deal, NoteResponseDTO.class))
-            .toList();
-  }
-
-  @Override
   public List<DealResponseDTO> getDeals(Long requestId) {
     final Request request = requestDao.findById(requestId).orElseThrow(
             () -> new EntityNotFoundException("Request with id "+ requestId + " does not exist")

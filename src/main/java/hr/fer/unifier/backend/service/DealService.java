@@ -14,8 +14,5 @@ public interface DealService {
   List<DealAdvertDTO> getAdvertDeals(Long userId);
   void updateRecension(RecensionDTO recensionDTO);
   void updateNote(NoteDTO noteDTO);
-  List<RecensionResponseDTO> getRecensions(Long userId);
-  List<NoteResponseDTO> getNotes(Long userId);
-
   List<DealResponseDTO> getDeals(Long requestId);
 }

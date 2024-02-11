@@ -10,7 +10,7 @@ public interface AdvertService {
 
   AdvertResponseDTO saveAdvert(AdvertDTO advertDTO);
 
-  void deleteAdvert(Long id);
+  void changeDeleteStatus(Long id);
 
   List<AdvertResponseDTO> getAdverts(Long userId);
 
