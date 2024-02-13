@@ -8,11 +8,12 @@ import hr.fer.unifier.backend.api.user.register.OrganizationRegisterDTO;
 import hr.fer.unifier.backend.api.user.register.PersonRegisterDTO;
 import hr.fer.unifier.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/auth")
+@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthResource {
     private final AuthService authService;

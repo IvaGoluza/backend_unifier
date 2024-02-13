@@ -3,6 +3,7 @@ package hr.fer.unifier.backend.resource;
 import hr.fer.unifier.backend.api.deal.*;
 import hr.fer.unifier.backend.service.DealService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/deal")
+@RequestMapping(value = "/deal", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class DealResource {
