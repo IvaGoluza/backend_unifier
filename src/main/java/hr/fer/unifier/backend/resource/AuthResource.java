@@ -1,15 +1,16 @@
 package hr.fer.unifier.backend.resource;
 
+import hr.fer.unifier.backend.api.user.UserLoginDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthRequestDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthTokenDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthenticationResponseDTO;
-import hr.fer.unifier.backend.api.user.UserLoginDTO;
 import hr.fer.unifier.backend.api.user.register.OrganizationRegisterDTO;
 import hr.fer.unifier.backend.api.user.register.PersonRegisterDTO;
 import hr.fer.unifier.backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,14 +19,14 @@ import org.springframework.web.bind.annotation.*;
 public class AuthResource {
     private final AuthService authService;
 
-    @PostMapping("/person-registration")
-    public AuthenticationResponseDTO registration(@RequestBody PersonRegisterDTO personRegisterDTO){
-        return authService.registerPerson(personRegisterDTO);
+    @PostMapping(path = "/person-registration", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public AuthenticationResponseDTO registration(@RequestPart PersonRegisterDTO personRegisterDTO, @RequestPart(required = false) MultipartFile file){
+        return authService.registerPerson(personRegisterDTO, file);
     }
 
-    @PostMapping("/organization-registration")
-    public AuthenticationResponseDTO registration(@RequestBody OrganizationRegisterDTO organizationRegisterDTO){
-        return authService.registerOrganization(organizationRegisterDTO);
+    @PostMapping(path = "/organization-registration", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public AuthenticationResponseDTO registration(@RequestPart OrganizationRegisterDTO organizationRegisterDTO, @RequestPart(required = false) MultipartFile file){
+        return authService.registerOrganization(organizationRegisterDTO, file);
     }
 
     @PostMapping("/login")

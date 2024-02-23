@@ -41,8 +41,14 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column
+    @Lob
+    private byte[] file;
+
+    private String volunteerCenter;
+
     private boolean blocked = false;
+
+    private boolean isApproved;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
