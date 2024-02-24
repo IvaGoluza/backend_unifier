@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin(origins = "http://localhost:3000")
 public class AuthResource {
     private final AuthService authService;
@@ -24,9 +24,9 @@ public class AuthResource {
         return authService.registerPerson(personRegisterDTO, file);
     }
 
-    @PostMapping(path = "/organization-registration", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public AuthenticationResponseDTO registration(@RequestPart OrganizationRegisterDTO organizationRegisterDTO, @RequestPart(required = false) MultipartFile file){
-        return authService.registerOrganization(organizationRegisterDTO, file);
+    @PostMapping(path = "/organization-registration")
+    public AuthenticationResponseDTO registration(@RequestBody OrganizationRegisterDTO organizationRegisterDTO){
+        return authService.registerOrganization(organizationRegisterDTO);
     }
 
     @PostMapping("/login")

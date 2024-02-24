@@ -1,6 +1,7 @@
 package hr.fer.unifier.backend.api.user.register;
 
 import hr.fer.unifier.backend.api.location.AddressRequestDTO;
+import hr.fer.unifier.backend.enums.VolunteerCenter;
 import hr.fer.unifier.backend.validation.EmailValidation;
 import hr.fer.unifier.backend.validation.FieldsMatchValidation;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +31,9 @@ public class OrganizationRegisterDTO {
     private String mobilePhone;
 
     @NotNull
+    private VolunteerCenter volunteerCenter;
+
+    @NotNull
     private String password;
 
     @NotNull
@@ -37,6 +41,9 @@ public class OrganizationRegisterDTO {
 
     @NotNull
     private AddressRequestDTO address;
+
+    @NotNull
+    private UserTypeRequestDTO userType;
 
     private String url;
 }

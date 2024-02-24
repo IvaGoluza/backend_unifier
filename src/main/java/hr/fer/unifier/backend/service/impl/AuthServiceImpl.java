@@ -64,14 +64,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public AuthenticationResponseDTO registerOrganization(OrganizationRegisterDTO organizationRegisterDTO, MultipartFile file) {
+    public AuthenticationResponseDTO registerOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
         userDao.findByEmail(organizationRegisterDTO.getEmail())
                 .ifPresent(user -> {
                     throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", organizationRegisterDTO.getEmail()));
                 });
 
         final Organization organization = createOrganization(organizationRegisterDTO);
-        saveFile(file, organization);
         return createAuthenticationResponseDTO(organization);
     }
 
@@ -110,7 +109,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void saveFile(MultipartFile file, User user) {
-        if (file == null) return;
+        if (file == null){
+            if (user.getUserType().equals(UserType.PERSON_IN_NEED)){
+                return;
+            }else {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Za registraciju volontera potrebna je potvrda o nekažnjavanju!");
+            }
+        }
 
         if (file.getContentType() != null && !file.getContentType().endsWith("pdf")){
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Datoteka mora biti u pdf obliku!");
@@ -176,7 +181,7 @@ public class AuthServiceImpl implements AuthService {
 
         organization.setPassword(passwordEncoder.encode(organizationRegisterDTO.getPassword()));
         organization.setRole(Role.USER);
-        organization.setUserType(UserType.VOLUNTEER);
+        organization.setUserType(UserType.lookup(organizationRegisterDTO.getUserType()));
 
         return organizationDao.save(organization);
     }

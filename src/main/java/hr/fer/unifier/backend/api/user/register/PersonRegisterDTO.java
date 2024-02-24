@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.api.user.register;
 
+import hr.fer.unifier.backend.enums.VolunteerCenter;
 import hr.fer.unifier.backend.validation.EmailValidation;
 import hr.fer.unifier.backend.validation.FieldsMatchValidation;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +32,9 @@ public class PersonRegisterDTO {
 
     @NotNull
     private String controlPassword;
+
+    @NotNull
+    private VolunteerCenter volunteerCenter;
 
     @NotNull
     private UserTypeRequestDTO userType;
