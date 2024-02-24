@@ -14,11 +14,11 @@ import hr.fer.unifier.backend.db.user.entity.Person;
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.enums.UserType;
+import hr.fer.unifier.backend.mapper.AuthMapper;
 import hr.fer.unifier.backend.service.AuthService;
 import hr.fer.unifier.backend.service.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final PersonDao personDao;
 
-    private final ModelMapper modelMapper;
+    private final AuthMapper authMapper;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -167,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Person createPerson(final PersonRegisterDTO personRegisterDTO) {
-        final Person person = modelMapper.map(personRegisterDTO, Person.class);
+        final Person person = authMapper.toPerson(personRegisterDTO);
 
         person.setPassword(passwordEncoder.encode(personRegisterDTO.getPassword()));
         person.setRole(Role.USER);
@@ -177,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Organization createOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
-        final Organization organization = modelMapper.map(organizationRegisterDTO, Organization.class);
+        final Organization organization = authMapper.toOrganization(organizationRegisterDTO);
 
         organization.setPassword(passwordEncoder.encode(organizationRegisterDTO.getPassword()));
         organization.setRole(Role.USER);

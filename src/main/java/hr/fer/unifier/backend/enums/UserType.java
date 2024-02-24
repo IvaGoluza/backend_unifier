@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Getter
 public enum UserType {
-  ASSOCIATION(new UserTypeRequestDTO(true,true)),
+  VOLUNTEER_AND_PERSON_IN_NEED(new UserTypeRequestDTO(true,true)),
   VOLUNTEER(new UserTypeRequestDTO(true, false)),
   PERSON_IN_NEED(new UserTypeRequestDTO(false, true));
 
