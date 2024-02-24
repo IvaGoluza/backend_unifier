@@ -1,12 +1,11 @@
 package hr.fer.unifier.backend.service.impl;
 
+import hr.fer.unifier.backend.api.user.UserLoginDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthRequestDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthTokenDTO;
 import hr.fer.unifier.backend.api.user.auth.AuthenticationResponseDTO;
-import hr.fer.unifier.backend.api.user.UserLoginDTO;
 import hr.fer.unifier.backend.api.user.register.OrganizationRegisterDTO;
 import hr.fer.unifier.backend.api.user.register.PersonRegisterDTO;
-import hr.fer.unifier.backend.db.entity.Address;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.UserDao;
@@ -14,19 +13,22 @@ import hr.fer.unifier.backend.db.user.entity.Organization;
 import hr.fer.unifier.backend.db.user.entity.Person;
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Role;
+import hr.fer.unifier.backend.enums.UserType;
+import hr.fer.unifier.backend.mapper.AuthMapper;
 import hr.fer.unifier.backend.service.AuthService;
 import hr.fer.unifier.backend.service.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 @Service
@@ -38,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final PersonDao personDao;
 
-    private final ModelMapper modelMapper;
+    private final AuthMapper authMapper;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -48,13 +50,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public AuthenticationResponseDTO registerPerson(final PersonRegisterDTO personRegisterDTO) {
-        userDao.findByEmail(personRegisterDTO.getBaseUserDetails().getEmail())
+    public AuthenticationResponseDTO registerPerson(final PersonRegisterDTO personRegisterDTO, MultipartFile file) {
+        userDao.findByEmail(personRegisterDTO.getEmail())
                 .ifPresent(user -> {
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", personRegisterDTO.getBaseUserDetails().getEmail()));
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", personRegisterDTO.getEmail()));
                 });
 
         final Person person = createPerson(personRegisterDTO);
+        saveFile(file, person);
         return createAuthenticationResponseDTO(person);
     }
 
@@ -62,9 +65,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public AuthenticationResponseDTO registerOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
-        userDao.findByEmail(organizationRegisterDTO.getBaseUserDetails().getEmail())
+        userDao.findByEmail(organizationRegisterDTO.getEmail())
                 .ifPresent(user -> {
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", organizationRegisterDTO.getBaseUserDetails().getEmail()));
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email %s already exists!", organizationRegisterDTO.getEmail()));
                 });
 
         final Organization organization = createOrganization(organizationRegisterDTO);
@@ -105,6 +108,29 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+    private void saveFile(MultipartFile file, User user) {
+        if (file == null){
+            if (user.getUserType().equals(UserType.PERSON_IN_NEED)){
+                return;
+            }else {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Za registraciju volontera potrebna je potvrda o nekažnjavanju!");
+            }
+        }
+
+        if (file.getContentType() != null && !file.getContentType().endsWith("pdf")){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Datoteka mora biti u pdf obliku!");
+        }
+
+        try{
+            user.setFile(file.getBytes());
+        }catch (IOException ex){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Couldn't save file");
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     private AuthenticationResponseDTO createAuthenticationResponseDTO(User user) {
         return new AuthenticationResponseDTO(
                 user.getId(),
@@ -141,26 +167,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Person createPerson(final PersonRegisterDTO personRegisterDTO) {
-        final Person person = modelMapper.map(personRegisterDTO.getBaseUserDetails(), Person.class);
+        final Person person = authMapper.toPerson(personRegisterDTO);
 
-        person.setPassword(passwordEncoder.encode(personRegisterDTO.getBaseUserDetails().getPassword()));
-        person.setFirstName(personRegisterDTO.getFirstName());
-        person.setLastName(personRegisterDTO.getLastName());
+        person.setPassword(passwordEncoder.encode(personRegisterDTO.getPassword()));
         person.setRole(Role.USER);
+        person.setUserType(UserType.lookup(personRegisterDTO.getUserType()));
 
         return personDao.save(person);
     }
 
     private Organization createOrganization(OrganizationRegisterDTO organizationRegisterDTO) {
-        final Organization organization = modelMapper.map(organizationRegisterDTO.getBaseUserDetails(), Organization.class);
+        final Organization organization = authMapper.toOrganization(organizationRegisterDTO);
 
-        organization.setPassword(passwordEncoder.encode(organizationRegisterDTO.getBaseUserDetails().getPassword()));
-        organization.setAddress(modelMapper.map(organizationRegisterDTO.getAddress(), Address.class));
-        organization.setName(organizationRegisterDTO.getName());
-        organization.setUrl(organizationRegisterDTO.getUrl());
-        organization.setOib(organizationRegisterDTO.getOib());
-        organization.setType(organizationRegisterDTO.getType());
+        organization.setPassword(passwordEncoder.encode(organizationRegisterDTO.getPassword()));
         organization.setRole(Role.USER);
+        organization.setUserType(UserType.lookup(organizationRegisterDTO.getUserType()));
 
         return organizationDao.save(organization);
     }

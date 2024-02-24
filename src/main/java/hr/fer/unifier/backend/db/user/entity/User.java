@@ -4,6 +4,7 @@ import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.enums.UserType;
+import hr.fer.unifier.backend.enums.VolunteerCenter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,16 +42,22 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column
+    @Lob
+    private byte[] file;
+
     private boolean blocked = false;
+
+    private boolean isApproved;
+
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
+
+    @Enumerated(EnumType.STRING)
+    private VolunteerCenter volunteerCenter;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Request> requests;
