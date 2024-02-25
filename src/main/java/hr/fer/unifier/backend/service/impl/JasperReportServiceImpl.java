@@ -25,6 +25,7 @@ import java.util.HashMap;
 public class JasperReportServiceImpl implements JasperReportService {
 
     private final DataSource dataSource;
+    private final StreamingUtil streamingUtil;
 
     @Override
     public ResponseEntity<StreamingResponseBody> getPdfReport() {
@@ -47,6 +48,6 @@ public class JasperReportServiceImpl implements JasperReportService {
     private ResponseEntity<StreamingResponseBody> exportToPdf(JasperPrint jasperPrint) throws JRException, SQLException {
         final byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
         final Blob pdfBlob = new SerialBlob(pdfBytes);
-        return StreamingUtil.getBlobStreamingResponse("users.pdf", pdfBlob);
+        return streamingUtil.getBlobStreamingResponse("users.pdf", pdfBlob);
     }
 }
