@@ -98,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
         Long userId = jwtService.extractRefreshUserId(authRequestDTO.getRefreshToken());
         final User user = userDao.findById(userId).orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId)));
 
-        if(!jwtService.isRefreshTokenValid(authRequestDTO.getRefreshToken(), user)){
+        if(!jwtService.isRefreshTokenValid(authRequestDTO.getRefreshToken(), user.getEmail())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -156,14 +156,14 @@ public class AuthServiceImpl implements AuthService {
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
 
-        return jwtService.generateAuthToken(claims, user);
+        return jwtService.generateAuthToken(claims, user.getEmail());
     }
 
     private String createRefreshToken(final User user){
         final HashMap<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
 
-        return jwtService.generateRefreshToken(claims, user);
+        return jwtService.generateRefreshToken(claims, user.getEmail());
     }
 
     private Person createPerson(final PersonRegisterDTO personRegisterDTO) {

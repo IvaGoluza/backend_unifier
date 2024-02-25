@@ -26,8 +26,9 @@ public class ApplicationConfig {
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> userDao.findByEmail(username).orElse(null);
+    return username -> userDao.existsByEmail(username) ? userDao.getUserDetails(username) : null;
   }
+
   @Bean
   public AuthenticationProvider authenticationProvider(){
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

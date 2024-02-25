@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -12,9 +13,10 @@ import java.sql.Blob;
 import java.sql.SQLException;
 
 @Slf4j
+@Component
 public class StreamingUtil {
 
-    public static ResponseEntity<StreamingResponseBody> getBlobStreamingResponse(final String fileName, final Blob blobDocument) {
+    public ResponseEntity<StreamingResponseBody> getBlobStreamingResponse(final String fileName, final Blob blobDocument) {
         final HttpHeaders httpHeaders = new HttpHeaders();
 
         try{

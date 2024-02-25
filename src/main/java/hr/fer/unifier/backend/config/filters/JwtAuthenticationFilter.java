@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -51,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "");
             }
 
-            if (jwtService.isAuthTokenValid(jwt, userDetails)) {
+            if (jwtService.isAuthTokenValid(jwt, userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

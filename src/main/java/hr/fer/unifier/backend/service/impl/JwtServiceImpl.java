@@ -29,11 +29,11 @@ public class JwtServiceImpl implements JwtService {
 
 
     @Override
-    public String generateAuthToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateAuthToken(Map<String, Object> extraClaims, String userName) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60))
                 .signWith(getAuthSigningKey(), SignatureAlgorithm.HS256)
@@ -41,15 +41,15 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean isAuthTokenValid(String jwt, UserDetails userDetails) {
-        final String username = extractUsername(jwt, false);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwt, false);
+    public boolean isAuthTokenValid(String jwt, String username) {
+        final String extractUsername = extractUsername(jwt, false);
+        return (extractUsername.equals(username)) && !isTokenExpired(jwt, false);
     }
 
     @Override
-    public boolean isRefreshTokenValid(String jwt, UserDetails userDetails) {
-        final String username = extractUsername(jwt, true);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(jwt, true);
+    public boolean isRefreshTokenValid(String jwt, String username) {
+        final String extractUsername = extractUsername(jwt, true);
+        return (extractUsername.equals(username)) && !isTokenExpired(jwt, true);
     }
 
     @Override
@@ -59,11 +59,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateRefreshToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateRefreshToken(Map<String, Object> extraClaims, String username) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 12))
                 .signWith(getRefreshSigningKey(), SignatureAlgorithm.HS256)
