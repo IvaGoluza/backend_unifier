@@ -7,4 +7,6 @@ public interface UserService {
   AllUsersDTO getAllUsers();
 
   void changeBlockStatus(Long userId);
+
+  void approveUser(Long userId);
 }

@@ -12,8 +12,10 @@ import hr.fer.unifier.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Comparator;
 import java.util.List;
@@ -56,5 +58,15 @@ public class UserServiceImpl implements UserService {
     );
 
     user.setBlocked(!user.isBlocked());
+  }
+
+  @Transactional
+  @Override
+  public void approveUser(Long userId) {
+    final User user = userDao.findById(userId).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Couldn't find user with id %d", userId))
+    );
+
+    user.setApproved(true);
   }
 }

@@ -3,7 +3,6 @@ package hr.fer.unifier.backend.resource;
 import hr.fer.unifier.backend.api.user.AllUsersDTO;
 import hr.fer.unifier.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +22,13 @@ public class UserResource {
   }
 
   @PutMapping("/change-block-status/{userId}")
-  public ResponseEntity<HttpStatus> changeBlockStatus(@PathVariable Long userId) {
+  public ResponseEntity<Void> changeBlockStatus(@PathVariable Long userId) {
     userService.changeBlockStatus(userId);
-    return ResponseEntity.ok(HttpStatus.NO_CONTENT);
+    return ResponseEntity.noContent().build();
+  }
+  @PutMapping("/approve-user/{userId}")
+  public ResponseEntity<Void> approveUser(@PathVariable Long userId) {
+    userService.approveUser(userId);
+    return ResponseEntity.noContent().build();
   }
 }
