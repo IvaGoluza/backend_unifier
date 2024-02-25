@@ -19,4 +19,6 @@ public class UserResponseDTO {
   private UserType userType;
 
   private boolean blocked;
+
+  private boolean isApproved;
 }
