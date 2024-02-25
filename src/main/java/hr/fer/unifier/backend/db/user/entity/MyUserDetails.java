@@ -1,4 +1,4 @@
-package hr.fer.unifier.backend.api.user;
+package hr.fer.unifier.backend.db.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

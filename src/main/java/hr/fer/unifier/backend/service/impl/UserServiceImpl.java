@@ -8,6 +8,7 @@ import hr.fer.unifier.backend.db.user.OrganizationDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.db.user.entity.UserWithFile;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.StreamingUtil;
 import lombok.RequiredArgsConstructor;
@@ -74,11 +75,13 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public ResponseEntity<StreamingResponseBody> getUserCertificateOfGoodConduct(Long userId) {
-        final User user = getUserById(userId);
+        final UserWithFile user = userDao.getUserWithFile(userId);
+        if (user == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Couldn't find user with id %d", userId));
+        if (user.getFile() == null) return null;
 
         try {
             Blob blob = new SerialBlob(user.getFile());
-            return streamingUtil.getBlobStreamingResponse("User_certificate.pdf", blob);
+            return streamingUtil.getBlobStreamingResponse(String.format("%s.pdf", user.getName()), blob);
         } catch (SQLException sqlException) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Couldn't read file.", sqlException);
         }
