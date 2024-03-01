@@ -1,12 +1,7 @@
 package hr.fer.unifier.backend.db.entity;
 
 import hr.fer.unifier.backend.db.user.entity.User;
-import hr.fer.unifier.backend.enums.Category;
-import hr.fer.unifier.backend.enums.HelpType;
-import hr.fer.unifier.backend.enums.Town;
-import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,37 +19,44 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private boolean association;
+    private Long requestId;
 
     @Column(nullable = false)
     private String requestTitle;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Town town;
+    private String location;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private HelpType helpType;
+    private String time;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
-    @Column(nullable = false, length = 750)
-    private String description;
+    private String helpType;
 
     @Column(nullable = false)
-    private Integer volunteerNum;
+    private String category;
+
+    @Column(nullable = false)
+    private Integer numOfVolunteers;
 
     @Column
-    private boolean active;
+    private String skillSet;
+
+    @Column(nullable = false, length = 1000)
+    private String description;
+
+    @Column
+    private Boolean active;
 
     @Column
     private Boolean deleted;
+
+    @Column
+    private Boolean oneTime;
+
+    @Lob
+    @Column
+    private byte[] image;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

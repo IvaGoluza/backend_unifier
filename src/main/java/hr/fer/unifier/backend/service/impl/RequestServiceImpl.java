@@ -6,10 +6,10 @@ import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.RequestService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,23 +22,17 @@ import java.util.stream.Collectors;
 public class RequestServiceImpl implements RequestService {
 
   private final RequestDao requestDao;
-  private final ModelMapper modelMapper;
+  private final RequestMapper requestMapper;
   private final UserDao userDao;
 
   @Transactional
   @Override
   public RequestResponseDTO saveRequest(final RequestDTO requestDTO) {
-    Request request = modelMapper.map(requestDTO, Request.class);
     final User requestUser = userDao.findById(requestDTO.getUserId()).orElseThrow(() ->
             new EntityNotFoundException("User with id " + requestDTO.getUserId() + " does not exist.")
     );
-
-    request.setUser(requestUser);
-    request.setActive(true);
-    request.setDeleted(false);
-    request = requestDao.save(request);
-
-    return modelMapper.map(request, RequestResponseDTO.class);
+    final Request request = requestDao.save(requestMapper.toRequest(requestDTO, requestUser));
+    return requestMapper.toRequestResponseDTO(request);
   }
 
   @Transactional
@@ -60,7 +54,7 @@ public class RequestServiceImpl implements RequestService {
     return requestDao.findByUserAndDeletedFalse(user)
             .orElse(Collections.emptyList())
             .stream()
-            .map(request -> modelMapper.map(request, RequestResponseDTO.class))
+            .map(requestMapper::toRequestResponseDTO)
             .collect(Collectors.toList());
   }
 
@@ -70,7 +64,7 @@ public class RequestServiceImpl implements RequestService {
     return requestDao.findAllByActiveTrueAndDeletedFalse()
             .orElse(Collections.emptyList())
             .stream()
-            .map(request -> modelMapper.map(request, RequestResponseDTO.class))
+            .map(requestMapper::toRequestResponseDTO)
             .toList();
   }
 
