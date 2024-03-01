@@ -10,62 +10,82 @@ import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.RequestService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static hr.fer.unifier.backend.util.FileValidator.validateImage;
 
 @Service
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
 
-  private final RequestDao requestDao;
-  private final RequestMapper requestMapper;
-  private final UserDao userDao;
+    private final RequestDao requestDao;
+    private final RequestMapper requestMapper;
+    private final UserDao userDao;
 
-  @Transactional
-  @Override
-  public RequestResponseDTO saveRequest(final RequestDTO requestDTO) {
-    final User requestUser = userDao.findById(requestDTO.getUserId()).orElseThrow(() ->
-            new EntityNotFoundException("User with id " + requestDTO.getUserId() + " does not exist.")
-    );
-    final Request request = requestDao.save(requestMapper.toRequest(requestDTO, requestUser));
-    return requestMapper.toRequestResponseDTO(request);
-  }
+    @Transactional
+    @Override
+    public RequestResponseDTO saveRequest(final RequestDTO requestDTO) {
+        return requestMapper.toRequestResponseDTO(createRequest(requestDTO, null));
+    }
 
-  @Transactional
-  @Override
-  public void changeDeleteStatus(Long id) {
-    final Request request = requestDao.findById(id).orElseThrow(
-            () -> new EntityNotFoundException("Request with id: " + id + " doesn't exists.")
-    );
 
-    request.setDeleted(true);
-  }
+    private Request createRequest(RequestDTO requestDTO, MultipartFile file) {
+        final User requestUser = userDao.findById(requestDTO.getUserId()).orElseThrow(() ->
+                new EntityNotFoundException("User with id " + requestDTO.getUserId() + " does not exist.")
+        );
 
-  @Override
-  public List<RequestResponseDTO> getRequests(Long userId) {
-    final User user = userDao.findById(userId).orElseThrow(
-            () -> new EntityNotFoundException("User with id: " + userId + " not found.")
-    );
+        final Request request = requestDao.save(requestMapper.toRequest(requestDTO, requestUser));
+        try {
+            if (file != null && !file.isEmpty()) {
+                validateImage(file);
+                request.setImage(file.getBytes());
+            }
+        } catch (IOException ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Coulnd't save image", ex);
+        }
+        return request;
+    }
 
-    return requestDao.findByUserAndDeletedFalse(user)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(requestMapper::toRequestResponseDTO)
-            .collect(Collectors.toList());
-  }
+    @Transactional
+    @Override
+    public void changeDeleteStatus(Long id) {
+        final Request request = requestDao.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Request with id: " + id + " doesn't exists.")
+        );
 
-  @Transactional(readOnly = true)
-  @Override
-  public List<RequestResponseDTO> getAllRequests() {
-    return requestDao.findAllByActiveTrueAndDeletedFalse()
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(requestMapper::toRequestResponseDTO)
-            .toList();
-  }
+        request.setDeleted(true);
+    }
+
+    @Override
+    public List<RequestResponseDTO> getRequests(Long userId) {
+        final User user = userDao.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException("User with id: " + userId + " not found.")
+        );
+
+        return requestDao.findByUserAndDeletedFalse(user)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(requestMapper::toRequestResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<RequestResponseDTO> getAllRequests() {
+        return requestDao.findAllByActiveTrueAndDeletedFalse()
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(requestMapper::toRequestResponseDTO)
+                .toList();
+    }
 
 }

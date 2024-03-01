@@ -118,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (file.getContentType() != null && !file.getContentType().endsWith("pdf")){
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Datoteka mora biti u pdf obliku!");
+            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Datoteka mora biti u pdf obliku!");
         }
 
         try{
