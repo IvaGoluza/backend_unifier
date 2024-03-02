@@ -122,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         try{
-            user.setFile(file.getBytes());
+            user.setCertificateOfGoodConduct(file.getBytes());
         }catch (IOException ex){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Couldn't save file");
         }catch (Exception e){
