@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,6 +23,11 @@ public class AdvertResource {
   @PostMapping
   public ResponseEntity<AdvertResponseDTO> saveAdvert(@RequestBody AdvertDTO advertDTO) {
     return ResponseEntity.ok(advertService.saveAdvert(advertDTO));
+  }
+
+  @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<AdvertResponseDTO> saveAdvert(@RequestPart AdvertDTO advertDTO, @RequestPart MultipartFile file) {
+    return ResponseEntity.ok(advertService.saveAdvert(advertDTO,file));
   }
 
   @PutMapping("/change-delete-status/{advertId}")
