@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.db.user;
 
 import hr.fer.unifier.backend.db.user.entity.MyUserDetails;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.db.user.entity.UserCardInfo;
 import hr.fer.unifier.backend.db.user.entity.UserWithFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +23,10 @@ public interface UserDao extends JpaRepository<User, Long> {
             " LEFT JOIN Organization o ON o.id = u.id" +
             " WHERE u.id = :id")
     UserWithFile getUserWithFile(Long id);
+
+    @Query("SELECT NEW UserCardInfo (u.id, replace(coalesce(o.name, p.firstName || ' ' || p.lastName),' ', '-'),u.email,u.mobilePhone)FROM User as u" +
+            " LEFT JOIN Person p ON p.id = u.id" +
+            " LEFT JOIN Organization o ON o.id = u.id" +
+            " WHERE u.id = :id")
+    UserCardInfo getUserCardInfo(Long id);
 }

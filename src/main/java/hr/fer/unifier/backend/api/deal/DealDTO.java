@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class DealDTO {
 
-    private Long id;
+    private Long senderId;
 
     private Sender sender;
 
@@ -20,4 +20,5 @@ public class DealDTO {
 
     private Long advertId;
 
+    private String message;
 }

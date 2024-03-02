@@ -1,20 +1,23 @@
 package hr.fer.unifier.backend.service.impl;
 
 
-import hr.fer.unifier.backend.api.deal.*;
+import hr.fer.unifier.backend.api.deal.DealDTO;
+import hr.fer.unifier.backend.api.deal.DealResponseDTO;
+import hr.fer.unifier.backend.api.deal.PersonInNeedApplicationDTO;
+import hr.fer.unifier.backend.api.deal.VolunteerHelpApplicationDTO;
 import hr.fer.unifier.backend.db.AdvertDao;
 import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.entity.Deal;
 import hr.fer.unifier.backend.db.entity.Request;
-import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Sender;
+import hr.fer.unifier.backend.mapper.DealMapper;
 import hr.fer.unifier.backend.service.DealService;
+import hr.fer.unifier.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,44 +31,31 @@ import java.util.List;
 public class DealServiceImpl implements DealService {
 
   private final DealDao dealDao;
-  private final UserDao userDao;
-  private final ModelMapper modelMapper;
+  private final UserService userService;
+  private final DealMapper dealMapper;
   private final RequestDao requestDao;
   private final AdvertDao advertDao;
 
   @Transactional
   @Override
   public DealResponseDTO saveDeal(final DealDTO dealDTO) {
-    Deal deal = modelMapper.map(dealDTO, Deal.class);
-
-    deal.setAccepted(false);
-
-    final Request request = requestDao.findById(dealDTO.getRequestId()).orElseThrow(() ->
+    validateDealRequest(dealDTO);
+    final Request request = dealDTO.getRequestId() != null ? requestDao.findById(dealDTO.getRequestId()).orElseThrow(() ->
             new EntityNotFoundException("Request with id " + dealDTO.getRequestId() + " does not exist.")
-    );
-    deal.setRequest(request);
-    final Advert advert = advertDao.findById(dealDTO.getAdvertId()).orElseThrow(() ->
+    ) : null;
+    final Advert advert = dealDTO.getAdvertId() != null ? advertDao.findById(dealDTO.getAdvertId()).orElseThrow(() ->
             new EntityNotFoundException("Advert with id " + dealDTO.getAdvertId() + " does not exist.")
-    );
+    ) : null;
+    final User sender = userService.getUserById(dealDTO.getSenderId());
+
+    final Deal deal = dealDao.save(dealMapper.toDeal(dealDTO));
+    deal.setRequest(request);
     deal.setAdvert(advert);
-    deal = dealDao.save(deal);
+    deal.setSenderId(sender);
 
-    return modelMapper.map(deal, DealResponseDTO.class);
+    return dealMapper.toDealResponseDTO(deal);
   }
 
-  @Transactional(readOnly = true)
-  @Override
-  public List<DealResponseDTO> getHelpRequestsDeals(Long userId) {
-    final User user = userDao.findById(userId).orElseThrow(() ->
-            new EntityNotFoundException("User with id " + userId + " does not exist.")
-    );
-
-    return dealDao.findByAcceptedFalseAndAdvert_UserAndSender(user, Sender.REQUEST)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(deal -> modelMapper.map(deal, DealResponseDTO.class))
-            .toList();
-  }
 
   @Transactional
   @Override
@@ -101,63 +91,74 @@ public class DealServiceImpl implements DealService {
     dealDao.delete(deal);
   }
 
-  @Transactional(readOnly = true)
-  @Override
-  public List<DealRequestDTO> getRequestDeals(Long userId) {
-    final User user = userDao.findById(userId).orElseThrow(() ->
-            new EntityNotFoundException("User with id " + userId + " does not exist.")
-    );
-
-    return dealDao.findByAdvert_UserAndSenderAndAcceptedTrueOrSenderAndAdvert_User(user, Sender.REQUEST, Sender.ADVERT, user)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(deal -> modelMapper.map(deal, DealRequestDTO.class))
-            .toList();
-  }
-
-  @Override
-  public List<DealAdvertDTO> getAdvertDeals(Long userId) {
-    User user = userDao.findById(userId).orElseThrow(() ->
-            new EntityNotFoundException("User with id " + userId + " does not exist.")
-    );
-
-    return dealDao.findByRequest_UserAndSenderAndAcceptedTrueOrSenderAndRequest_User(user, Sender.ADVERT, Sender.REQUEST, user)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(deal -> modelMapper.map(deal, DealAdvertDTO.class))
-            .toList();
-  }
-
   @Transactional
   @Override
-  public void updateRecension(RecensionDTO recensionDTO) {
-    final Deal deal = dealDao.findById(recensionDTO.getId()).orElseThrow(
-            () -> new EntityNotFoundException("Deal with id " + recensionDTO.getId() + " does not exist.")
-    );
-
-    deal.setRecension(recensionDTO.getRecension());
-  }
-
-  @Transactional
-  @Override
-  public void updateNote(NoteDTO noteDTO) {
-    final Deal deal = dealDao.findById(noteDTO.getId()).orElseThrow(
-            () -> new EntityNotFoundException("Deal with id " + noteDTO.getId() + " does not exist.")
-    );
-
-    deal.setNote(noteDTO.getNote());
-  }
-
-  @Override
-  public List<DealResponseDTO> getDeals(Long requestId) {
+  public List<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId) {
     final Request request = requestDao.findById(requestId).orElseThrow(
-            () -> new EntityNotFoundException("Request with id "+ requestId + " does not exist")
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Ne postoji zahtjev s id = %d", requestId))
     );
-    return dealDao.findByAcceptedFalseAndRequestAndSender(request, Sender.ADVERT)
+    if (!request.getActive()){
+      return null;
+    }
+
+    return dealDao.findAllByRequestAndSender(request, Sender.VOLUNTEER)
             .orElse(Collections.emptyList())
             .stream()
-            .map(deal -> modelMapper.map(deal, DealResponseDTO.class))
+            .map(this::createVolunteerHelpApplications)
             .toList();
+  }
 
+  @Transactional
+  @Override
+  public List<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId) {
+    final Advert advert = advertDao.findById(advertId).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Ne postoji volonterski oglas s id = %d", advertId))
+    );
+
+    return dealDao.findAllByAdvertAndSender(advert, Sender.PERSON_IN_NEED)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(this::createPersonInNeedApplicationDTO)
+            .toList();
+  }
+
+  private void validateDealRequest(DealDTO dealDTO) {
+    if (dealDTO.getSender() == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nedostaje sender!");
+    }
+
+    if (dealDTO.getSender().equals(Sender.PERSON_IN_NEED)){
+      if (dealDTO.getAdvertId() == null) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nedostaje advert id!");
+      }
+
+      if (dealDTO.getMessage() == null && dealDTO.getRequestId() == null){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Potrebno je priložit ili zahtjev ili poruku!");
+      }
+    }else {
+      if (dealDTO.getRequestId() == null) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nedostaje advert id!");
+      }
+
+      if (dealDTO.getMessage() == null && dealDTO.getAdvertId() == null){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Potrebno je priložit ili oglas ili poruku!");
+      }
+    }
+  }
+
+  private PersonInNeedApplicationDTO createPersonInNeedApplicationDTO(Deal deal) {
+    final PersonInNeedApplicationDTO personInNeedApplicationDTO = dealMapper.toPersonInNeedApplicationDTO(deal);
+
+    personInNeedApplicationDTO.setUser(userService.getUserCardInfo(deal.getSenderId().getId()));
+
+    return personInNeedApplicationDTO;
+  }
+
+  private VolunteerHelpApplicationDTO createVolunteerHelpApplications(Deal deal) {
+    final VolunteerHelpApplicationDTO volunteerHelpApplicationDTO = dealMapper.toVolunteerHelpApplicationDTO(deal);
+
+    volunteerHelpApplicationDTO.setUser(userService.getUserCardInfo(deal.getSenderId().getId()));
+
+    return volunteerHelpApplicationDTO;
   }
 }

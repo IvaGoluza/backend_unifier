@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.db.entity;
 
+import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Sender;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -20,17 +21,10 @@ public class Deal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(length = 1000)
-    private String recension;
-
-    @Column(length = 1000)
-    private String note;
+    private Long dealId;
 
     @Column
-    private boolean accepted;
+    private boolean accepted = false;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -44,5 +38,10 @@ public class Deal {
     @JoinColumn(name = "advert_id")
     private Advert advert;
 
+    @Column
+    private String message;
 
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User senderId;
 }

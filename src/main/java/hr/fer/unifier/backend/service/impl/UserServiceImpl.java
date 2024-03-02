@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service.impl;
 
 
 import hr.fer.unifier.backend.api.user.AllUsersDTO;
+import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
@@ -9,6 +10,7 @@ import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.db.user.entity.UserWithFile;
+import hr.fer.unifier.backend.mapper.UserMapper;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.StreamingUtil;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
 
     private final StreamingUtil streamingUtil;
+
+    private final UserMapper userMapper;
 
 
     @Transactional(readOnly = true)
@@ -87,7 +91,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private User getUserById(Long userId) {
+    @Transactional
+    @Override
+    public UserCardInfoDTO getUserCardInfo(Long userId) {
+        getUserById(userId);
+        return userMapper.toUserCardInfo(userDao.getUserCardInfo(userId));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public User getUserById(Long userId) {
         return userDao.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Couldn't find user with id %d", userId))
         );

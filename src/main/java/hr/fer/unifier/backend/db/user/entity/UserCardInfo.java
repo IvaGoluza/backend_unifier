@@ -1,0 +1,21 @@
+package hr.fer.unifier.backend.db.user.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserCardInfo {
+    @Id
+    private Long userId;
+    private String name;
+    private String email;
+    private String mobilePhone;
+}
