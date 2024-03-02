@@ -12,13 +12,13 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserProfileDTO {
+public class UserUpdateProfileDTO {
 
-  private Long userId;
-
-  private String profileDescription;
+  private String email;
 
   private String mobilePhone;
+
+  private String profileDescription;
 
   private List<String> workArea;
 }

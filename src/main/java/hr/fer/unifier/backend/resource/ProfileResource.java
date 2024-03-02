@@ -1,8 +1,9 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.OrganizationUpdateProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
-import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.UserUpdateProfileDTO;
 import hr.fer.unifier.backend.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -27,11 +28,18 @@ public class ProfileResource {
         return ResponseEntity.ok(profileService.getOrganizationProfile(userId));
     }
 
-    @PutMapping
-    public ResponseEntity<Void> updateProfile(@RequestBody UserProfileDTO userProfileDTO) {
-        profileService.updateProfile(userProfileDTO);
+    @PutMapping("/user-profile/{userId}")
+    public ResponseEntity<Void> updateUserProfile(Long userId,@RequestBody UserUpdateProfileDTO userUpdateProfileDTO) {
+        profileService.updateUserProfile(userId,userUpdateProfileDTO);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/organization-profile/{userId}")
+    public ResponseEntity<Void> updateOrganizationProfile(@PathVariable Long userId,@RequestBody OrganizationUpdateProfileDTO userProfileDTO) {
+        profileService.updateOrganizationProfile(userId,userProfileDTO);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @PutMapping(value = "/update-profile-image/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateProfileImage(@PathVariable Long userId, @RequestPart MultipartFile file) {

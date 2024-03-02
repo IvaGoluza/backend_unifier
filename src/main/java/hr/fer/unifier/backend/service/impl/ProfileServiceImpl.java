@@ -1,13 +1,15 @@
 package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.OrganizationUpdateProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
-import hr.fer.unifier.backend.api.user.profile.UserProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.UserUpdateProfileDTO;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.entity.Organization;
 import hr.fer.unifier.backend.db.user.entity.Person;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.mapper.UserMapper;
 import hr.fer.unifier.backend.service.ProfileService;
 import hr.fer.unifier.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,6 +38,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final UserService userService;
 
+    private final UserMapper userMapper;
+
 
     @Transactional
     @Override
@@ -62,15 +66,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    @Transactional
-    @Override
-    public void updateProfile(UserProfileDTO userProfileDTO) {
-        final User user = userService.getUserById(userProfileDTO.getUserId());
-
-        user.setProfileDescription(userProfileDTO.getProfileDescription());
-        user.setMobilePhone(userProfileDTO.getMobilePhone());
-    }
-
 
     @Transactional(readOnly = true)
     @Override
@@ -89,5 +84,24 @@ public class ProfileServiceImpl implements ProfileService {
         );
 
         return modelMapper.map(organization, OrganizationProfileDTO.class);
+    }
+
+    @Transactional
+    @Override
+    public void updateUserProfile(Long userId,UserUpdateProfileDTO userUpdateProfileDTO) {
+        final Person person = personDao.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId))
+        );
+
+        userMapper.updatePerson(person, userUpdateProfileDTO);
+    }
+
+    @Transactional
+    @Override
+    public void updateOrganizationProfile(Long userId, OrganizationUpdateProfileDTO userProfileDTO) {
+        final Organization organization = organizationDao.findById(userId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Organization with id %d doesn't exists", userId))
+        );
+        userMapper.updateOrganization(organization, userProfileDTO);
     }
 }
