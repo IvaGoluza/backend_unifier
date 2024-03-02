@@ -1,6 +1,9 @@
 package hr.fer.unifier.backend.resource;
 
-import hr.fer.unifier.backend.api.deal.*;
+import hr.fer.unifier.backend.api.deal.DealDTO;
+import hr.fer.unifier.backend.api.deal.DealResponseDTO;
+import hr.fer.unifier.backend.api.deal.PersonInNeedApplicationDTO;
+import hr.fer.unifier.backend.api.deal.VolunteerHelpApplicationDTO;
 import hr.fer.unifier.backend.service.DealService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -22,12 +25,6 @@ public class DealResource {
   public ResponseEntity<DealResponseDTO> saveDeal(@RequestBody DealDTO dealDTO) {
     return ResponseEntity.ok(dealService.saveDeal(dealDTO));
   }
-
-  @GetMapping("/all-deals/{requestId}")
-  public ResponseEntity<List<DealResponseDTO>> getDeals(@PathVariable Long requestId) {
-    return ResponseEntity.ok(dealService.getDeals(requestId));
-  }
-
   @PutMapping("/accepted/{dealId}")
   public void updateAccepted(@PathVariable Long dealId) {
     dealService.updateAccepted(dealId);
@@ -38,29 +35,15 @@ public class DealResource {
     dealService.deleteDeal(dealId);
   }
 
-  @PutMapping("/recension")
-  public void updateRecension(@RequestBody RecensionDTO recensionDTO) {
-    dealService.updateRecension(recensionDTO);
+  @GetMapping("/{requestId}/volunteer-applications")
+  public List<VolunteerHelpApplicationDTO> getVolunteerApplications(@PathVariable Long requestId){
+    return dealService.getVolunteersHelpApplications(requestId);
   }
 
-  @PutMapping("/note")
-  public void updateNote(@RequestBody NoteDTO noteDTO) {
-    dealService.updateNote(noteDTO);
+  @GetMapping("/{advertId}/person-in-need-applications")
+  public List<PersonInNeedApplicationDTO> getPersonInNeedApplications(@PathVariable Long advertId){
+    return dealService.getPersonInNeedApplications(advertId);
   }
 
-  @GetMapping("/help-requests/{userId}")
-  public ResponseEntity<List<DealResponseDTO>> getHelpDealsForVol(@PathVariable Long userId) {
-    return ResponseEntity.ok(dealService.getHelpRequestsDeals(userId));
-  }
-
-  @GetMapping("/my-deals-requests/{userId}")
-  public ResponseEntity<List<DealRequestDTO>> getDealsRequests(@PathVariable Long userId) {
-    return ResponseEntity.ok(dealService.getRequestDeals(userId));
-  }
-
-  @GetMapping("/my-deals-adverts/{userId}")
-  public ResponseEntity<List<DealAdvertDTO>> getDealsAdverts(@PathVariable Long userId) {
-    return ResponseEntity.ok(dealService.getAdvertDeals(userId));
-  }
 
 }

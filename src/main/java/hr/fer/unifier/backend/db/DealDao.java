@@ -1,8 +1,8 @@
 package hr.fer.unifier.backend.db;
 
+import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.entity.Deal;
 import hr.fer.unifier.backend.db.entity.Request;
-import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Sender;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,10 +16,8 @@ public interface DealDao extends JpaRepository<Deal, Long> {
 
   @Modifying
   void deleteByAcceptedFalseAndRequest(Request request);
-  Optional<List<Deal>> findByAcceptedFalseAndAdvert_UserAndSender(User user, Sender sender);
-  Optional<List<Deal>> findByAcceptedFalseAndRequestAndSender(Request request, Sender sender);
-  Optional<List<Deal>> findByAdvert_UserAndSenderAndAcceptedTrueOrSenderAndAdvert_User(User user, Sender sender, Sender sender2, User user2);
-  Optional<List<Deal>> findByRequest_UserAndSenderAndAcceptedTrueOrSenderAndRequest_User(User user, Sender sender, Sender sender2, User user2);
-  Optional<List<Deal>> findByAdvert_UserAndRecensionNotNull(User user);
-  Optional<List<Deal>> findByRequest_UserAndNoteNotNull(User user);
+
+  Optional<List<Deal>> findAllByRequestAndSender(Request request, Sender sender);
+
+  Optional<List<Deal>> findAllByAdvertAndSender(Advert advert, Sender sender);
 }

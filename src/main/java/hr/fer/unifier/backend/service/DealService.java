@@ -1,18 +1,17 @@
 package hr.fer.unifier.backend.service;
 
-import hr.fer.unifier.backend.api.deal.*;
+import hr.fer.unifier.backend.api.deal.DealDTO;
+import hr.fer.unifier.backend.api.deal.DealResponseDTO;
+import hr.fer.unifier.backend.api.deal.PersonInNeedApplicationDTO;
+import hr.fer.unifier.backend.api.deal.VolunteerHelpApplicationDTO;
 
 import java.util.List;
 
 public interface DealService {
 
   DealResponseDTO saveDeal(DealDTO dealDTO);
-  List<DealResponseDTO> getHelpRequestsDeals(Long userId);
   void updateAccepted(Long dealId);
   void deleteDeal(Long dealId);
-  List<DealRequestDTO> getRequestDeals(Long userId);
-  List<DealAdvertDTO> getAdvertDeals(Long userId);
-  void updateRecension(RecensionDTO recensionDTO);
-  void updateNote(NoteDTO noteDTO);
-  List<DealResponseDTO> getDeals(Long requestId);
+  List<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId);
+  List<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId);
 }

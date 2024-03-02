@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class DealResponseDTO {
 
-    private Long id;
+    private Long dealId;
 
     private boolean accepted;
 
