@@ -67,6 +67,16 @@ public class OpenApiGroupConfig {
     }
 
     @Bean
+    public GroupedOpenApi recensionOpenApi() {
+        final String[] paths =  {"/recension/**"};
+        return GroupedOpenApi
+                .builder()
+                .group("Recension")
+                .pathsToMatch(paths)
+                .build();
+    }
+
+    @Bean
     public GroupedOpenApi allOpenApi() {
         final String[] paths =  {"/**"};
         return GroupedOpenApi
