@@ -31,7 +31,7 @@ public class FileUtil {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Datoteka ne sadrži tip!");
         }
 
-        if (!file.getContentType().endsWith(".pdf")) {
+        if (!file.getContentType().endsWith("pdf")) {
             throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Datoteka mora biti u pdf obliku!");
         }
     }

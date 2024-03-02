@@ -52,6 +52,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    @Transactional
     @Override
     public void uploadHealthCertificate(Long userId, MultipartFile file) {
         final Person person = personDao.findById(userId).orElseThrow(

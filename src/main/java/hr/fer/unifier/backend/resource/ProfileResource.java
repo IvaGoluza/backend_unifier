@@ -40,7 +40,7 @@ public class ProfileResource {
         return ResponseEntity.ok(galleryService.getGallery(userId));
     }
 
-    @PostMapping("/user-gallery")
+    @PostMapping(value = "/user-gallery", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<Void>> addToGallery(@RequestPart GalleryRequestDTO gallery, @RequestPart MultipartFile file) {
         galleryService.saveToGallery(gallery,file);
         return ResponseEntity.noContent().build();

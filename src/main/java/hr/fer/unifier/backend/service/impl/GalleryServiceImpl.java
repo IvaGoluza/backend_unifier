@@ -11,6 +11,7 @@ import hr.fer.unifier.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,6 +27,7 @@ public class GalleryServiceImpl implements GalleryService {
     private final GalleryMapper galleryMapper;
     private final GalleryDao galleryDao;
     private final UserService userService;
+    @Transactional
     @Override
     public void saveToGallery(GalleryRequestDTO galleryReq, MultipartFile file) {
         validateImage(file);
@@ -41,6 +43,7 @@ public class GalleryServiceImpl implements GalleryService {
         galleryDao.save(gallery);
     }
 
+    @Transactional
     @Override
     public List<GalleryDTO> getGallery(Long userId) {
         final User user = userService.getUserById(userId);
