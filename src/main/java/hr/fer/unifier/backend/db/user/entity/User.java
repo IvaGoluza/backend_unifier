@@ -4,7 +4,6 @@ import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.enums.Role;
 import hr.fer.unifier.backend.enums.UserType;
-import hr.fer.unifier.backend.enums.VolunteerCenter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,11 +44,10 @@ public class User {
 
     private boolean isApproved;
 
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
+    private String volunteerCenter;
 
     @Enumerated(EnumType.STRING)
-    private VolunteerCenter volunteerCenter;
+    private UserType userType;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
