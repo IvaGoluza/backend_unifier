@@ -9,10 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ProfileService {
     void updateProfileImage(Long userId, MultipartFile file);
     void uploadHealthCertificate(Long userId, MultipartFile file);
+    void updateUserProfile(Long userId,UserUpdateProfileDTO userUpdateProfileDTO);
+    void updateOrganizationProfile(Long userId,OrganizationUpdateProfileDTO userProfileDTO);
     PersonProfileDTO getPersonProfile(Long userId);
     OrganizationProfileDTO getOrganizationProfile(Long userId);
-
-    void updateUserProfile(Long userId,UserUpdateProfileDTO userUpdateProfileDTO);
-
-    void updateOrganizationProfile(Long userId,OrganizationUpdateProfileDTO userProfileDTO);
 }
