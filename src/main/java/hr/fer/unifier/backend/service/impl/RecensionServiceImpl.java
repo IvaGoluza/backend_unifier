@@ -48,6 +48,7 @@ public class RecensionServiceImpl implements RecensionService {
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(recension -> new RecensionDTO(recension.getRecension()))
+                .limit(8)
                 .toList();
     }
 }
