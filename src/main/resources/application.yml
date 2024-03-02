@@ -17,11 +17,15 @@ spring:
     database: POSTGRESQL
     ##show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         ##format_sql: true
         default_schema: public
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
 
 unifier:
   auth-secret-key: 'b5ab8db8c7af75e71b59dfc1238a00813b3f5a926b4a606dd01b6831ca4a4666'
