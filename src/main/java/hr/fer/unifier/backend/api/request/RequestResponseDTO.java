@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestResponseDTO {
+    private Long requestId;
 
     private String requestTitle;
 

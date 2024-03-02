@@ -1,14 +1,10 @@
 package hr.fer.unifier.backend.api.advert;
 
 import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
-import hr.fer.unifier.backend.enums.Category;
-import hr.fer.unifier.backend.enums.HelpType;
-import hr.fer.unifier.backend.enums.Town;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,18 +12,21 @@ import lombok.Setter;
 @Setter
 public class AdvertResponseDTO {
 
-  private Long id;
+  private Long advertId;
 
   private String advertTitle;
 
-  private Town town;
+  private String location;
 
-  private HelpType helpType;
+  private String helpType;
 
-  private Category category;
+  private String category;
 
   private String description;
 
-  private UserResponseDTO user;
+  private String advertImage;
 
+  private String volunteerCenter;
+
+  private UserResponseDTO user;
 }

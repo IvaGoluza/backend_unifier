@@ -1,9 +1,6 @@
 package hr.fer.unifier.backend.db.entity;
 
 import hr.fer.unifier.backend.db.user.entity.User;
-import hr.fer.unifier.backend.enums.Category;
-import hr.fer.unifier.backend.enums.HelpType;
-import hr.fer.unifier.backend.enums.Town;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,28 +19,29 @@ public class Advert {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long advertId;
 
     @Column(nullable = false)
     private String advertTitle;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Town town;
+    private String location;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private HelpType helpType;
+    private String helpType;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Category category;
+    private String category;
 
     @Column(nullable = false, length = 750)
     private String description;
 
     @Column
     private Boolean deleted;
+
+    @Lob
+    @Column
+    private byte[] advertImage;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

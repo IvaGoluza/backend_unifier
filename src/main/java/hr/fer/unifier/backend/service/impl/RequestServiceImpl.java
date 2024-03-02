@@ -35,6 +35,10 @@ public class RequestServiceImpl implements RequestService {
                 new EntityNotFoundException("User with id " + requestDTO.getUserId() + " does not exist.")
         );
 
+        if (requestUser.isBlocked()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Korisnik je trenutno blokiran, ne možete raditi zahtjeve!");
+        }
+
         if (requestUser.getUserType().equals(UserType.VOLUNTEER)){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Volunteer can't make a request");
         }
