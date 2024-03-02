@@ -1,15 +1,15 @@
 package hr.fer.unifier.backend.api.user.profile;
 
-import hr.fer.unifier.backend.enums.UserType;
+import hr.fer.unifier.backend.api.deal.recension.RecensionDTO;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class PersonProfileDTO {
     private Long id;
 
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     private String email;
 
@@ -17,5 +17,13 @@ public class PersonProfileDTO {
 
     private String profileDescription;
 
-    private UserType userType;
+    private String image;
+
+    private List<String> workArea;
+
+    private Boolean hasHealthCertificate;
+
+    private Boolean hasCertificateOfGoodConduct;
+
+    private List<RecensionDTO> userRecensions;
 }

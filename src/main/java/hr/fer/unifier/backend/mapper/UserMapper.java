@@ -1,7 +1,9 @@
 package hr.fer.unifier.backend.mapper;
 
 import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
+import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationUpdateProfileDTO;
+import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.UserUpdateProfileDTO;
 import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
 import hr.fer.unifier.backend.db.user.entity.Organization;
@@ -17,6 +19,9 @@ public interface UserMapper {
     UserResponseDTO toUserResponseDTO(User user);
 
     UserCardInfoDTO toUserCardInfo(UserCardInfo userCardInfo);
+
+    PersonProfileDTO toPersonProfileDTO(Person person);
+    OrganizationProfileDTO toOrganizationProfileDTO(Organization organization);
 
     void updatePerson(@MappingTarget Person person, UserUpdateProfileDTO userUpdateProfileDTO);
 

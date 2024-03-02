@@ -9,4 +9,6 @@ public class RecensionRequestDTO {
     private String recension;
     @NonNull
     private Long dealId;
+    @NonNull
+    private Long reviewingUserId;
 }

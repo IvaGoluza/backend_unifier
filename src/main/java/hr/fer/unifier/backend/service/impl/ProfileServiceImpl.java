@@ -11,10 +11,10 @@ import hr.fer.unifier.backend.db.user.entity.Person;
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.mapper.UserMapper;
 import hr.fer.unifier.backend.service.ProfileService;
+import hr.fer.unifier.backend.service.RecensionService;
 import hr.fer.unifier.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +29,6 @@ import static hr.fer.unifier.backend.util.FileUtil.validateImage;
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
-
-    private final ModelMapper modelMapper;
-
     private final PersonDao personDao;
 
     private final OrganizationDao organizationDao;
@@ -39,6 +36,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserService userService;
 
     private final UserMapper userMapper;
+
+    private final RecensionService recensionService;
 
 
     @Transactional
@@ -74,7 +73,14 @@ public class ProfileServiceImpl implements ProfileService {
                 () -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId))
         );
 
-        return modelMapper.map(person, PersonProfileDTO.class);
+        final PersonProfileDTO personProfileDTO = userMapper.toPersonProfileDTO(person);
+
+        personProfileDTO.setName(String.format("%s %s", person.getFirstName(), person.getLastName()));
+        personProfileDTO.setHasCertificateOfGoodConduct(person.getCertificateOfGoodConduct() != null);
+        personProfileDTO.setHasHealthCertificate(person.getHealthCertificate() != null);
+        personProfileDTO.setUserRecensions(recensionService.getUserRecensions(userId));
+
+        return personProfileDTO;
     }
     @Transactional(readOnly = true)
     @Override
@@ -83,7 +89,11 @@ public class ProfileServiceImpl implements ProfileService {
                 () -> new EntityNotFoundException(String.format("Organization with id %d doesn't exists", userId))
         );
 
-        return modelMapper.map(organization, OrganizationProfileDTO.class);
+        final OrganizationProfileDTO organizationProfileDTO = userMapper.toOrganizationProfileDTO(organization);
+
+        organizationProfileDTO.setUserRecensions(recensionService.getUserRecensions(userId));
+
+        return organizationProfileDTO;
     }
 
     @Transactional
