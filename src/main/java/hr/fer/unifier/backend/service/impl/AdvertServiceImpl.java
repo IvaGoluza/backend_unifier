@@ -82,11 +82,15 @@ public class AdvertServiceImpl implements AdvertService {
     );
 
     if (!advertUser.isApproved()) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Korisnik još nije odobren od strane admina!");
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Niste odobreni od strane admina, ne možete raditi volonterske oglase!");
+    }
+
+    if (advertUser.isBlocked()) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Trenutno ste blokirani, ne možete raditi volonterske oglase!");
     }
 
     if (advertUser.getUserType().equals(UserType.PERSON_IN_NEED)){
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Korisnik nema prava za stvaranje volonterskih oglasa!");
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Nemate prava za stvaranje volonterskih oglasa!");
     }
 
     Advert advert = advertDao.save(advertMapper.toAdvert(advertDTO, advertUser));
