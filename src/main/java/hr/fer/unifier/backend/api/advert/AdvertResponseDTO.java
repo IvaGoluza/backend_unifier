@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.api.advert;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,5 +29,6 @@ public class AdvertResponseDTO {
 
   private String volunteerCenter;
 
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   private UserResponseDTO user;
 }

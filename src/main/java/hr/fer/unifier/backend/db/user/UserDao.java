@@ -18,7 +18,7 @@ public interface UserDao extends JpaRepository<User, Long> {
     MyUserDetails getUserDetails(String email);
 
 
-    @Query("SELECT NEW UserWithFile(u.id,u.file, replace(coalesce(o.name, p.firstName || ' ' || p.lastName),' ', '-'))FROM User as u" +
+    @Query("SELECT NEW UserWithFile(u.id,u.certificateOfGoodConduct, replace(coalesce(o.name, p.firstName || ' ' || p.lastName),' ', '-'))FROM User as u" +
             " LEFT JOIN Person p ON p.id = u.id" +
             " LEFT JOIN Organization o ON o.id = u.id" +
             " WHERE u.id = :id")

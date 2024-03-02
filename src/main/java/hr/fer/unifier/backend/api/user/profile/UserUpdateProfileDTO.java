@@ -1,22 +1,24 @@
 package hr.fer.unifier.backend.api.user.profile;
-import hr.fer.unifier.backend.validation.EmailValidation;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserProfileDTO {
+public class UserUpdateProfileDTO {
 
-  private Long id;
+  private String email;
+
+  private String mobilePhone;
 
   private String profileDescription;
 
-  @NotNull
-  private String mobilePhone;
+  private List<String> workArea;
 }

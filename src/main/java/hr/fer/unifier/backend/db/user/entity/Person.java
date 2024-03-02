@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.db.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,4 +21,7 @@ public class Person extends User{
 
     @Column(nullable = false, length = 50)
     private String lastName;
+
+    @Lob
+    private byte[] healthCertificate;
 }

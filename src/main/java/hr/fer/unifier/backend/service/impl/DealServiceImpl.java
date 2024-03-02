@@ -150,6 +150,7 @@ public class DealServiceImpl implements DealService {
     final PersonInNeedApplicationDTO personInNeedApplicationDTO = dealMapper.toPersonInNeedApplicationDTO(deal);
 
     personInNeedApplicationDTO.setUser(userService.getUserCardInfo(deal.getSenderId().getId()));
+    personInNeedApplicationDTO.getRequest().setUser(null);
 
     return personInNeedApplicationDTO;
   }
@@ -158,6 +159,7 @@ public class DealServiceImpl implements DealService {
     final VolunteerHelpApplicationDTO volunteerHelpApplicationDTO = dealMapper.toVolunteerHelpApplicationDTO(deal);
 
     volunteerHelpApplicationDTO.setUser(userService.getUserCardInfo(deal.getSenderId().getId()));
+    volunteerHelpApplicationDTO.getAdvert().setUser(null);
 
     return volunteerHelpApplicationDTO;
   }

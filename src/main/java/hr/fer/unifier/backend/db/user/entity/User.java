@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.db.user.entity;
 
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.enums.Role;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import java.util.List;
 
@@ -37,8 +39,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Type(StringArrayType.class)
+    @Column(columnDefinition = "text[]")
+    private String[] workArea;
+
     @Lob
-    private byte[] file;
+    private byte[] certificateOfGoodConduct;
+
+    @Lob
+    private byte[] image;
 
     private boolean blocked = false;
 

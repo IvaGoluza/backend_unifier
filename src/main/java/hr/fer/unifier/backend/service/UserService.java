@@ -18,5 +18,5 @@ public interface UserService {
 
   UserCardInfoDTO getUserCardInfo(Long userId);
 
-  User getUserById(Long senderId);
+  User getUserById(Long userId);
 }
