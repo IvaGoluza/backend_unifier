@@ -172,6 +172,7 @@ public class AuthServiceImpl implements AuthService {
         person.setPassword(passwordEncoder.encode(personRegisterDTO.getPassword()));
         person.setRole(Role.USER);
         person.setUserType(UserType.lookup(personRegisterDTO.getUserType()));
+        person.setVolunteerCenter(personRegisterDTO.getVolunteerCenter().getName());
         person.setApproved(
                 person.getUserType().equals(UserType.PERSON_IN_NEED)
         );
@@ -185,6 +186,7 @@ public class AuthServiceImpl implements AuthService {
         organization.setPassword(passwordEncoder.encode(organizationRegisterDTO.getPassword()));
         organization.setRole(Role.USER);
         organization.setUserType(UserType.lookup(organizationRegisterDTO.getUserType()));
+        organization.setVolunteerCenter(organizationRegisterDTO.getVolunteerCenter().getName());
         organization.setApproved(
                 organization.getUserType().equals(UserType.PERSON_IN_NEED)
         );

@@ -6,6 +6,7 @@ import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.RequestService;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,15 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static hr.fer.unifier.backend.util.FileValidator.validateImage;
 
 @Service
 @RequiredArgsConstructor
@@ -34,25 +31,16 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     @Override
     public RequestResponseDTO saveRequest(final RequestDTO requestDTO) {
-        return requestMapper.toRequestResponseDTO(createRequest(requestDTO, null));
-    }
-
-
-    private Request createRequest(RequestDTO requestDTO, MultipartFile file) {
         final User requestUser = userDao.findById(requestDTO.getUserId()).orElseThrow(() ->
                 new EntityNotFoundException("User with id " + requestDTO.getUserId() + " does not exist.")
         );
 
-        final Request request = requestDao.save(requestMapper.toRequest(requestDTO, requestUser));
-        try {
-            if (file != null && !file.isEmpty()) {
-                validateImage(file);
-                request.setImage(file.getBytes());
-            }
-        } catch (IOException ex) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Coulnd't save image", ex);
+        if (requestUser.getUserType().equals(UserType.VOLUNTEER)){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Volunteer can't make a request");
         }
-        return request;
+
+        final Request request = requestDao.save(requestMapper.toRequest(requestDTO, requestUser));
+        return requestMapper.toRequestResponseDTO(request);
     }
 
     @Transactional

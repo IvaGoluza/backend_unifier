@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.api.request;
 
 import hr.fer.unifier.backend.enums.Category;
 import hr.fer.unifier.backend.enums.HelpType;
+import hr.fer.unifier.backend.enums.UserActionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public class RequestDTO {
 
     private String skillSet;
 
-    private String typeOfAction;
+    private UserActionType typeOfAction;
 
     private Integer numOfVolunteers;
 

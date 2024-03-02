@@ -26,6 +26,8 @@ public class RequestResponseDTO {
 
     private String skillSet;
 
+    private String volunteerCenter;
+
     private Integer numOfVolunteers;
 
     private UserResponseDTO user;
