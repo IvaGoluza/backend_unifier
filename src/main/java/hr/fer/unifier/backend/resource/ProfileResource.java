@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -29,6 +30,18 @@ public class ProfileResource {
     @PutMapping
     public ResponseEntity<Void> updateProfile(@RequestBody UserProfileDTO userProfileDTO) {
         profileService.updateProfile(userProfileDTO);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/update-profile-image/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateProfileImage(@PathVariable Long userId, @RequestPart MultipartFile file) {
+        profileService.updateProfileImage(userId, file);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/update-healthcare-certificate/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateProfile(@PathVariable Long userId, @RequestPart MultipartFile file) {
+        profileService.uploadHealthCertificate(userId, file);
         return ResponseEntity.noContent().build();
     }
 

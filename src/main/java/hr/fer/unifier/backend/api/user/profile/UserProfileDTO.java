@@ -1,10 +1,11 @@
 package hr.fer.unifier.backend.api.user.profile;
-import hr.fer.unifier.backend.validation.EmailValidation;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 
 @NoArgsConstructor
@@ -13,10 +14,11 @@ import lombok.Setter;
 @Setter
 public class UserProfileDTO {
 
-  private Long id;
+  private Long userId;
 
   private String profileDescription;
 
-  @NotNull
   private String mobilePhone;
+
+  private List<String> workArea;
 }
