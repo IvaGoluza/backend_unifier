@@ -1,9 +1,6 @@
 package hr.fer.unifier.backend.resource;
 
-import hr.fer.unifier.backend.api.deal.DealDTO;
-import hr.fer.unifier.backend.api.deal.DealResponseDTO;
-import hr.fer.unifier.backend.api.deal.PersonInNeedApplicationDTO;
-import hr.fer.unifier.backend.api.deal.VolunteerHelpApplicationDTO;
+import hr.fer.unifier.backend.api.deal.*;
 import hr.fer.unifier.backend.service.DealService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -46,5 +43,9 @@ public class DealResource {
     return dealService.getPersonInNeedApplications(advertId,pageable);
   }
 
+  @GetMapping("/accepted-deals/{userId}")
+  public Page<AcceptedPersonInNeedDealsDTO> getAcceptedDeals(@PathVariable Long userId, @ParameterObject Pageable pageable){
+    return dealService.getAcceptedDealsForPersonInNeed(userId,pageable);
+  }
 
 }
