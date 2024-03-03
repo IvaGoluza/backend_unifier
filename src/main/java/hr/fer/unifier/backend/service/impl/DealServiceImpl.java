@@ -130,7 +130,7 @@ public class DealServiceImpl implements DealService {
     @Override
     public Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
-        final List<AcceptedPersonInNeedDealsDTO> acceptedDeals = dealDao.findAllBySenderIdOrRequest_User(user,user)
+        final List<AcceptedPersonInNeedDealsDTO> acceptedDeals = dealDao.findAllBySenderIdOrRequest_UserOrderByDealIdDesc(user,user)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(deal -> filterDeal(deal, userId))
