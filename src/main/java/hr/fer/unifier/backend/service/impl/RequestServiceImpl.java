@@ -9,8 +9,11 @@ import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.RequestService;
+import hr.fer.unifier.backend.util.pagination.PageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +62,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestResponseDTO> getRequests(Long userId) {
+        // TODO -> Promijena da bude kao u sidebar-u
         final User user = userDao.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User with id: " + userId + " not found.")
         );
@@ -72,12 +76,11 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<RequestResponseDTO> getAllRequests() {
-        return requestDao.findAllByActiveTrueAndDeletedFalse()
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(requestMapper::toRequestResponseDTO)
-                .toList();
+    public Page<RequestResponseDTO> getAllRequests(Pageable pageable) {
+        return PageUtil.map(
+                requestDao.findAllByActiveTrueAndDeletedFalse(pageable),
+                requestMapper::toRequestResponseDTO
+        );
     }
 
 }

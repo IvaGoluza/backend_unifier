@@ -23,8 +23,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
-import static hr.fer.unifier.backend.util.FileUtil.validateHealthCertificate;
-import static hr.fer.unifier.backend.util.FileUtil.validateImage;
+import static hr.fer.unifier.backend.util.file.FileUtil.validateHealthCertificate;
+import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 
 @Service
 @RequiredArgsConstructor

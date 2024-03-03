@@ -7,5 +7,5 @@ public class UserCardInfoDTO {
     private Long userId;
     private String name;
     private String email;
-    private String number;
+    private String mobilePhone;
 }

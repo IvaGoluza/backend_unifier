@@ -4,6 +4,9 @@ import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.service.AdvertService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +44,8 @@ public class AdvertResource {
   }
 
   @GetMapping("/all-adverts")
-  public ResponseEntity<List<AdvertResponseDTO>> getAllAdverts() {
-    return ResponseEntity.ok(advertService.getAllAdverts());
+  public ResponseEntity<Page<AdvertResponseDTO>> getAllAdverts(@ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(advertService.getAllAdverts(pageable));
   }
 
 }

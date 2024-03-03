@@ -6,11 +6,12 @@ import hr.fer.unifier.backend.api.deal.PersonInNeedApplicationDTO;
 import hr.fer.unifier.backend.api.deal.VolunteerHelpApplicationDTO;
 import hr.fer.unifier.backend.service.DealService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -36,13 +37,13 @@ public class DealResource {
   }
 
   @GetMapping("/{requestId}/volunteer-applications")
-  public List<VolunteerHelpApplicationDTO> getVolunteerApplications(@PathVariable Long requestId){
-    return dealService.getVolunteersHelpApplications(requestId);
+  public Page<VolunteerHelpApplicationDTO> getVolunteerApplications(@PathVariable Long requestId, @ParameterObject Pageable pageable){
+    return dealService.getVolunteersHelpApplications(requestId,pageable);
   }
 
   @GetMapping("/{advertId}/person-in-need-applications")
-  public List<PersonInNeedApplicationDTO> getPersonInNeedApplications(@PathVariable Long advertId){
-    return dealService.getPersonInNeedApplications(advertId);
+  public Page<PersonInNeedApplicationDTO> getPersonInNeedApplications(@PathVariable Long advertId, @ParameterObject Pageable pageable){
+    return dealService.getPersonInNeedApplications(advertId,pageable);
   }
 
 

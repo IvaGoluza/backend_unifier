@@ -9,6 +9,9 @@ import hr.fer.unifier.backend.api.user.profile.gallery.GalleryRequestDTO;
 import hr.fer.unifier.backend.service.GalleryService;
 import hr.fer.unifier.backend.service.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +39,8 @@ public class ProfileResource {
     }
 
     @GetMapping("/user-gallery/{userId}")
-    public ResponseEntity<List<GalleryDTO>> getProfileGallery(@PathVariable Long userId) {
-        return ResponseEntity.ok(galleryService.getGallery(userId));
+    public ResponseEntity<Page<GalleryDTO>> getProfileGallery(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(galleryService.getGallery(userId,pageable));
     }
 
     @PostMapping(value = "/user-gallery", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

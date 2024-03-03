@@ -1,4 +1,4 @@
-package hr.fer.unifier.backend.util;
+package hr.fer.unifier.backend.util.file;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
