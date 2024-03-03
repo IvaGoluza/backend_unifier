@@ -1,19 +1,20 @@
 package hr.fer.unifier.backend.service.impl;
 
 
-import hr.fer.unifier.backend.api.deal.DealDTO;
-import hr.fer.unifier.backend.api.deal.DealResponseDTO;
-import hr.fer.unifier.backend.api.deal.PersonInNeedApplicationDTO;
-import hr.fer.unifier.backend.api.deal.VolunteerHelpApplicationDTO;
+import hr.fer.unifier.backend.api.deal.*;
 import hr.fer.unifier.backend.db.AdvertDao;
 import hr.fer.unifier.backend.db.DealDao;
+import hr.fer.unifier.backend.db.RecensionDao;
 import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.entity.Deal;
 import hr.fer.unifier.backend.db.entity.Request;
+import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Sender;
+import hr.fer.unifier.backend.mapper.AdvertMapper;
 import hr.fer.unifier.backend.mapper.DealMapper;
+import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.DealService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
@@ -36,8 +37,12 @@ public class DealServiceImpl implements DealService {
     private final DealDao dealDao;
     private final UserService userService;
     private final DealMapper dealMapper;
+    private final AdvertMapper advertMapper;
+    private final RequestMapper requestMapper;
     private final RequestDao requestDao;
     private final AdvertDao advertDao;
+    private final RecensionDao recensionDao;
+    private final UserDao userDao;
 
     @Transactional
     @Override
@@ -119,6 +124,67 @@ public class DealServiceImpl implements DealService {
         );
 
         return PageUtil.map(dealDao.findAllByAdvertAndSender(advert, Sender.PERSON_IN_NEED, pageable),this::createPersonInNeedApplicationDTO);
+    }
+
+    @Transactional
+    @Override
+    public Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId, Pageable pageable) {
+        final User user = userService.getUserById(userId);
+        final List<AcceptedPersonInNeedDealsDTO> acceptedDeals = dealDao.findAllBySenderIdOrRequest_User(user,user)
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(deal -> filterDeal(deal, userId))
+                .map(deal ->toAcceptedPersonInNeedDealsDTO(deal, userId))
+                .toList();
+
+        return PageUtil.toPage(acceptedDeals,pageable);
+    }
+
+    private boolean filterDeal(Deal deal, Long personInNeedId) {
+        boolean isPersonInNeed = false;
+
+        if (deal.getSenderId().getId().equals(personInNeedId)){
+            if (!deal.getAdvert().getUser().getId().equals(personInNeedId)){
+                isPersonInNeed = true;
+            }
+        }else {
+            isPersonInNeed = deal.getRequest().getUser().getId().equals(personInNeedId);
+        }
+
+        return isPersonInNeed && deal.isAccepted();
+    }
+
+    private AcceptedPersonInNeedDealsDTO toAcceptedPersonInNeedDealsDTO(Deal deal, Long personInNeedId) {
+        final AcceptedPersonInNeedDealsDTO acceptedDeal = new AcceptedPersonInNeedDealsDTO();
+
+        if (deal.getAdvert() != null){
+            acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAdvertResponseDTO(deal.getAdvert()));
+            acceptedDeal.getVolunteerApplicationAdvert().setAdvertImage(null);
+        }
+
+        if (deal.getRequest() != null){
+            acceptedDeal.setPersonInNeedRequest(requestMapper.toRequestResponseDTO(deal.getRequest()));
+        }
+
+        if (deal.getMessage() != null){
+            if (deal.getSender().equals(Sender.VOLUNTEER)){
+                acceptedDeal.setVolunteerApplicationMessage(deal.getMessage());
+            }else {
+                acceptedDeal.setPersonInNeedMessage(deal.getMessage());
+            }
+        }
+
+        acceptedDeal.setHasConfirmationOfVolunteering(recensionDao.existsByDeal(deal));
+        final String volunteerName;
+
+        if (!deal.getSenderId().getId().equals(personInNeedId)){
+            volunteerName = userDao.getUserCardInfo(deal.getSenderId().getId()).getName();
+        }else {
+            volunteerName = userDao.getUserCardInfo(deal.getAdvert().getUser().getId()).getName();
+        }
+
+        acceptedDeal.setVolunteerName(volunteerName);
+        return acceptedDeal;
     }
 
     private void validateDealRequest(DealDTO dealDTO) {
