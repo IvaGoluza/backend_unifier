@@ -33,7 +33,7 @@ public class GalleryServiceImpl implements GalleryService {
     public void saveToGallery(GalleryRequestDTO galleryReq, MultipartFile file) {
         validateImage(file);
         final Gallery gallery = new Gallery();
-        gallery.setDescription(gallery.getDescription());
+        gallery.setDescription(galleryReq.getDescription());
         gallery.setUser(userService.getUserById(galleryReq.getUserId()));
         try {
             gallery.setImage(file.getBytes());
@@ -44,7 +44,7 @@ public class GalleryServiceImpl implements GalleryService {
         galleryDao.save(gallery);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Page<GalleryDTO> getGallery(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
