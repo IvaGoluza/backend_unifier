@@ -82,6 +82,7 @@ public class RequestServiceImpl implements RequestService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public RequestsInfoDTO getRequestInfo(Long userId) {
         final User user = userService.getUserById(userId);

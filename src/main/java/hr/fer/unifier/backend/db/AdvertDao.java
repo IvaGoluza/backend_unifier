@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface AdvertDao extends JpaRepository<Advert, Long> {
 
-  Optional<List<Advert>> findByUserAndDeletedFalse(User user);
+  Optional<List<Advert>> findAllByUserOrderByAdvertIdDesc(User user);
   Page<Advert> findAdvertsByDeletedFalse(Pageable pageable);
 
 }

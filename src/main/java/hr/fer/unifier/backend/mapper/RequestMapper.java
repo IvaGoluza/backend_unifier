@@ -30,7 +30,7 @@ public interface RequestMapper {
     default RequestsInfoDTO toRequestsInfoDTO(List<Request> requests){
         List<RequestInfoDTO> active = requests
                 .stream()
-                .filter(request -> !request.getDeleted())
+                .filter(request -> !request.getDeleted() && request.getActive())
                 .map(this::toRequestInfoDTO)
                 .toList();
 

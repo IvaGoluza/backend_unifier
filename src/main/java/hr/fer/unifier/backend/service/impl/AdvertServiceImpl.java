@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
+import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
 import hr.fer.unifier.backend.db.AdvertDao;
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.user.UserDao;
@@ -9,6 +10,7 @@ import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.AdvertMapper;
 import hr.fer.unifier.backend.service.AdvertService;
+import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 
@@ -35,6 +36,8 @@ public class AdvertServiceImpl implements AdvertService {
   private final UserDao userDao;
 
   private final AdvertMapper advertMapper;
+
+  private final UserService userService;
 
   @Transactional
   @Override
@@ -55,24 +58,31 @@ public class AdvertServiceImpl implements AdvertService {
     advert.setDeleted(true);
   }
 
-  @Transactional(readOnly = true)
-  @Override
-  public List<AdvertResponseDTO> getAdverts(Long userId) {
-    final User user = userDao.findById(userId).orElseThrow(() ->
-      new EntityNotFoundException("User with id " + userId + " does not exist.")
-    );
-
-    return advertDao.findByUserAndDeletedFalse(user)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(advertMapper::toAdvertResponseDTO)
-            .toList();
-  }
 
   @Transactional(readOnly = true)
   @Override
   public Page<AdvertResponseDTO> getAllAdverts(Pageable pageable) {
     return PageUtil.map(advertDao.findAdvertsByDeletedFalse(pageable), advertMapper::toAdvertResponseDTO);
+  }
+@Transactional(readOnly = true)
+  @Override
+  public AdvertResponseDTO getAdvert(Long userId, Long advertId) {
+    userService.getUserById(userId);
+
+    final Advert advert = advertDao.findById(advertId).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
+    );
+
+    return advertMapper.toAdvertResponseDTO(advert);
+  }
+@Transactional(readOnly = true)
+  @Override
+  public AdvertsInfoDTO getAdvertsInfo(Long userId) {
+    final User user = userService.getUserById(userId);
+
+    return advertMapper.toAdvertsInfoDTO(
+            advertDao.findAllByUserOrderByAdvertIdDesc(user).orElse(Collections.emptyList())
+    );
   }
 
   private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file){
