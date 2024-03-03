@@ -8,7 +8,10 @@ import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.mapper.GalleryMapper;
 import hr.fer.unifier.backend.service.GalleryService;
 import hr.fer.unifier.backend.service.UserService;
+import hr.fer.unifier.backend.util.pagination.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
-import static hr.fer.unifier.backend.util.FileUtil.validateImage;
+import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class GalleryServiceImpl implements GalleryService {
     public void saveToGallery(GalleryRequestDTO galleryReq, MultipartFile file) {
         validateImage(file);
         final Gallery gallery = new Gallery();
-        gallery.setDescription(gallery.getDescription());
+        gallery.setDescription(galleryReq.getDescription());
         gallery.setUser(userService.getUserById(galleryReq.getUserId()));
         try {
             gallery.setImage(file.getBytes());
@@ -43,15 +44,10 @@ public class GalleryServiceImpl implements GalleryService {
         galleryDao.save(gallery);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public List<GalleryDTO> getGallery(Long userId) {
+    public Page<GalleryDTO> getGallery(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
-        return galleryDao.findAllByUser(user)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(galleryMapper::toGalleryDTO)
-                .toList();
-
+        return PageUtil.map(galleryDao.findAllByUser(user,pageable), galleryMapper::toGalleryDTO);
     }
 }

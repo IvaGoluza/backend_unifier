@@ -9,8 +9,11 @@ import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.AdvertMapper;
 import hr.fer.unifier.backend.service.AdvertService;
+import hr.fer.unifier.backend.util.pagination.PageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +24,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import static hr.fer.unifier.backend.util.FileUtil.validateImage;
+import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 
 @Service
 @RequiredArgsConstructor
@@ -68,12 +71,8 @@ public class AdvertServiceImpl implements AdvertService {
 
   @Transactional(readOnly = true)
   @Override
-  public List<AdvertResponseDTO> getAllAdverts() {
-    return advertDao.findAdvertsByDeletedFalse()
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(advertMapper::toAdvertResponseDTO)
-            .toList();
+  public Page<AdvertResponseDTO> getAllAdverts(Pageable pageable) {
+    return PageUtil.map(advertDao.findAdvertsByDeletedFalse(pageable), advertMapper::toAdvertResponseDTO);
   }
 
   private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file){

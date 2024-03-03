@@ -4,14 +4,14 @@ import hr.fer.unifier.backend.api.deal.DealDTO;
 import hr.fer.unifier.backend.api.deal.DealResponseDTO;
 import hr.fer.unifier.backend.api.deal.PersonInNeedApplicationDTO;
 import hr.fer.unifier.backend.api.deal.VolunteerHelpApplicationDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface DealService {
 
   DealResponseDTO saveDeal(DealDTO dealDTO);
   void updateAccepted(Long dealId);
   void deleteDeal(Long dealId);
-  List<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId);
-  List<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId);
+  Page<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId, Pageable pageable);
+  Page<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable);
 }

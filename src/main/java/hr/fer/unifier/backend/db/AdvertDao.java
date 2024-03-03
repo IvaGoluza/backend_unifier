@@ -2,6 +2,8 @@ package hr.fer.unifier.backend.db;
 
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,6 @@ import java.util.Optional;
 public interface AdvertDao extends JpaRepository<Advert, Long> {
 
   Optional<List<Advert>> findByUserAndDeletedFalse(User user);
-  Optional<List<Advert>> findAdvertsByDeletedFalse();
+  Page<Advert> findAdvertsByDeletedFalse(Pageable pageable);
 
 }

@@ -4,6 +4,9 @@ import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.service.RequestService;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +38,8 @@ public class RequestResource {
   }
 
   @GetMapping(value = {"/all-requests"})
-  public ResponseEntity<List<RequestResponseDTO>> getAllRequests() {
-    return ResponseEntity.ok(requestService.getAllRequests());
+  public ResponseEntity<Page<RequestResponseDTO>> getAllRequests(@ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(requestService.getAllRequests(pageable));
   }
 
 }

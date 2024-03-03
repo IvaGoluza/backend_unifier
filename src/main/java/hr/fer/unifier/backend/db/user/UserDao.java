@@ -24,7 +24,7 @@ public interface UserDao extends JpaRepository<User, Long> {
             " WHERE u.id = :id")
     UserWithFile getUserWithFile(Long id);
 
-    @Query("SELECT NEW UserCardInfo (u.id, replace(coalesce(o.name, p.firstName || ' ' || p.lastName),' ', '-'),u.email,u.mobilePhone)FROM User as u" +
+    @Query("SELECT NEW UserCardInfo (u.id, coalesce(o.name, p.firstName || ' ' || p.lastName),u.email,u.mobilePhone)FROM User as u" +
             " LEFT JOIN Person p ON p.id = u.id" +
             " LEFT JOIN Organization o ON o.id = u.id" +
             " WHERE u.id = :id")

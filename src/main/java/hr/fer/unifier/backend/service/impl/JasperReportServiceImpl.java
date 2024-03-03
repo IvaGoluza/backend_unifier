@@ -1,7 +1,7 @@
 package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.service.JasperReportService;
-import hr.fer.unifier.backend.util.StreamingUtil;
+import hr.fer.unifier.backend.util.file.StreamingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;

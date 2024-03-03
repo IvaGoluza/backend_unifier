@@ -12,7 +12,7 @@ import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.db.user.entity.UserWithFile;
 import hr.fer.unifier.backend.mapper.UserMapper;
 import hr.fer.unifier.backend.service.UserService;
-import hr.fer.unifier.backend.util.StreamingUtil;
+import hr.fer.unifier.backend.util.file.StreamingUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;

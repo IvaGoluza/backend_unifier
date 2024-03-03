@@ -2,6 +2,8 @@ package hr.fer.unifier.backend.db;
 
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +14,6 @@ import java.util.Optional;
 @Repository
 public interface RequestDao extends JpaRepository<Request, Long> {
   Optional<List<Request>> findByUserAndDeletedFalse(User user);
-  Optional<List<Request>> findAllByActiveTrueAndDeletedFalse();
+  Page<Request> findAllByActiveTrueAndDeletedFalse(Pageable pageable);
 
 }
