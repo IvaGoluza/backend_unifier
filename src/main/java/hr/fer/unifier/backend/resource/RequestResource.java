@@ -1,6 +1,7 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.request.RequestDTO;
+import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.service.RequestService;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -32,9 +31,14 @@ public class RequestResource {
     requestService.changeDeleteStatus(id);
   }
 
-  @GetMapping("/my-requests/{userId}")
-  public ResponseEntity<List<RequestResponseDTO>> getRequests(@PathVariable Long userId) {
-    return ResponseEntity.ok(requestService.getRequests(userId));
+  @GetMapping("/{requestId}/my-request/{userId}")
+  public ResponseEntity<RequestResponseDTO> getRequests(@PathVariable Long userId, @PathVariable Long requestId) {
+    return ResponseEntity.ok(requestService.getRequest(userId,requestId));
+  }
+
+  @GetMapping("/my-requests-info/{userId}")
+  public ResponseEntity<RequestsInfoDTO> getRequests(@PathVariable Long userId) {
+    return ResponseEntity.ok(requestService.getRequestInfo(userId));
   }
 
   @GetMapping(value = {"/all-requests"})

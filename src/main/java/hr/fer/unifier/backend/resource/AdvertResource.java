@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
+import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
 import hr.fer.unifier.backend.service.AdvertService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -11,8 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 
 @RestController
@@ -38,9 +37,14 @@ public class AdvertResource {
     advertService.changeDeleteStatus(advertId);
   }
 
-  @GetMapping("/my-adverts/{userId}")
-  public ResponseEntity<List<AdvertResponseDTO>> getAdverts(@PathVariable Long userId) {
-    return ResponseEntity.ok(advertService.getAdverts(userId));
+  @GetMapping("/my-adverts-info/{userId}")
+  public ResponseEntity<AdvertsInfoDTO> getAdverts(@PathVariable Long userId) {
+    return ResponseEntity.ok(advertService.getAdvertsInfo(userId));
+  }
+
+  @GetMapping("/{advertId}/my-advert/{userId}")
+  public ResponseEntity<AdvertResponseDTO> getAdvert(@PathVariable Long userId, @PathVariable Long advertId) {
+    return ResponseEntity.ok(advertService.getAdvert(userId,advertId));
   }
 
   @GetMapping("/all-adverts")

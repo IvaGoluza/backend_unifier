@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
+import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
 import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.UserDao;
@@ -9,6 +10,7 @@ import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.RequestService;
+import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +30,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestDao requestDao;
     private final RequestMapper requestMapper;
     private final UserDao userDao;
+    private final UserService userService;
 
     @Transactional
     @Override
@@ -60,18 +61,16 @@ public class RequestServiceImpl implements RequestService {
         request.setDeleted(true);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<RequestResponseDTO> getRequests(Long userId) {
-        // TODO -> Promijena da bude kao u sidebar-u
-        final User user = userDao.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("User with id: " + userId + " not found.")
-        );
+    public RequestResponseDTO getRequest(Long userId, Long requestId) {
+        userService.getUserById(userId);
 
-        return requestDao.findByUserAndDeletedFalse(user)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(requestMapper::toRequestResponseDTO)
-                .collect(Collectors.toList());
+        final Request request = requestDao.findById(requestId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Request with id: %d not found.", requestId))
+        );
+        return requestMapper.toRequestResponseDTO(request);
+
     }
 
     @Transactional(readOnly = true)
@@ -80,6 +79,16 @@ public class RequestServiceImpl implements RequestService {
         return PageUtil.map(
                 requestDao.findAllByActiveTrueAndDeletedFalse(pageable),
                 requestMapper::toRequestResponseDTO
+        );
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public RequestsInfoDTO getRequestInfo(Long userId) {
+        final User user = userService.getUserById(userId);
+
+        return requestMapper.toRequestsInfoDTO(
+                requestDao.findAllByUserOrderByRequestIdDesc(user).orElse(Collections.emptyList())
         );
     }
 
