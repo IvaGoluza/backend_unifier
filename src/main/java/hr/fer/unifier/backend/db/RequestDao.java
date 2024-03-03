@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface RequestDao extends JpaRepository<Request, Long> {
-  Optional<List<Request>> findByUserAndDeletedFalse(User user);
   Page<Request> findAllByActiveTrueAndDeletedFalse(Pageable pageable);
 
+  Optional<List<Request>> findAllByUserOrderByRequestIdDesc(User user);
 }

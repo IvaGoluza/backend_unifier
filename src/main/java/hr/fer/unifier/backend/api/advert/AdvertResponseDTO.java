@@ -29,6 +29,8 @@ public class AdvertResponseDTO {
 
   private String volunteerCenter;
 
+  private boolean archived;
+
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private UserResponseDTO user;
 }

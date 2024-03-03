@@ -32,6 +32,8 @@ public class RequestResponseDTO {
 
     private Integer numOfVolunteers;
 
+    private boolean archived;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private UserResponseDTO user;
 
