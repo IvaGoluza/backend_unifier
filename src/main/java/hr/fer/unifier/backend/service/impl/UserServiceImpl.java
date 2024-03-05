@@ -3,6 +3,7 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.user.AllUsersDTO;
 import hr.fer.unifier.backend.api.user.PasswordResetTokenRequestDTO;
+import hr.fer.unifier.backend.api.user.ResetPasswordRequestDTO;
 import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
     private final EmailService emailService;
 
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     @Override
@@ -126,6 +129,22 @@ public class UserServiceImpl implements UserService {
 
         final PasswordResetToken passwordResetToken = createToken(user);
         emailService.sendRecoveryMail(user.getEmail(), passwordResetToken.getToken());
+    }
+
+    @Transactional
+    @Override
+    public void updatePassword(ResetPasswordRequestDTO resetPasswordRequestDTO) {
+        final PasswordResetToken passwordResetToken = passwordResetTokenDao.findByToken(resetPasswordRequestDTO.getToken()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token couldn't be found")
+        );
+
+        if (passwordResetToken.getExpiryDate().isBefore(LocalDateTime.now())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token expired");
+        }
+
+        passwordResetToken.getUser().setPassword(
+                passwordEncoder.encode(resetPasswordRequestDTO.getPassword())
+        );
     }
 
     private PasswordResetToken createToken(User user) {
