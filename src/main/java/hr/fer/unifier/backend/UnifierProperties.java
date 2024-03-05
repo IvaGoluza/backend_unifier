@@ -16,4 +16,19 @@ public class UnifierProperties {
 
     @NonNull
     private String refreshSecretKey;
+
+    @ConfigurationProperties(prefix = "email-properties")
+    @NoArgsConstructor
+    @Component
+    @Data
+    public static class EmailProperties {
+        @NonNull
+        private String host;
+        @NonNull
+        private Integer port;
+        @NonNull
+        private String username;
+        @NonNull
+        private String password;
+    }
 }
