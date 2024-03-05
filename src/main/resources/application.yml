@@ -47,3 +47,9 @@ email-properties:
   port: 587
   username: 'unifier.hr@gmail.com'
   password: 'kptt rjpi zsjl zlnv'
+
+unifier-frontend-url:
+  host: 'localhost'
+  protocol: 'http'
+  port: '3000'
+  password-recovery-url: passwordRecovery

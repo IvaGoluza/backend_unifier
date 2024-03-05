@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service;
 
 
 import hr.fer.unifier.backend.api.user.AllUsersDTO;
+import hr.fer.unifier.backend.api.user.PasswordResetTokenRequestDTO;
 import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
 import hr.fer.unifier.backend.db.user.entity.User;
 import org.springframework.http.ResponseEntity;
@@ -19,4 +20,5 @@ public interface UserService {
   UserCardInfoDTO getUserCardInfo(Long userId);
 
   User getUserById(Long userId);
+  void passwordReset(PasswordResetTokenRequestDTO passwordResetTokenRequestDTO);
 }

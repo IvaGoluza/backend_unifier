@@ -31,4 +31,22 @@ public class UnifierProperties {
         @NonNull
         private String password;
     }
+
+    @ConfigurationProperties(prefix = "unifier-frontend-url")
+    @NoArgsConstructor
+    @Component
+    @Data
+    public static class UnifierFrontendUrlProperties {
+        @NonNull
+        private String host;
+        @NonNull
+        private Integer port;
+        @NonNull
+        private String protocol;
+        @NonNull
+        private String passwordRecoveryUrl;
+        public String getRecoveryUrl(){
+            return String.format("%s://%s:%d/%s", protocol, host, port, passwordRecoveryUrl);
+        }
+    }
 }
