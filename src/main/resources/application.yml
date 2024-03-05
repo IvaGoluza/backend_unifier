@@ -8,6 +8,17 @@ server:
     include-stacktrace: never
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 'unifier.hr@gmail.com'
+    password: 'kptt rjpi zsjl zlnv'
+    properties:
+      mail:
+        smtp:
+          auth:true
+        starttls:
+            enable:true
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
@@ -30,3 +41,9 @@ spring:
 unifier:
   auth-secret-key: 'b5ab8db8c7af75e71b59dfc1238a00813b3f5a926b4a606dd01b6831ca4a4666'
   refresh-secret-key: '8841b37b78ab5b825b3cc9fbebf85cbd650131a32099bd76f0a81ebd09fc065b'
+
+email-properties:
+  host: 'smtp.gmail.com'
+  port: 587
+  username: 'unifier.hr@gmail.com'
+  password: 'kptt rjpi zsjl zlnv'
