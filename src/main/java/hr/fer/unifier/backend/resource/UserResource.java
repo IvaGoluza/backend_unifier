@@ -1,6 +1,8 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.user.AllUsersDTO;
+import hr.fer.unifier.backend.api.user.PasswordResetTokenRequestDTO;
+import hr.fer.unifier.backend.api.user.ResetPasswordRequestDTO;
 import hr.fer.unifier.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -36,6 +38,17 @@ public class UserResource {
   @GetMapping(value = "/user-certificate-of-good-conduct/{userId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
   public ResponseEntity<StreamingResponseBody> getUserCertificateOfGoodConduct(@PathVariable Long userId) {
     return userService.getUserCertificateOfGoodConduct(userId);
+  }
 
+  @PostMapping(value = "/password-recovery")
+  public ResponseEntity<Void> passwordRecovery(@RequestBody PasswordResetTokenRequestDTO passwordResetTokenRequestDTO) {
+    userService.passwordReset(passwordResetTokenRequestDTO);
+    return ResponseEntity.ok().build();
+  }
+
+  @PutMapping(value = "/password")
+  public ResponseEntity<Void> updatePassword(@RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO) {
+    userService.updatePassword(resetPasswordRequestDTO);
+    return ResponseEntity.ok().build();
   }
 }

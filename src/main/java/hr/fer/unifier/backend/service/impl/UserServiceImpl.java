@@ -2,21 +2,27 @@ package hr.fer.unifier.backend.service.impl;
 
 
 import hr.fer.unifier.backend.api.user.AllUsersDTO;
+import hr.fer.unifier.backend.api.user.PasswordResetTokenRequestDTO;
+import hr.fer.unifier.backend.api.user.ResetPasswordRequestDTO;
 import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
+import hr.fer.unifier.backend.db.user.PasswordResetTokenDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.PasswordResetToken;
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.db.user.entity.UserWithFile;
 import hr.fer.unifier.backend.mapper.UserMapper;
+import hr.fer.unifier.backend.service.EmailService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.file.StreamingUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,8 +31,10 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +52,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
+    private final PasswordResetTokenDao passwordResetTokenDao;
+
+    private final EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     @Override
@@ -80,7 +93,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<StreamingResponseBody> getUserCertificateOfGoodConduct(Long userId) {
         final UserWithFile user = userDao.getUserWithFile(userId);
-        if (user == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Couldn't find user with id %d", userId));
+        if (user == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Couldn't find user with id %d", userId));
         if (user.getFile() == null) return null;
 
         try {
@@ -105,4 +119,42 @@ public class UserServiceImpl implements UserService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Couldn't find user with id %d", userId))
         );
     }
+
+    @Transactional
+    @Override
+    public void passwordReset(PasswordResetTokenRequestDTO passwordResetTokenRequestDTO) {
+        final User user = userDao.findByEmail(passwordResetTokenRequestDTO.getEmail()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ne postoji korisnik s navedenim email-om")
+        );
+
+        final PasswordResetToken passwordResetToken = createToken(user);
+        emailService.sendRecoveryMail(user.getEmail(), passwordResetToken.getToken());
+    }
+
+    @Transactional
+    @Override
+    public void updatePassword(ResetPasswordRequestDTO resetPasswordRequestDTO) {
+        final PasswordResetToken passwordResetToken = passwordResetTokenDao.findByToken(resetPasswordRequestDTO.getToken()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Token couldn't be found")
+        );
+
+        if (passwordResetToken.getExpiryDate().isBefore(LocalDateTime.now())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token expired");
+        }
+
+        passwordResetToken.getUser().setPassword(
+                passwordEncoder.encode(resetPasswordRequestDTO.getPassword())
+        );
+    }
+
+    private PasswordResetToken createToken(User user) {
+        final PasswordResetToken passwordResetToken = new PasswordResetToken();
+
+        passwordResetToken.setToken(UUID.randomUUID().toString());
+        passwordResetToken.setUser(user);
+        passwordResetToken.setExpiryDate(LocalDateTime.now().plusMinutes(PasswordResetToken.EXPIRATION));
+
+        return passwordResetTokenDao.save(passwordResetToken);
+    }
+
 }
