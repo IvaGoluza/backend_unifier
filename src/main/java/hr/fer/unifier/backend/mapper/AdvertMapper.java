@@ -1,7 +1,6 @@
 package hr.fer.unifier.backend.mapper;
 
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
-import hr.fer.unifier.backend.api.advert.AdvertInfoDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
 import hr.fer.unifier.backend.db.entity.Advert;
@@ -9,8 +8,6 @@ import hr.fer.unifier.backend.db.user.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.List;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring", uses = {UserMapper.class, CommonMapper.class})
 public interface AdvertMapper {
@@ -24,21 +21,16 @@ public interface AdvertMapper {
     @Mapping(target = "archived", source = "deleted")
     AdvertResponseDTO toAdvertResponseDTO(Advert advert);
 
-    AdvertInfoDTO toAdvertInfoDTO(Advert advert);
 
-    default AdvertsInfoDTO toAdvertsInfoDTO(List<Advert> requests){
-        List<AdvertInfoDTO> active = requests
-                .stream()
-                .filter(advert -> !advert.getDeleted())
-                .map(this::toAdvertInfoDTO)
-                .toList();
+    default AdvertsInfoDTO toAdvertsInfoDTO(Advert advert){
+        final AdvertsInfoDTO advertsInfoDTO = new AdvertsInfoDTO();
 
-        List<AdvertInfoDTO> archived = requests
-                .stream()
-                .filter(Advert::getDeleted)
-                .map(this::toAdvertInfoDTO)
-                .toList();
+        advertsInfoDTO.setAdvertId(advert.getAdvertId());
+        advertsInfoDTO.setAdvertTitle(advert.getAdvertTitle());
+        advertsInfoDTO.setCategory(advert.getCategory());
+        advertsInfoDTO.setHelpType(advert.getHelpType());
+        advertsInfoDTO.setArchived(advert.getDeleted());
 
-        return new AdvertsInfoDTO(active,archived);
+        return advertsInfoDTO;
     }
 }

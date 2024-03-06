@@ -38,8 +38,8 @@ public class AdvertResource {
   }
 
   @GetMapping("/my-adverts-info/{userId}")
-  public ResponseEntity<AdvertsInfoDTO> getAdverts(@PathVariable Long userId) {
-    return ResponseEntity.ok(advertService.getAdvertsInfo(userId));
+  public ResponseEntity<Page<AdvertsInfoDTO>> getAdverts(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(advertService.getAdvertsInfo(userId, pageable));
   }
 
   @GetMapping("/{advertId}/my-advert/{userId}")

@@ -4,12 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdvertsInfoDTO {
-    private List<AdvertInfoDTO> active;
-    private List<AdvertInfoDTO> archived;
+    private Long advertId;
+
+    private String advertTitle;
+
+    private String category;
+
+    private String helpType;
+
+    private boolean archived;
 }

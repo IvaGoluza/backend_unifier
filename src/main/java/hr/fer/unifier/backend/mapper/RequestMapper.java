@@ -28,7 +28,7 @@ public interface RequestMapper {
 
         requestsInfoDTO.setRequestId(request.getRequestId());
         requestsInfoDTO.setRequestTitle(request.getRequestTitle());
-        requestsInfoDTO.setCategory(requestsInfoDTO.getCategory());
+        requestsInfoDTO.setCategory(request.getCategory());
         requestsInfoDTO.setHelpType(request.getHelpType());
         requestsInfoDTO.setArchived(request.getDeleted() || !request.getActive());
 
