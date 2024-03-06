@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
-
 @Service
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
@@ -84,12 +82,10 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public RequestsInfoDTO getRequestInfo(Long userId) {
+    public Page<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
-
-        return requestMapper.toRequestsInfoDTO(
-                requestDao.findAllByUserOrderByRequestIdDesc(user).orElse(Collections.emptyList())
-        );
+        Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user,pageable);
+        return PageUtil.map(allRequests, requestMapper::toRequestsInfoDTO);
     }
 
 }

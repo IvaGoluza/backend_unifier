@@ -4,12 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestsInfoDTO {
-    private List<RequestInfoDTO> active;
-    private List<RequestInfoDTO> archived;
+    private Long requestId;
+
+    private String requestTitle;
+
+    private String category;
+
+    private String helpType;
+
+    private boolean archived;
 }
