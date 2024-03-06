@@ -18,6 +18,8 @@ public class AuthenticationResponseDTO {
 
     private UserType userType;
 
+    private boolean isOrganization;
+
     private boolean blocked;
 
     private AuthTokenDTO auth;
