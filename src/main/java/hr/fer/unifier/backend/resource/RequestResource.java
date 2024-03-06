@@ -37,8 +37,8 @@ public class RequestResource {
   }
 
   @GetMapping("/my-requests-info/{userId}")
-  public ResponseEntity<RequestsInfoDTO> getRequests(@PathVariable Long userId) {
-    return ResponseEntity.ok(requestService.getRequestInfo(userId));
+  public ResponseEntity<Page<RequestsInfoDTO>> getRequests(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(requestService.getRequestInfo(userId, pageable));
   }
 
   @GetMapping(value = {"/all-requests"})

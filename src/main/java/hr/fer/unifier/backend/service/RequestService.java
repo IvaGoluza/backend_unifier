@@ -12,5 +12,5 @@ public interface RequestService {
   void changeDeleteStatus(Long id);
   Page<RequestResponseDTO> getAllRequests(Pageable pageable);
   RequestResponseDTO getRequest(Long userId, Long requestId);
-  RequestsInfoDTO getRequestInfo(Long userId);
+  Page<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable);
 }

@@ -7,4 +7,6 @@ public class RequestInfoDTO {
     private Long requestId;
 
     private String requestTitle;
+
+
 }
