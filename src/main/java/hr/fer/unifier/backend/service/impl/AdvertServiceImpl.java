@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 
@@ -31,89 +30,89 @@ import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 @RequiredArgsConstructor
 public class AdvertServiceImpl implements AdvertService {
 
-  private final AdvertDao advertDao;
+    private final AdvertDao advertDao;
 
-  private final UserDao userDao;
+    private final UserDao userDao;
 
-  private final AdvertMapper advertMapper;
+    private final AdvertMapper advertMapper;
 
-  private final UserService userService;
+    private final UserService userService;
 
-  @Transactional
-  @Override
-  public AdvertResponseDTO saveAdvert(AdvertDTO advertDTO, MultipartFile file) {
-    return advertMapper.toAdvertResponseDTO(createAdvert(advertDTO,file));
-  }
-
-  @Transactional
-  @Override
-  public AdvertResponseDTO saveAdvert(AdvertDTO advertDTO) {
-    return advertMapper.toAdvertResponseDTO(createAdvert(advertDTO,null));
-  }
-
-  @Transactional
-  @Override
-  public void changeDeleteStatus(Long id) {
-    Advert advert = advertDao.findById(id).orElseThrow(() ->  new EntityNotFoundException("Advert with id:" + id + " does not exist."));
-    advert.setDeleted(true);
-  }
-
-
-  @Transactional(readOnly = true)
-  @Override
-  public Page<AdvertResponseDTO> getAllAdverts(Pageable pageable) {
-    return PageUtil.map(advertDao.findAdvertsByDeletedFalse(pageable), advertMapper::toAdvertResponseDTO);
-  }
-@Transactional(readOnly = true)
-  @Override
-  public AdvertResponseDTO getAdvert(Long userId, Long advertId) {
-    userService.getUserById(userId);
-
-    final Advert advert = advertDao.findById(advertId).orElseThrow(
-            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
-    );
-
-    return advertMapper.toAdvertResponseDTO(advert);
-  }
-@Transactional(readOnly = true)
-  @Override
-  public AdvertsInfoDTO getAdvertsInfo(Long userId) {
-    final User user = userService.getUserById(userId);
-
-    return advertMapper.toAdvertsInfoDTO(
-            advertDao.findAllByUserOrderByAdvertIdDesc(user).orElse(Collections.emptyList())
-    );
-  }
-
-  private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file){
-    User advertUser = userDao.findById(advertDTO.getUserId()).orElseThrow(() ->
-            new EntityNotFoundException("User with id " + advertDTO.getUserId() + " does not exist.")
-    );
-
-    if (!advertUser.isApproved()) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Niste odobreni od strane admina, ne možete raditi volonterske oglase!");
+    @Transactional
+    @Override
+    public AdvertResponseDTO saveAdvert(AdvertDTO advertDTO, MultipartFile file) {
+        return advertMapper.toAdvertResponseDTO(createAdvert(advertDTO, file));
     }
 
-    if (advertUser.isBlocked()) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Trenutno ste blokirani, ne možete raditi volonterske oglase!");
+    @Transactional
+    @Override
+    public AdvertResponseDTO saveAdvert(AdvertDTO advertDTO) {
+        return advertMapper.toAdvertResponseDTO(createAdvert(advertDTO, null));
     }
 
-    if (advertUser.getUserType().equals(UserType.PERSON_IN_NEED)){
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Nemate prava za stvaranje volonterskih oglasa!");
+    @Transactional
+    @Override
+    public void changeDeleteStatus(Long id) {
+        Advert advert = advertDao.findById(id).orElseThrow(() -> new EntityNotFoundException("Advert with id:" + id + " does not exist."));
+        advert.setDeleted(true);
     }
 
-    Advert advert = advertDao.save(advertMapper.toAdvert(advertDTO, advertUser));
 
-    if (file != null && !file.isEmpty()){
-      try{
-        validateImage(file);
-        advert.setAdvertImage(file.getBytes());
-      }catch (IOException ex){
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Couldn't save image.", ex);
-      }
+    @Transactional(readOnly = true)
+    @Override
+    public Page<AdvertResponseDTO> getAllAdverts(Pageable pageable) {
+        return PageUtil.map(advertDao.findAdvertsByDeletedFalse(pageable), advertMapper::toAdvertResponseDTO);
     }
 
-    return advert;
-  }
+    @Transactional(readOnly = true)
+    @Override
+    public AdvertResponseDTO getAdvert(Long userId, Long advertId) {
+        userService.getUserById(userId);
+
+        final Advert advert = advertDao.findById(advertId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
+        );
+
+        return advertMapper.toAdvertResponseDTO(advert);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable) {
+        final User user = userService.getUserById(userId);
+        final Page<Advert> adverts = advertDao.findAllByUserOrderByAdvertIdDesc(user, pageable);
+        return PageUtil.map(adverts, advertMapper::toAdvertsInfoDTO);
+    }
+
+    private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {
+        User advertUser = userDao.findById(advertDTO.getUserId()).orElseThrow(() ->
+                new EntityNotFoundException("User with id " + advertDTO.getUserId() + " does not exist.")
+        );
+
+        if (!advertUser.isApproved()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Niste odobreni od strane admina, ne možete raditi volonterske oglase!");
+        }
+
+        if (advertUser.isBlocked()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Trenutno ste blokirani, ne možete raditi volonterske oglase!");
+        }
+
+        if (advertUser.getUserType().equals(UserType.PERSON_IN_NEED)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Nemate prava za stvaranje volonterskih oglasa!");
+        }
+
+        Advert advert = advertDao.save(advertMapper.toAdvert(advertDTO, advertUser));
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                validateImage(file);
+                advert.setAdvertImage(file.getBytes());
+            } catch (IOException ex) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Couldn't save image.", ex);
+            }
+        }
+
+        return advert;
+    }
 
 }

@@ -16,6 +16,6 @@ public interface AdvertService {
   void changeDeleteStatus(Long id);
   Page<AdvertResponseDTO> getAllAdverts(Pageable pageable);
   AdvertResponseDTO getAdvert(Long userId, Long advertId);
-  AdvertsInfoDTO getAdvertsInfo(Long userId);
+  Page<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable);
 
 }

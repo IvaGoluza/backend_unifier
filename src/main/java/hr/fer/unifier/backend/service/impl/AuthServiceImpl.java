@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
         final Person person = createPerson(personRegisterDTO);
         saveFile(file, person);
-        return createAuthenticationResponseDTO(person);
+        return createAuthenticationResponseDTO(person, false);
     }
 
 
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
                 });
 
         final Organization organization = createOrganization(organizationRegisterDTO);
-        return createAuthenticationResponseDTO(organization);
+        return createAuthenticationResponseDTO(organization, true);
     }
 
 
@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-        return createAuthenticationResponseDTO(user);
+        return createAuthenticationResponseDTO(user, organizationDao.existsById(user.getId()));
     }
 
     @Transactional(readOnly = true)
@@ -131,13 +131,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    private AuthenticationResponseDTO createAuthenticationResponseDTO(User user) {
+    private AuthenticationResponseDTO createAuthenticationResponseDTO(User user, boolean isOrganization) {
         return new AuthenticationResponseDTO(
                 user.getId(),
                 user.getEmail(),
                 user.getMobilePhone(),
                 user.getRole(),
                 user.getUserType(),
+                isOrganization,
                 user.isBlocked(),
                 createAuthTokens(user)
         );
