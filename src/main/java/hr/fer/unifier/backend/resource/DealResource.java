@@ -43,9 +43,13 @@ public class DealResource {
     return dealService.getPersonInNeedApplications(advertId,pageable);
   }
 
-  @GetMapping("/accepted-deals/{userId}")
-  public Page<AcceptedPersonInNeedDealsDTO> getAcceptedDeals(@PathVariable Long userId, @ParameterObject Pageable pageable){
+  @GetMapping("/accepted-deals-person-in-need/{userId}")
+  public Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsPersonInNeed(@PathVariable Long userId, @ParameterObject Pageable pageable){
     return dealService.getAcceptedDealsForPersonInNeed(userId,pageable);
   }
 
+  @GetMapping("/accepted-deals-volunteer/{userId}")
+  public Page<AcceptedDealsVolunteerDTO> getAcceptedDealsVolunteer(@PathVariable Long userId, @ParameterObject Pageable pageable){
+    return dealService.getAcceptedDealsForVolunteer(userId,pageable);
+  }
 }
