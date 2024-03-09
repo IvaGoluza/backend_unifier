@@ -1,5 +1,8 @@
 package hr.fer.unifier.backend.service.impl;
 
+import hr.fer.unifier.backend.db.DealDao;
+import hr.fer.unifier.backend.db.RecensionDao;
+import hr.fer.unifier.backend.db.entity.Deal;
 import hr.fer.unifier.backend.service.JasperReportService;
 import hr.fer.unifier.backend.util.file.StreamingUtil;
 import lombok.RequiredArgsConstructor;
@@ -7,11 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.sql.DataSource;
@@ -28,12 +30,23 @@ import java.util.HashMap;
 @Slf4j
 @RequiredArgsConstructor
 public class JasperReportServiceImpl implements JasperReportService {
-
+    private final RecensionDao recensionDao;
+    private final DealDao dealDao;
     private final DataSource dataSource;
     private final StreamingUtil streamingUtil;
 
+    @Transactional
     @Override
     public ResponseEntity<byte[]> getPdfReport(Integer dealId) {
+        final Deal deal = dealDao.findById(Long.valueOf(dealId)).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Dogovor s id %d ne postoji", dealId))
+        );
+
+        boolean recensionExists = recensionDao.existsByDeal(deal);
+        if (!recensionExists){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recenzija ne postoji!");
+        }
+
         try (Connection connection = dataSource.getConnection()) {
             final File report = new ClassPathResource("jasper/certificateOfVolunteering.jasper").getFile();
             final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(report);
