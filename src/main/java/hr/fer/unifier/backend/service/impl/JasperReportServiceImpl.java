@@ -35,30 +35,31 @@ public class JasperReportServiceImpl implements JasperReportService {
     @Override
     public ResponseEntity<byte[]> getPdfReport(Integer dealId) {
         try (Connection connection = dataSource.getConnection()) {
-//            final InputStream stream= new ClassPathResource("jasper/users.jrxml").getInputStream();
-//            final JasperReport jasperReport = (JasperReport) JasperCompileManager.compileReport(stream);
-
-            final File report = new ClassPathResource("jasper/users.jasper").getFile();
+            final File report = new ClassPathResource("jasper/certificateOfVolunteering.jasper").getFile();
             final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(report);
 
             HashMap<String, Object> map = new HashMap<>();
             map.put("deal_id", dealId);
+
             final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, connection);
+            return exportToPdfByteArray(jasperPrint);
+
             //return exportToPdf(jasperPrint);
-            final HttpHeaders httpHeaders = new HttpHeaders();
-
-
-            byte[] pdf = JasperExportManager.exportReportToPdf(jasperPrint);
-            httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            httpHeaders.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode("users.pdf", StandardCharsets.UTF_8)).build());
-            httpHeaders.setContentLength(pdf.length);
-
-            return ResponseEntity.ok().headers(httpHeaders).body(pdf);
         } catch (Exception e) {
             log.error("Fill report failed", e);
         }
 
         return null;
+    }
+
+    private static ResponseEntity<byte[]> exportToPdfByteArray(JasperPrint jasperPrint) throws JRException {
+        final HttpHeaders httpHeaders = new HttpHeaders();
+        byte[] pdf = JasperExportManager.exportReportToPdf(jasperPrint);
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode("potvrda-o-volontiranju.pdf", StandardCharsets.UTF_8)).build());
+        httpHeaders.setContentLength(pdf.length);
+
+        return ResponseEntity.ok().headers(httpHeaders).body(pdf);
     }
 
     private ResponseEntity<StreamingResponseBody> exportToPdf(JasperPrint jasperPrint) throws JRException, SQLException {
