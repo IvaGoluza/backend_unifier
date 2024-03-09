@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 9.0.0.final using JasperReports Library version 6.21.0-4f56c4f36cd19e17675219a9ac4692d5f0f13b06  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Unifier users" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9932e28a-750f-4210-a84d-a6e3804c4557">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Unifier"/>
+	<parameter name="deal_id" class="java.lang.Integer">
+		<parameterDescription><![CDATA[Deal id]]></parameterDescription>
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT 
+ COALESCE(o.name, p.first_name || ' ' || p.last_name) AS user_name,
+ r.volunteer_position,
+ u.volunteer_center,
+ to_char(r.start_date, 'DD.MM.YYYY.') as start_date,
+ to_char(r.end_date, 'DD.MM.YYYY.') as end_date,
+ r.volunteer_work_description,
+ to_char(CURRENT_DATE, 'DD.MM.YYYY.') AS today
+FROM recension r
+LEFT JOIN person p ON r.reviewing_user_id = p.id
+LEFT JOIN organization o ON r.reviewing_user_id = o.id
+JOIN users u ON r.reviewing_user_id = u.id
+WHERE r.deal_id = $P{deal_id}]]>
+	</queryString>
+	<field name="user_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="user_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="user_name"/>
+	</field>
+	<field name="volunteer_position" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="volunteer_position"/>
+		<property name="com.jaspersoft.studio.field.label" value="volunteer_position"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="recension"/>
+	</field>
+	<field name="volunteer_center" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="volunteer_center"/>
+		<property name="com.jaspersoft.studio.field.label" value="volunteer_center"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="users"/>
+	</field>
+	<field name="start_date" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="start_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="start_date"/>
+	</field>
+	<field name="end_date" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="end_date"/>
+		<property name="com.jaspersoft.studio.field.label" value="end_date"/>
+	</field>
+	<field name="volunteer_work_description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="volunteer_work_description"/>
+		<property name="com.jaspersoft.studio.field.label" value="volunteer_work_description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="recension"/>
+	</field>
+	<field name="today" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="today"/>
+		<property name="com.jaspersoft.studio.field.label" value="today"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="777" splitType="Stretch">
+			<image>
+				<reportElement x="195" y="0" width="170" height="40" uuid="ca680a08-646e-4d43-a89b-d16e46d46d5a"/>
+				<imageExpression><![CDATA["C:/Users/Dean/OneDrive - fer.hr/Desktop/icon-removebg-preview.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="142" y="80" width="280" height="55" uuid="ca16e07a-3555-41fe-911d-d030e263cf36">
+					<property name="com.jaspersoft.studio.unit.tabStopWidth" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Bahnschrift" size="43" isBold="true" pdfEncoding=""/>
+					<paragraph lineSpacingSize="1.0" tabStopWidth="10"/>
+				</textElement>
+				<text><![CDATA[P O T V R D A]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="152" y="140" width="260" height="40" uuid="1a0e8eb8-e542-45ba-819d-85204f29f348"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="26" pdfEncoding=""/>
+				</textElement>
+				<text><![CDATA[o volontiranju]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="167" y="220" width="230" height="21" uuid="3e818bd9-9cac-4751-83d8-44b28b8d2d13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="16" pdfEncoding=""/>
+				</textElement>
+				<text><![CDATA[kojom se potvrđuje da je volonter/ka]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="75" y="250" width="415" height="70" uuid="3f0ec9d4-c802-4e01-b270-72cf5813a32d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Lucida Handwriting" size="50" isUnderline="false" pdfEncoding=""/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="55" y="315" width="450" height="5" uuid="6c103bcd-7b37-4d15-987e-795bf779b1ad"/>
+			</line>
+			<textField>
+				<reportElement x="80" y="330" width="431" height="50" uuid="dd52eebe-ca9c-42b1-938a-a514f23b33d9"/>
+				<textElement textAlignment="Center" markup="html">
+					<font fontName="Calibri" size="12" pdfEncoding=""/>
+				</textElement>
+				<textFieldExpression><![CDATA["pripadnik volonterskog centra <b>" + $F{volunteer_center} + "</b> ,<br> volontirao/la na volonterskom mjestu <b>" + $F{volunteer_position} + "</b><br>od <b>" + $F{start_date} +"</b> do <b>" + $F{end_date} +"</b> godine."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="72" y="380" width="420" height="40" uuid="aa68a76a-b2bf-4bc5-ad09-2ba86498ab9b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="html">
+					<font fontName="Calibri" size="12" pdfEncoding=""/>
+				</textElement>
+				<textFieldExpression><![CDATA["Volonter/ka <b>" + $F{user_name} +"</b> tijekom volontiranja obavljao/la je aktivnosti koje uključuju:"]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="340" y="690" width="180" height="87" uuid="c4e0d5c2-b510-469d-8604-610ed4466ff1"/>
+				<imageExpression><![CDATA["C:/Users/Dean/Downloads/pecat.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="640" width="375" height="40" uuid="2ecab120-0ae9-4ddf-b32b-fcd86a85d831"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="html">
+					<font fontName="Calibri" size="15" pdfEncoding=""/>
+				</textElement>
+				<textFieldExpression><![CDATA["U <b>"+$F{volunteer_center} + "</b>, dana <b>" + $F{today} + "</b> godine"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="430" width="280" height="160" uuid="3fa88694-cd17-4545-bc3d-60652f4543b2"/>
+				<textElement textAlignment="Center" markup="html">
+					<font fontName="Calibri" size="12" pdfEncoding=""/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>"+new java.util.ArrayList<String>(java.util.Arrays.asList($F{volunteer_work_description}.split(",")))
+    .stream()
+    .map(s -> s.toUpperCase())
+    .collect(java.util.stream.Collectors.joining("<br>")) + "</b>"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+</jasperReport>

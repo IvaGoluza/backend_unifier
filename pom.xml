@@ -110,6 +110,14 @@
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>3.2.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>local.jasperFontOverrides</groupId>
+            <artifactId>local.jasperFontOverrides</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/resources/font-extension.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
