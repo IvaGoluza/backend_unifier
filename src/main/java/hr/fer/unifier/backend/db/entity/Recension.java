@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -21,6 +23,18 @@ public class    Recension {
     @ManyToOne
     @JoinColumn(name = "DEAL_ID", nullable = false)
     private Deal deal;
+
+    @Column(name = "START_DATE")
+    private LocalDate startDate;
+
+    @Column(name = "END_DATE")
+    private LocalDate endDate;
+
+    @Column(name = "VOLUNTEER_WORK_DESCRIPTION")
+    private String volunteerWorkDescription;
+
+    @Column(name = "VOLUNTEER_POSITION")
+    private String volunteerPosition;
 
     @ManyToOne
     @JoinColumn(name = "REVIEWING_USER_ID", nullable = false)

@@ -11,8 +11,6 @@ public interface DealService {
   void deleteDeal(Long dealId);
   Page<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId, Pageable pageable);
   Page<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable);
-
   Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId,Pageable pageable);
-
   Page<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable);
 }
