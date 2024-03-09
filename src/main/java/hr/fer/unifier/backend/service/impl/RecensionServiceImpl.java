@@ -7,6 +7,7 @@ import hr.fer.unifier.backend.db.RecensionDao;
 import hr.fer.unifier.backend.db.entity.Deal;
 import hr.fer.unifier.backend.db.entity.Recension;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.mapper.RecensionMapper;
 import hr.fer.unifier.backend.service.RecensionService;
 import hr.fer.unifier.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import java.util.List;
 public class RecensionServiceImpl implements RecensionService {
     private final RecensionDao recensionDao;
     private final DealDao dealDao;
+    private final RecensionMapper recensionMapper;
     private final UserService userService;
     @Transactional
     @Override
@@ -31,13 +34,28 @@ public class RecensionServiceImpl implements RecensionService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Deal with id = %d doesn't exists", recensionRequestDTO.getDealId()))
         );
         final User reviewingUser = userService.getUserById(recensionRequestDTO.getReviewingUserId());
-
-        final Recension recension = new Recension();
-        recension.setRecension(recensionRequestDTO.getRecension());
+        checkRequest(recensionRequestDTO);
+        final Recension recension = recensionMapper.toRecension(recensionRequestDTO);
         recension.setReviewingUser(reviewingUser);
         recension.setDeal(deal);
 
         recensionDao.save(recension);
+    }
+
+    private void checkRequest(RecensionRequestDTO recensionRequestDTO) {
+        final LocalDate today = LocalDate.now();
+
+        if (recensionRequestDTO.getStartDate().isAfter(today)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Neispravan početni datum!");
+        }
+
+        if (recensionRequestDTO.getEndDate().isAfter(today)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Neispravan krajnji datum!");
+        }
+
+        if (recensionRequestDTO.getStartDate().isAfter(recensionRequestDTO.getEndDate())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Početni datum ne može biti veči od krajnjeg datuma!");
+        }
     }
 
     @Override
