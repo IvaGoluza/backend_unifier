@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -14,6 +17,8 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,16 +33,27 @@ public class JasperReportServiceImpl implements JasperReportService {
     private final StreamingUtil streamingUtil;
 
     @Override
-    public ResponseEntity<StreamingResponseBody> getPdfReport() {
+    public ResponseEntity<byte[]> getPdfReport(Integer dealId) {
         try (Connection connection = dataSource.getConnection()) {
+//            final InputStream stream= new ClassPathResource("jasper/users.jrxml").getInputStream();
+//            final JasperReport jasperReport = (JasperReport) JasperCompileManager.compileReport(stream);
+
             final File report = new ClassPathResource("jasper/users.jasper").getFile();
             final JasperReport jasperReport = (JasperReport) JRLoader.loadObject(report);
 
-            //TODO: Za kasnije
-            //JRParameter[] jr = jasperReport.getParameters();
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("deal_id", dealId);
+            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, connection);
+            //return exportToPdf(jasperPrint);
+            final HttpHeaders httpHeaders = new HttpHeaders();
 
-            final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,new HashMap<>(), connection);
-            return exportToPdf(jasperPrint);
+
+            byte[] pdf = JasperExportManager.exportReportToPdf(jasperPrint);
+            httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            httpHeaders.setContentDisposition(ContentDisposition.attachment().filename(URLEncoder.encode("users.pdf", StandardCharsets.UTF_8)).build());
+            httpHeaders.setContentLength(pdf.length);
+
+            return ResponseEntity.ok().headers(httpHeaders).body(pdf);
         } catch (Exception e) {
             log.error("Fill report failed", e);
         }
