@@ -24,6 +24,8 @@ public class RequestResponseDTO {
 
     private String category;
 
+    private String typeOfAction;
+
     private String description;
 
     private String skillSet;

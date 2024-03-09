@@ -7,6 +7,7 @@ import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.enums.UserActionType;
 import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.RequestService;
@@ -41,7 +42,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Korisnik je trenutno blokiran, ne možete raditi zahtjeve!");
         }
 
-        if (requestUser.getUserType().equals(UserType.VOLUNTEER)){
+        if (requestUser.getUserType().equals(UserType.VOLUNTEER)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Volunteer can't make a request");
         }
 
@@ -67,7 +68,7 @@ public class RequestServiceImpl implements RequestService {
         final Request request = requestDao.findById(requestId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Request with id: %d not found.", requestId))
         );
-        return requestMapper.toRequestResponseDTO(request);
+        return this.toRequestResponseDTO(request);
 
     }
 
@@ -76,7 +77,7 @@ public class RequestServiceImpl implements RequestService {
     public Page<RequestResponseDTO> getAllRequests(Pageable pageable) {
         return PageUtil.map(
                 requestDao.findAllByActiveTrueAndDeletedFalse(pageable),
-                requestMapper::toRequestResponseDTO
+                this::toRequestResponseDTO
         );
     }
 
@@ -84,8 +85,18 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Page<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
-        Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user,pageable);
+        Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user, pageable);
         return PageUtil.map(allRequests, requestMapper::toRequestsInfoDTO);
+    }
+
+    private RequestResponseDTO toRequestResponseDTO(Request request) {
+        final RequestResponseDTO requestResponseDTO = requestMapper.toRequestResponseDTO(request);
+
+        requestResponseDTO.setTypeOfAction(
+                UserActionType.getActionDescription(request.getOneTime())
+        );
+
+        return requestResponseDTO;
     }
 
 }
