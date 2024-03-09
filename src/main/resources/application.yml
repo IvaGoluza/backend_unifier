@@ -23,7 +23,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: bazepodataka
-    url: jdbc:postgresql://localhost:5433/unifier
+    url: jdbc:postgresql://localhost:5432/unifier
   jpa:
     database: POSTGRESQL
     ##show-sql: true
