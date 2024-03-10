@@ -44,4 +44,8 @@ public class Deal {
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User senderId;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
 }

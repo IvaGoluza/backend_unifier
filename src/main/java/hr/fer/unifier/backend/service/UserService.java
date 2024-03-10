@@ -13,15 +13,10 @@ public interface UserService {
   AllUsersDTO getAllUsers();
 
   void changeBlockStatus(Long userId);
-
   void approveUser(Long userId);
-
   ResponseEntity<StreamingResponseBody> getUserCertificateOfGoodConduct(Long userId);
-
   UserCardInfoDTO getUserCardInfo(Long userId);
-
   User getUserById(Long userId);
   void passwordReset(PasswordResetTokenRequestDTO passwordResetTokenRequestDTO);
-
   void updatePassword(ResetPasswordRequestDTO resetPasswordRequestDTO);
 }
