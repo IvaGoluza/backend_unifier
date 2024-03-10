@@ -84,7 +84,11 @@ public class RequestServiceImpl implements RequestService {
                 .and(StringUtils.isBlank(category) ? null : hasCategory(category))
                 .and(StringUtils.isBlank(helpType) ? null : hasHelpType(helpType));
         return PageUtil.toPage(
-                requestDao.findAll(filters).stream().map(this::toRequestResponseDTO).toList(),
+                requestDao.findAll(filters)
+                        .stream()
+                        .filter(request -> request.getActive() && !request.getDeleted())
+                        .map(this::toRequestResponseDTO)
+                        .toList(),
                 pageable
         );
         //TODO riješiti ovaj problem
