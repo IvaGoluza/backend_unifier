@@ -20,4 +20,9 @@ public class JasperReportResource {
     public ResponseEntity<byte[]> getPdfReport(@PathVariable Integer dealId){
         return jasperReportService.getPdfReport(dealId);
     }
+
+    @GetMapping("/volunteer-contract/{dealId}")
+    public ResponseEntity<byte[]> getVolunteerContract(@PathVariable Integer dealId){
+        return jasperReportService.getVolunteerContract(dealId);
+    }
 }
