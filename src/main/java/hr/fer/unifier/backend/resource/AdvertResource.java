@@ -48,8 +48,13 @@ public class AdvertResource {
   }
 
   @GetMapping("/all-adverts")
-  public ResponseEntity<Page<AdvertResponseDTO>> getAllAdverts(@ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(advertService.getAllAdverts(pageable));
+  public ResponseEntity<Page<AdvertResponseDTO>> getAllAdverts(
+          @RequestParam(required = false, name = "grad") String city,
+          @RequestParam(required = false, name = "kategorija") String category,
+          @RequestParam(required = false, name = "vrstaPomoci") String helpType,
+          @ParameterObject Pageable pageable
+  ) {
+    return ResponseEntity.ok(advertService.getAllAdverts(city,category,helpType,pageable));
   }
 
 }

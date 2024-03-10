@@ -12,9 +12,8 @@ public interface AdvertService {
 
   AdvertResponseDTO saveAdvert(AdvertDTO advertDTO, MultipartFile file);
   AdvertResponseDTO saveAdvert(AdvertDTO advertDTO);
-
   void changeDeleteStatus(Long id);
-  Page<AdvertResponseDTO> getAllAdverts(Pageable pageable);
+  Page<AdvertResponseDTO> getAllAdverts(String city,String category,String helpType,Pageable pageable);
   AdvertResponseDTO getAdvert(Long userId, Long advertId);
   Page<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable);
 
