@@ -15,12 +15,16 @@ import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import static hr.fer.unifier.backend.util.specification.RequestSpecification.*;
 
 @Service
 @RequiredArgsConstructor
@@ -74,11 +78,20 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<RequestResponseDTO> getAllRequests(Pageable pageable) {
-        return PageUtil.map(
-                requestDao.findAllByActiveTrueAndDeletedFalse(pageable),
-                this::toRequestResponseDTO
+    public Page<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Pageable pageable) {
+        Specification<Request> filters = Specification
+                .where(StringUtils.isBlank(city) ? null : inCity(city))
+                .and(StringUtils.isBlank(category) ? null : hasCategory(category))
+                .and(StringUtils.isBlank(helpType) ? null : hasHelpType(helpType));
+        return PageUtil.toPage(
+                requestDao.findAll(filters).stream().map(this::toRequestResponseDTO).toList(),
+                pageable
         );
+        //TODO riješiti ovaj problem
+//        return PageUtil.map(
+//                requestDao.findAllByActiveTrueAndDeletedFalse(filters, pageable),
+//                this::toRequestResponseDTO
+//        );
     }
 
     @Transactional(readOnly = true)

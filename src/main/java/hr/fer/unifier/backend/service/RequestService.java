@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 public interface RequestService {
   RequestResponseDTO saveRequest(RequestDTO requestDTO);
   void changeDeleteStatus(Long id);
-  Page<RequestResponseDTO> getAllRequests(Pageable pageable);
+  Page<RequestResponseDTO> getAllRequests(String city,String category,String helpType,Pageable pageable);
   RequestResponseDTO getRequest(Long userId, Long requestId);
   Page<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable);
 }
