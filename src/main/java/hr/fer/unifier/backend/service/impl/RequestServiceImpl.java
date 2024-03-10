@@ -56,12 +56,24 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional
     @Override
-    public void changeDeleteStatus(Long id) {
+    public void archive(Long id) {
         final Request request = requestDao.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Request with id: " + id + " doesn't exists.")
         );
 
         request.setDeleted(true);
+        request.setActive(false);
+    }
+
+    @Transactional
+    @Override
+    public void undoArchive(Long id) {
+        final Request request = requestDao.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Request with id: " + id + " doesn't exists.")
+        );
+
+        request.setDeleted(false);
+        request.setActive(true);
     }
 
     @Transactional(readOnly = true)

@@ -26,9 +26,13 @@ public class RequestResource {
     return ResponseEntity.ok(requestService.saveRequest(requestDTO));
   }
 
-  @PutMapping("/change-delete-status/{id}")
-  public void deleteRequest(@PathVariable Long id) {
-    requestService.changeDeleteStatus(id);
+  @PutMapping("/archive/{id}")
+  public void archiveRequest(@PathVariable Long id) {
+    requestService.archive(id);
+  }
+  @PutMapping("/undo-archive/{id}")
+  public void undoArchive(@PathVariable Long id) {
+    requestService.undoArchive(id);
   }
 
   @GetMapping("/{requestId}/my-request/{userId}")
