@@ -46,8 +46,13 @@ public class RequestResource {
   }
 
   @GetMapping(value = {"/all-requests"})
-  public ResponseEntity<Page<RequestResponseDTO>> getAllRequests(@ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(requestService.getAllRequests(pageable));
+  public ResponseEntity<Page<RequestResponseDTO>> getAllRequests(
+          @RequestParam(required = false, name = "grad") String city,
+          @RequestParam(required = false, name = "kategorija") String category,
+          @RequestParam(required = false, name = "vrstaPomoci") String helpType,
+          @ParameterObject Pageable pageable
+  ) {
+    return ResponseEntity.ok(requestService.getAllRequests(city,category,helpType,pageable));
   }
 
 }

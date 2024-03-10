@@ -14,8 +14,10 @@ import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 
 import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
+import static hr.fer.unifier.backend.util.specification.AdvertSpecification.*;
 
 @Service
 @RequiredArgsConstructor
@@ -60,8 +63,22 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdvertResponseDTO> getAllAdverts(Pageable pageable) {
-        return PageUtil.map(advertDao.findAdvertsByDeletedFalse(pageable), advertMapper::toAdvertResponseDTO);
+    public Page<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType,Pageable pageable) {
+        Specification<Advert> filters = Specification
+                .where(StringUtils.isBlank(city) ? null : inCity(city))
+                .and(StringUtils.isBlank(category) ? null : hasCategory(category))
+                .and(StringUtils.isBlank(helpType) ? null : hasHelpType(helpType));
+
+        return PageUtil.toPage(
+                advertDao.findAll(filters)
+                        .stream()
+                        .filter(advert -> !advert.getDeleted())
+                        .map(advertMapper::toAdvertResponseDTO)
+                        .toList(),
+                pageable
+        );
+        //TODO riješit ovaj problem
+//        return PageUtil.map(advertDao.findAdvertsByDeletedFalse(pageable), advertMapper::toAdvertResponseDTO);
     }
 
     @Transactional(readOnly = true)
