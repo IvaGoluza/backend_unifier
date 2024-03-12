@@ -30,12 +30,6 @@ public class    Recension {
     @Column(name = "END_DATE")
     private LocalDate endDate;
 
-    @Column(name = "VOLUNTEER_WORK_DESCRIPTION")
-    private String volunteerWorkDescription;
-
-    @Column(name = "VOLUNTEER_POSITION")
-    private String volunteerPosition;
-
     @ManyToOne
     @JoinColumn(name = "REVIEWING_USER_ID", nullable = false)
     private User reviewingUser;
