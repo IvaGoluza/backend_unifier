@@ -154,6 +154,27 @@ public class DealServiceImpl implements DealService {
         return PageUtil.toPage(acceptedDeals,pageable);
     }
 
+    @Transactional
+    @Override
+    public void updateVolunteerDealDescription(Long dealId, VolunteerDealDescriptionDTO volunteerDealDescriptionDTO) {
+        final Deal deal = dealDao.findById(dealId).orElseThrow(
+                () -> new EntityNotFoundException("Deal with id " + dealId + " does not exist.")
+        );
+
+        final String workDescription = volunteerDealDescriptionDTO.getVolunteerWorkDescription();
+        if (workDescription == null || workDescription.isBlank()){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Nedostaje opis volonterskog posla!");
+        }
+
+        final String volunteerPosition = volunteerDealDescriptionDTO.getVolunteerPosition();
+        if (volunteerPosition == null || volunteerPosition.isBlank()){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Nedostaje volonterska pozicija!");
+        }
+
+        deal.setVolunteerPosition(volunteerDealDescriptionDTO.getVolunteerPosition());
+        deal.setVolunteerWorkDescription(volunteerDealDescriptionDTO.getVolunteerWorkDescription());
+    }
+
     private boolean filterDealForPersonInNeed(Deal deal, Long personInNeedId) {
         boolean isPersonInNeed = false;
 

@@ -52,4 +52,9 @@ public class DealResource {
   public Page<AcceptedDealsVolunteerDTO> getAcceptedDealsVolunteer(@PathVariable Long userId, @ParameterObject Pageable pageable){
     return dealService.getAcceptedDealsForVolunteer(userId,pageable);
   }
+
+  @PutMapping("/volunteer-description/{dealId}")
+  public void updateVolunteerDealDescription(@PathVariable Long dealId, @RequestBody VolunteerDealDescriptionDTO volunteerDealDescriptionDTO){
+    dealService.updateVolunteerDealDescription(dealId,volunteerDealDescriptionDTO);
+  }
 }

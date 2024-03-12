@@ -13,4 +13,5 @@ public interface DealService {
   Page<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable);
   Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId,Pageable pageable);
   Page<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable);
+  void updateVolunteerDealDescription(Long dealId, VolunteerDealDescriptionDTO volunteerDealDescriptionDTO);
 }
