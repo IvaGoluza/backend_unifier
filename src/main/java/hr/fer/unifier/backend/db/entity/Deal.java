@@ -31,17 +31,27 @@ public class Deal {
     private Sender sender;
 
     @ManyToOne
-    @JoinColumn(name = "request_id")
+    @JoinColumn(name = "REQUEST_ID")
     private Request request;
 
     @ManyToOne
-    @JoinColumn(name = "advert_id")
+    @JoinColumn(name = "ADVERT_ID")
     private Advert advert;
 
     @Column
     private String message;
 
+    @Column(name = "VOLUNTEER_POSITION")
+    private String volunteerPosition;
+
+    @Column(name = "VOLUNTEER_WORK_DESCRIPTION", length = 2048)
+    private String volunteerWorkDescription;
+
     @ManyToOne
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "SENDER_ID")
     private User senderId;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
 }

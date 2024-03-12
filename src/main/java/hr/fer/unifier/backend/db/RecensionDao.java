@@ -12,4 +12,6 @@ public interface RecensionDao extends JpaRepository<Recension,Long> {
     Optional<List<Recension>> getAllByReviewingUser(User user);
 
     Boolean existsByDeal(Deal deal);
+
+    Optional<Recension> findByDeal(Deal deal);
 }

@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
 @RequestMapping(value = "/jasper-report", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -16,8 +16,13 @@ public class JasperReportResource {
 
     private final JasperReportService jasperReportService;
 
-    @GetMapping("/volunteer-report")
-    public ResponseEntity<StreamingResponseBody> getPdfReport(){
-        return jasperReportService.getPdfReport();
+    @GetMapping("/volunteer-report/{dealId}")
+    public ResponseEntity<byte[]> getPdfReport(@PathVariable Integer dealId){
+        return jasperReportService.getPdfReport(dealId);
+    }
+
+    @GetMapping("/volunteer-contract/{dealId}")
+    public ResponseEntity<byte[]> getVolunteerContract(@PathVariable Integer dealId){
+        return jasperReportService.getVolunteerContract(dealId);
     }
 }

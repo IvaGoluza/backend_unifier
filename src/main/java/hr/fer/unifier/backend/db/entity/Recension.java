@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "RECENSION")
-public class    Recension {
+public class Recension {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recensionId;
@@ -29,12 +29,6 @@ public class    Recension {
 
     @Column(name = "END_DATE")
     private LocalDate endDate;
-
-    @Column(name = "VOLUNTEER_WORK_DESCRIPTION")
-    private String volunteerWorkDescription;
-
-    @Column(name = "VOLUNTEER_POSITION")
-    private String volunteerPosition;
 
     @ManyToOne
     @JoinColumn(name = "REVIEWING_USER_ID", nullable = false)

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fontFamilies>
+    <fontFamily name="Calibri">
+        <normal>
+            <ttf><![CDATA[fonts/calibri.ttf]]></ttf>
+            <pdf><![CDATA[fonts/calibri.ttf]]></pdf>
+        </normal>
+        <bold>
+            <ttf><![CDATA[fonts/calibrib.ttf]]></ttf>
+            <pdf><![CDATA[fonts/calibrib.ttf]]></pdf>
+        </bold>
+        <pdfEncoding><![CDATA[CP1250]]></pdfEncoding>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+        <exportFonts/>
+    </fontFamily>
+
+    <fontFamily name="Lucida Handwriting">
+        <normal>
+            <ttf><![CDATA[fonts/LucidaHandwritingStdRg.TTF]]></ttf>
+            <pdf><![CDATA[fonts/LucidaHandwritingStdRg.TTF]]></pdf>
+        </normal>
+        <bold>
+            <ttf><![CDATA[fonts/LucidaHandwritingStdBold.TTF]]></ttf>
+            <pdf><![CDATA[fonts/LucidaHandwritingStdBold.TTF]]></pdf>
+        </bold>
+        <pdfEncoding><![CDATA[CP1250]]></pdfEncoding>
+        <pdfEmbedded><![CDATA[true]]></pdfEmbedded>
+        <exportFonts/>
+    </fontFamily>
+</fontFamilies>

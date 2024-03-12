@@ -42,22 +42,7 @@ public class RecensionServiceImpl implements RecensionService {
         recensionDao.save(recension);
     }
 
-    private void checkRequest(RecensionRequestDTO recensionRequestDTO) {
-        final LocalDate today = LocalDate.now();
-
-        if (recensionRequestDTO.getStartDate().isAfter(today)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Neispravan početni datum!");
-        }
-
-        if (recensionRequestDTO.getEndDate().isAfter(today)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Neispravan krajnji datum!");
-        }
-
-        if (recensionRequestDTO.getStartDate().isAfter(recensionRequestDTO.getEndDate())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Početni datum ne može biti veči od krajnjeg datuma!");
-        }
-    }
-
+    @Transactional
     @Override
     public List<RecensionDTO> getUserRecensions(Long userId) {
         final User user = userService.getUserById(userId);
@@ -68,5 +53,21 @@ public class RecensionServiceImpl implements RecensionService {
                 .map(recension -> new RecensionDTO(recension.getRecension()))
                 .limit(8)
                 .toList();
+    }
+
+    private void checkRequest(RecensionRequestDTO recensionRequestDTO) {
+        final LocalDate today = LocalDate.now();
+
+        if (recensionRequestDTO.getStartDate().isAfter(today)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Neispravan početni datum!");
+        }
+
+        if (recensionRequestDTO.getEndDate().isBefore(today)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Neispravan krajnji datum!");
+        }
+
+        if (recensionRequestDTO.getStartDate().isAfter(recensionRequestDTO.getEndDate())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Početni datum ne može biti veči od krajnjeg datuma!");
+        }
     }
 }
