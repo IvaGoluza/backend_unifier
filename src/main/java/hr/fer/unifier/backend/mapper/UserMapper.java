@@ -1,5 +1,7 @@
 package hr.fer.unifier.backend.mapper;
 
+import hr.fer.unifier.backend.api.user.OrganizationDTO;
+import hr.fer.unifier.backend.api.user.PersonDTO;
 import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationUpdateProfileDTO;
@@ -26,4 +28,8 @@ public interface UserMapper {
     void updatePerson(@MappingTarget Person person, UserUpdateProfileDTO userUpdateProfileDTO);
 
     void updateOrganization(@MappingTarget Organization organization, OrganizationUpdateProfileDTO userProfileDTO);
+
+    OrganizationDTO toOrganizationDTO(Organization organization);
+
+    PersonDTO toPersonDTO(Person person);
 }
