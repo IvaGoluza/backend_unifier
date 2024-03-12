@@ -21,9 +21,9 @@ spring:
             enable:true
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: bazepodataka
-    url: jdbc:postgresql://localhost:5433/unifier
+    username: <enter-username>
+    password: <enter-password>
+    url: <enter-db>
   jpa:
     database: POSTGRESQL
     ##show-sql: true
