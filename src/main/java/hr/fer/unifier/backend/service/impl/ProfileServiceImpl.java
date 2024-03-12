@@ -22,6 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import static hr.fer.unifier.backend.util.file.FileUtil.validateHealthCertificate;
 import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
@@ -47,7 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
         validateImage(file);
         try {
             user.setImage(file.getBytes());
-        } catch (IOException ex){
+        } catch (IOException ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Coulnd't upload image", ex);
         }
     }
@@ -61,7 +64,7 @@ public class ProfileServiceImpl implements ProfileService {
         validateHealthCertificate(file);
         try {
             person.setHealthCertificate(file.getBytes());
-        } catch (IOException ex){
+        } catch (IOException ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Coulnd't upload healthcare certificate!", ex);
         }
     }
@@ -83,6 +86,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         return personProfileDTO;
     }
+
     @Transactional(readOnly = true)
     @Override
     public OrganizationProfileDTO getOrganizationProfile(Long userId) {
@@ -99,20 +103,36 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Transactional
     @Override
-    public void updateUserProfile(Long userId,UserUpdateProfileDTO userUpdateProfileDTO) {
+    public void updateUserProfile(Long userId, UserUpdateProfileDTO userUpdateProfileDTO) {
         final Person person = personDao.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId))
         );
 
-        userMapper.updatePerson(person, userUpdateProfileDTO);
+        updateEntityAttribute(userUpdateProfileDTO.getProfileDescription(), person::setProfileDescription);
+        updateEntityWorkArea(userUpdateProfileDTO.getWorkArea(), person::setWorkArea);
     }
 
     @Transactional
     @Override
-    public void updateOrganizationProfile(Long userId, OrganizationUpdateProfileDTO userProfileDTO) {
+    public void updateOrganizationProfile(Long userId, OrganizationUpdateProfileDTO organizationUpdateProfileDTO) {
         final Organization organization = organizationDao.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Organization with id %d doesn't exists", userId))
         );
-        userMapper.updateOrganization(organization, userProfileDTO);
+
+        updateEntityAttribute(organizationUpdateProfileDTO.getProfileDescription(), organization::setProfileDescription);
+        updateEntityAttribute(organizationUpdateProfileDTO.getUrl(), organization::setUrl);
+        updateEntityWorkArea(organizationUpdateProfileDTO.getWorkArea(), organization::setWorkArea);
+    }
+
+    private void updateEntityWorkArea(Optional<List<String>> workArea, Consumer<String[]> setWorkArea) {
+        if (workArea == null) return;
+
+        String[] workAreaArray = workArea.map(strings -> strings.toArray(new String[0])).orElse(null);
+        setWorkArea.accept(workAreaArray);
+    }
+
+    private <T> void updateEntityAttribute(Optional<T> updateValue, Consumer<T> setter) {
+        if (updateValue == null) return;
+        setter.accept(updateValue.orElse(null));
     }
 }

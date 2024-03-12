@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @NoArgsConstructor
@@ -13,12 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class UserUpdateProfileDTO {
+  private Optional<String> profileDescription;
 
-  private String email;
-
-  private String mobilePhone;
-
-  private String profileDescription;
-
-  private List<String> workArea;
+  private Optional<List<String>> workArea;
 }
