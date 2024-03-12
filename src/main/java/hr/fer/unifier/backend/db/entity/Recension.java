@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "RECENSION")
-public class    Recension {
+public class Recension {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recensionId;

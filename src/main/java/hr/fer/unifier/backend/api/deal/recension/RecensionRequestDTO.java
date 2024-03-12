@@ -21,12 +21,6 @@ public class RecensionRequestDTO {
     private LocalDate endDate;
 
     @NonNull
-    private String volunteerWorkDescription;
-
-    @NonNull
-    private String volunteerPosition;
-
-    @NonNull
     private Long dealId;
 
     @NonNull
