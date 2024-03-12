@@ -204,14 +204,18 @@ public class DealServiceImpl implements DealService {
 
         acceptedDeal.setHasConfirmationOfVolunteering(recensionDao.existsByDeal(deal));
         final String volunteerName;
-
+        final Long volunteerId;
         if (!deal.getSenderId().getId().equals(personInNeedId)){
+            volunteerId = deal.getSenderId().getId();
             volunteerName = userDao.getUserCardInfo(deal.getSenderId().getId()).getName();
         }else {
+            volunteerId = deal.getAdvert().getUser().getId();
             volunteerName = userDao.getUserCardInfo(deal.getAdvert().getUser().getId()).getName();
         }
 
         acceptedDeal.setVolunteerName(volunteerName);
+        acceptedDeal.setVolunteerId(volunteerId);
+
         return acceptedDeal;
     }
 
