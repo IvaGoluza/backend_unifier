@@ -55,11 +55,13 @@ public class DealServiceImpl implements DealService {
                 new EntityNotFoundException("Advert with id " + dealDTO.getAdvertId() + " does not exist.")
         ) : null;
         final User sender = userService.getUserById(dealDTO.getSenderId());
-
+        final User receiver = userService.getUserById(dealDTO.getReceiverId());
         final Deal deal = dealDao.save(dealMapper.toDeal(dealDTO));
+
         deal.setRequest(request);
         deal.setAdvert(advert);
         deal.setSenderId(sender);
+        deal.setReceiver(receiver);
 
         return dealMapper.toDealResponseDTO(deal);
     }
