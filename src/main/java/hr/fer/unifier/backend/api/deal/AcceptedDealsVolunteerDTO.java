@@ -12,4 +12,5 @@ public class AcceptedDealsVolunteerDTO {
     private String personInNeedMessage;
     private RequestResponseDTO personInNeedRequest;
     private boolean isReviewed;
+    private boolean isContractReady;
 }

@@ -225,7 +225,10 @@ public class DealServiceImpl implements DealService {
             }
         }
 
-        acceptedDeal.setHasConfirmationOfVolunteering(recensionDao.existsByDeal(deal));
+        acceptedDeal.setRecensionFulfilled(recensionDao.existsByDeal(deal));
+        acceptedDeal.setContractDetailsFulfilled(
+                deal.getVolunteerPosition() != null && deal.getVolunteerWorkDescription() != null
+        );
         final String volunteerName;
         final Long volunteerId;
         if (!deal.getSenderId().getId().equals(personInNeedId)){
@@ -263,6 +266,9 @@ public class DealServiceImpl implements DealService {
         }
 
         acceptedDeal.setReviewed(recensionDao.existsByDeal(deal));
+        acceptedDeal.setContractReady(
+                deal.getVolunteerPosition() != null && deal.getVolunteerWorkDescription() != null
+        );
         final String personInNeedName;
 
         if (!deal.getSenderId().getId().equals(personInNeedId)){
