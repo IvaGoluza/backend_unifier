@@ -4,6 +4,7 @@ import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
 import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.RecensionDao;
 import hr.fer.unifier.backend.db.entity.Deal;
+import hr.fer.unifier.backend.db.entity.Recension;
 import hr.fer.unifier.backend.enums.Sender;
 import hr.fer.unifier.backend.service.JasperReportService;
 import hr.fer.unifier.backend.service.UserService;
@@ -53,16 +54,21 @@ public class JasperReportServiceImpl implements JasperReportService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Dogovor s id %d ne postoji", dealId))
         );
 
-        boolean recensionExists = recensionDao.existsByDeal(deal);
-        if (!recensionExists){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recenzija ne postoji!");
-        }
+        final Recension recension = recensionDao.findByDeal(deal).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recenzija ne postoji!")
+        );
+
+        boolean isOneDay = recension.getStartDate().isEqual(recension.getEndDate());
 
         try (Connection connection = dataSource.getConnection()) {
             HashMap<String, Object> parameters = new HashMap<>();
             parameters.put("deal_id", dealId);
 
-            final JasperPrint jasperPrint = fillReport(parameters, "jasper/certificateOfVolunteering.jasper", connection);
+            final String reportName = isOneDay
+                    ? "jasper/certificateOfVolunteeringOneDay.jasper"
+                    : "jasper/certificateOfVolunteering.jasper";
+
+            final JasperPrint jasperPrint = fillReport(parameters, reportName, connection);
             return exportToPdfByteArray(jasperPrint, "potvrda-o-volontiranju.pdf");
         } catch (Exception e) {
             log.error("Fill report failed", e);
