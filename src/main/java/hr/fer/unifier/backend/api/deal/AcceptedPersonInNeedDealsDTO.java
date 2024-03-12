@@ -12,5 +12,6 @@ public class AcceptedPersonInNeedDealsDTO {
     private AdvertResponseDTO volunteerApplicationAdvert;
     private String personInNeedMessage;
     private RequestResponseDTO personInNeedRequest;
-    private boolean hasConfirmationOfVolunteering;
+    private boolean isRecensionFulfilled;
+    private boolean isContractDetailsFulfilled;
 }
