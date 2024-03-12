@@ -23,5 +23,7 @@ public class AdvertDTO {
 
   private String description;
 
+  private String time;
+
   private Long userId;
 }

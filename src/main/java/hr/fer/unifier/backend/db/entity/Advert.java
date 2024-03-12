@@ -36,6 +36,9 @@ public class Advert {
     @Column(nullable = false, length = 750)
     private String description;
 
+    @Column(nullable = false)
+    private String time;
+
     @Column
     private Boolean deleted;
 
