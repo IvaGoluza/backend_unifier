@@ -1,12 +1,7 @@
 package hr.fer.unifier.backend.service.impl;
 
 
-import hr.fer.unifier.backend.api.user.AllUsersDTO;
-import hr.fer.unifier.backend.api.user.PasswordResetTokenRequestDTO;
-import hr.fer.unifier.backend.api.user.ResetPasswordRequestDTO;
-import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
-import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
-import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
+import hr.fer.unifier.backend.api.user.*;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
 import hr.fer.unifier.backend.db.user.PasswordResetTokenDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
@@ -19,7 +14,6 @@ import hr.fer.unifier.backend.service.EmailService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.file.StreamingUtil;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,8 +40,6 @@ public class UserServiceImpl implements UserService {
 
     private final OrganizationDao organizationDao;
 
-    private final ModelMapper modelMapper;
-
     private final StreamingUtil streamingUtil;
 
     private final UserMapper userMapper;
@@ -61,19 +53,19 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public AllUsersDTO getAllUsers() {
-        final List<PersonProfileDTO> volunteers = personDao.findAll()
+        final List<PersonDTO> persons = personDao.findAll()
                 .stream()
                 .sorted(Comparator.comparing(User::getId))
-                .map(volunteer -> modelMapper.map(volunteer, PersonProfileDTO.class))
+                .map(userMapper::toPersonDTO)
                 .toList();
 
-        final List<OrganizationProfileDTO> organizations = organizationDao.findAll()
+        final List<OrganizationDTO> organizations = organizationDao.findAll()
                 .stream()
                 .sorted(Comparator.comparing(User::getId))
-                .map(organization -> modelMapper.map(organization, OrganizationProfileDTO.class))
+                .map(userMapper::toOrganizationDTO)
                 .toList();
 
-        return new AllUsersDTO(volunteers, organizations);
+        return new AllUsersDTO(persons, organizations);
     }
 
     @Transactional
