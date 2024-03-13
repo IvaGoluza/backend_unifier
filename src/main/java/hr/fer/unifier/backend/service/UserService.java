@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 public interface UserService {
   AllUsersDTO getAllUsers();
-
   void changeBlockStatus(Long userId);
   void approveUser(Long userId);
   ResponseEntity<StreamingResponseBody> getUserCertificateOfGoodConduct(Long userId);

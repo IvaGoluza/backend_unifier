@@ -1,7 +1,7 @@
 package hr.fer.unifier.backend.service;
 
 import hr.fer.unifier.backend.api.deal.*;
-import org.springframework.data.domain.Page;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import org.springframework.data.domain.Pageable;
 
 public interface DealService {
@@ -9,9 +9,9 @@ public interface DealService {
   DealResponseDTO saveDeal(DealDTO dealDTO);
   void updateAccepted(Long dealId);
   void deleteDeal(Long dealId);
-  Page<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId, Pageable pageable);
-  Page<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable);
-  Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId,Pageable pageable);
-  Page<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable);
+  UnifierPage<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId, Pageable pageable);
+  UnifierPage<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable);
+  UnifierPage<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId,Pageable pageable);
+  UnifierPage<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable);
   void updateVolunteerDealDescription(Long dealId, VolunteerDealDescriptionDTO volunteerDealDescriptionDTO);
 }

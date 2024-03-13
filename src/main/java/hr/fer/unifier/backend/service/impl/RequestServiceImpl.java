@@ -13,6 +13,7 @@ import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.RequestService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -90,7 +91,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Pageable pageable) {
+    public UnifierPage<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Pageable pageable) {
         Specification<Request> filters = Specification
                 .where(StringUtils.isBlank(city) ? null : inCity(city))
                 .and(StringUtils.isBlank(category) ? null : hasCategory(category))
@@ -112,7 +113,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable) {
+    public UnifierPage<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user, pageable);
         return PageUtil.map(allRequests, requestMapper::toRequestsInfoDTO);

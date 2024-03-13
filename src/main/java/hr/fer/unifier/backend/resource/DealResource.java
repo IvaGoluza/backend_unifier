@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.deal.*;
 import hr.fer.unifier.backend.service.DealService;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -34,22 +35,22 @@ public class DealResource {
   }
 
   @GetMapping("/{requestId}/volunteer-applications")
-  public Page<VolunteerHelpApplicationDTO> getVolunteerApplications(@PathVariable Long requestId, @ParameterObject Pageable pageable){
+  public UnifierPage<VolunteerHelpApplicationDTO> getVolunteerApplications(@PathVariable Long requestId, @ParameterObject Pageable pageable){
     return dealService.getVolunteersHelpApplications(requestId,pageable);
   }
 
   @GetMapping("/{advertId}/person-in-need-applications")
-  public Page<PersonInNeedApplicationDTO> getPersonInNeedApplications(@PathVariable Long advertId, @ParameterObject Pageable pageable){
+  public UnifierPage<PersonInNeedApplicationDTO> getPersonInNeedApplications(@PathVariable Long advertId, @ParameterObject Pageable pageable){
     return dealService.getPersonInNeedApplications(advertId,pageable);
   }
 
   @GetMapping("/accepted-deals-person-in-need/{userId}")
-  public Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsPersonInNeed(@PathVariable Long userId, @ParameterObject Pageable pageable){
+  public UnifierPage<AcceptedPersonInNeedDealsDTO> getAcceptedDealsPersonInNeed(@PathVariable Long userId, @ParameterObject Pageable pageable){
     return dealService.getAcceptedDealsForPersonInNeed(userId,pageable);
   }
 
   @GetMapping("/accepted-deals-volunteer/{userId}")
-  public Page<AcceptedDealsVolunteerDTO> getAcceptedDealsVolunteer(@PathVariable Long userId, @ParameterObject Pageable pageable){
+  public UnifierPage<AcceptedDealsVolunteerDTO> getAcceptedDealsVolunteer(@PathVariable Long userId, @ParameterObject Pageable pageable){
     return dealService.getAcceptedDealsForVolunteer(userId,pageable);
   }
 

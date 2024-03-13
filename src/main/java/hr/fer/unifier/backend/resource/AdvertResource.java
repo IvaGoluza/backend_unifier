@@ -4,6 +4,7 @@ import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
 import hr.fer.unifier.backend.service.AdvertService;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -38,7 +39,7 @@ public class AdvertResource {
   }
 
   @GetMapping("/my-adverts-info/{userId}")
-  public ResponseEntity<Page<AdvertsInfoDTO>> getAdverts(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+  public ResponseEntity<UnifierPage<AdvertsInfoDTO>> getAdverts(@PathVariable Long userId, @ParameterObject Pageable pageable) {
     return ResponseEntity.ok(advertService.getAdvertsInfo(userId, pageable));
   }
 
@@ -48,7 +49,7 @@ public class AdvertResource {
   }
 
   @GetMapping("/all-adverts")
-  public ResponseEntity<Page<AdvertResponseDTO>> getAllAdverts(
+  public ResponseEntity<UnifierPage<AdvertResponseDTO>> getAllAdverts(
           @RequestParam(required = false, name = "grad") String city,
           @RequestParam(required = false, name = "kategorija") String category,
           @RequestParam(required = false, name = "vrstaPomoci") String helpType,

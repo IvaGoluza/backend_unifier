@@ -4,6 +4,7 @@ import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.service.RequestService;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -41,12 +42,12 @@ public class RequestResource {
   }
 
   @GetMapping("/my-requests-info/{userId}")
-  public ResponseEntity<Page<RequestsInfoDTO>> getRequests(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+  public ResponseEntity<UnifierPage<RequestsInfoDTO>> getRequests(@PathVariable Long userId, @ParameterObject Pageable pageable) {
     return ResponseEntity.ok(requestService.getRequestInfo(userId, pageable));
   }
 
   @GetMapping(value = {"/all-requests"})
-  public ResponseEntity<Page<RequestResponseDTO>> getAllRequests(
+  public ResponseEntity<UnifierPage<RequestResponseDTO>> getAllRequests(
           @RequestParam(required = false, name = "grad") String city,
           @RequestParam(required = false, name = "kategorija") String category,
           @RequestParam(required = false, name = "vrstaPomoci") String helpType,

@@ -9,8 +9,8 @@ import hr.fer.unifier.backend.mapper.GalleryMapper;
 import hr.fer.unifier.backend.service.GalleryService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class GalleryServiceImpl implements GalleryService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<GalleryDTO> getGallery(Long userId, Pageable pageable) {
+    public UnifierPage<GalleryDTO> getGallery(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         return PageUtil.map(galleryDao.findAllByUser(user,pageable), galleryMapper::toGalleryDTO);
     }
