@@ -2,15 +2,9 @@ package hr.fer.unifier.backend.api.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 public class RequestResponseDTO {
     private Long requestId;
 

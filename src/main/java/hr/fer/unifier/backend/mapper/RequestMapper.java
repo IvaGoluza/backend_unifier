@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.mapper;
 
+import hr.fer.unifier.backend.api.deal.AcceptedDealRequestResponseDTO;
 import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
@@ -34,4 +35,7 @@ public interface RequestMapper {
 
         return requestsInfoDTO;
     }
+
+    @Mapping(target = "volunteerCenter", source = "request.user.volunteerCenter")
+    AcceptedDealRequestResponseDTO toAcceptedDealRequestResponseDTO(Request request);
 }

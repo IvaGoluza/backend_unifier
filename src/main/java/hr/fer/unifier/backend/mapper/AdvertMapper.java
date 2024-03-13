@@ -3,6 +3,7 @@ package hr.fer.unifier.backend.mapper;
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
+import hr.fer.unifier.backend.api.deal.AcceptedDealAdvertResponseDTO;
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.user.entity.User;
 import org.mapstruct.Mapper;
@@ -33,4 +34,8 @@ public interface AdvertMapper {
 
         return advertsInfoDTO;
     }
+
+
+    @Mapping(target = "volunteerCenter", source = "advert.user.volunteerCenter")
+    AcceptedDealAdvertResponseDTO toAcceptedDealAdvertResponseDTO(Advert advert);
 }
