@@ -18,9 +18,9 @@ import hr.fer.unifier.backend.mapper.RequestMapper;
 import hr.fer.unifier.backend.service.DealService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -103,7 +103,7 @@ public class DealServiceImpl implements DealService {
 
     @Transactional
     @Override
-    public Page<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId, Pageable pageable) {
+    public UnifierPage<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId, Pageable pageable) {
         final Request request = requestDao.findById(requestId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Ne postoji zahtjev s id = %d", requestId))
         );
@@ -120,7 +120,7 @@ public class DealServiceImpl implements DealService {
 
     @Transactional
     @Override
-    public Page<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable) {
+    public UnifierPage<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable) {
         final Advert advert = advertDao.findById(advertId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Ne postoji volonterski oglas s id = %d", advertId))
         );
@@ -130,7 +130,7 @@ public class DealServiceImpl implements DealService {
 
     @Transactional
     @Override
-    public Page<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId, Pageable pageable) {
+    public UnifierPage<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         final List<AcceptedPersonInNeedDealsDTO> acceptedDeals = dealDao.findAllBySenderIdOrRequest_UserOrderByDealIdDesc(user,user)
                 .orElse(Collections.emptyList())
@@ -144,7 +144,7 @@ public class DealServiceImpl implements DealService {
 
     @Transactional
     @Override
-    public Page<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable) {
+    public UnifierPage<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         final List<AcceptedDealsVolunteerDTO> acceptedDeals = dealDao.findAllBySenderIdOrAdvert_UserOrderByDealIdDesc(user,user)
                 .orElse(Collections.emptyList())

@@ -12,6 +12,7 @@ import hr.fer.unifier.backend.mapper.AdvertMapper;
 import hr.fer.unifier.backend.service.AdvertService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
+import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +64,7 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType,Pageable pageable) {
+    public UnifierPage<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType,Pageable pageable) {
         Specification<Advert> filters = Specification
                 .where(StringUtils.isBlank(city) ? null : inCity(city))
                 .and(StringUtils.isBlank(category) ? null : hasCategory(category))
@@ -95,7 +96,7 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable) {
+    public UnifierPage<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         final Page<Advert> adverts = advertDao.findAllByUserOrderByAdvertIdDesc(user, pageable);
         return PageUtil.map(adverts, advertMapper::toAdvertsInfoDTO);
