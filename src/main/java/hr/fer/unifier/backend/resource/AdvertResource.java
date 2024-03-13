@@ -1,13 +1,13 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
+import hr.fer.unifier.backend.api.advert.AdvertImageDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
 import hr.fer.unifier.backend.service.AdvertService;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +56,10 @@ public class AdvertResource {
           @ParameterObject Pageable pageable
   ) {
     return ResponseEntity.ok(advertService.getAllAdverts(city,category,helpType,pageable));
+  }
+ @GetMapping("/{advertId}/advert-image")
+  public ResponseEntity<AdvertImageDTO> getAllAdverts(@PathVariable Long advertId) {
+    return ResponseEntity.ok(advertService.getAdvertImageDTO(advertId));
   }
 
 }

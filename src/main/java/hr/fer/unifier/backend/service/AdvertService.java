@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service;
 
 
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
+import hr.fer.unifier.backend.api.advert.AdvertImageDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
@@ -16,5 +17,7 @@ public interface AdvertService {
   UnifierPage<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType, Pageable pageable);
   AdvertResponseDTO getAdvert(Long userId, Long advertId);
   UnifierPage<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable);
+
+  AdvertImageDTO getAdvertImageDTO(Long advertId);
 
 }

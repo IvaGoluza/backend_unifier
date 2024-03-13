@@ -181,7 +181,7 @@ public class DealServiceImpl implements DealService {
         boolean isPersonInNeed = false;
 
         if (deal.getSenderId().getId().equals(personInNeedId)){
-            if (!deal.getAdvert().getUser().getId().equals(personInNeedId)){
+            if (deal.getAdvert() != null && !deal.getAdvert().getUser().getId().equals(personInNeedId)){
                 isPersonInNeed = true;
             }
         }else {
@@ -209,12 +209,12 @@ public class DealServiceImpl implements DealService {
         final AcceptedPersonInNeedDealsDTO acceptedDeal = new AcceptedPersonInNeedDealsDTO();
 
         if (deal.getAdvert() != null){
-            acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAdvertResponseDTO(deal.getAdvert()));
-            acceptedDeal.getVolunteerApplicationAdvert().setAdvertImage(null);
+            acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAcceptedDealAdvertResponseDTO(deal.getAdvert()));
+            acceptedDeal.getVolunteerApplicationAdvert().setHasImage(deal.getAdvert().getAdvertImage() != null);
         }
 
         if (deal.getRequest() != null){
-            acceptedDeal.setPersonInNeedRequest(requestMapper.toRequestResponseDTO(deal.getRequest()));
+            acceptedDeal.setPersonInNeedRequest(requestMapper.toAcceptedDealRequestResponseDTO(deal.getRequest()));
         }
 
         if (deal.getMessage() != null){
@@ -249,12 +249,12 @@ public class DealServiceImpl implements DealService {
         final AcceptedDealsVolunteerDTO acceptedDeal = new AcceptedDealsVolunteerDTO();
 
         if (deal.getAdvert() != null){
-            acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAdvertResponseDTO(deal.getAdvert()));
-            acceptedDeal.getVolunteerApplicationAdvert().setAdvertImage(null);
+            acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAcceptedDealAdvertResponseDTO(deal.getAdvert()));
+            acceptedDeal.getVolunteerApplicationAdvert().setHasImage(deal.getAdvert().getAdvertImage() != null);
         }
 
         if (deal.getRequest() != null){
-            acceptedDeal.setPersonInNeedRequest(requestMapper.toRequestResponseDTO(deal.getRequest()));
+            acceptedDeal.setPersonInNeedRequest(requestMapper.toAcceptedDealRequestResponseDTO(deal.getRequest()));
         }
 
         if (deal.getMessage() != null){
