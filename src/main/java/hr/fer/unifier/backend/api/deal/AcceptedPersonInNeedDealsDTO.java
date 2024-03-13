@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class AcceptedPersonInNeedDealsDTO {
+    private Long dealId;
     private Long volunteerId;
     private String volunteerName;
     private String volunteerApplicationMessage;

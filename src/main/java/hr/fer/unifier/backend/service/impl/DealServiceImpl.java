@@ -74,7 +74,7 @@ public class DealServiceImpl implements DealService {
                 new EntityNotFoundException("Deal with id " + dealId + " does not exist.")
         );
 
-        final Deal deal = dealDao.findById(dealId).get();
+        final Deal deal = dealDao.findById(dealId).orElseThrow();
 
         if (deal.isAccepted()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Deal is already accepted");
@@ -207,7 +207,7 @@ public class DealServiceImpl implements DealService {
 
     private AcceptedPersonInNeedDealsDTO toAcceptedPersonInNeedDealsDTO(Deal deal, Long personInNeedId) {
         final AcceptedPersonInNeedDealsDTO acceptedDeal = new AcceptedPersonInNeedDealsDTO();
-
+        acceptedDeal.setDealId(deal.getDealId());
         if (deal.getAdvert() != null){
             acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAcceptedDealAdvertResponseDTO(deal.getAdvert()));
             acceptedDeal.getVolunteerApplicationAdvert().setHasImage(deal.getAdvert().getAdvertImage() != null);
@@ -247,6 +247,7 @@ public class DealServiceImpl implements DealService {
 
     private AcceptedDealsVolunteerDTO toAcceptedDealsVolunteerDTO(Deal deal, Long personInNeedId) {
         final AcceptedDealsVolunteerDTO acceptedDeal = new AcceptedDealsVolunteerDTO();
+        acceptedDeal.setDealId(deal.getDealId());
 
         if (deal.getAdvert() != null){
             acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAcceptedDealAdvertResponseDTO(deal.getAdvert()));
