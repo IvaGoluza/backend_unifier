@@ -14,9 +14,9 @@ public class AcceptedDealAdvertResponseDTO {
 
     private String description;
 
-    private String advertImage;
-
     private String volunteerCenter;
 
     private String time;
+
+    private boolean hasImage;
 }
