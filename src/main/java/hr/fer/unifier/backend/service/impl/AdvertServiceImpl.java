@@ -1,6 +1,7 @@
 package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.advert.AdvertDTO;
+import hr.fer.unifier.backend.api.advert.AdvertImageDTO;
 import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
 import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
 import hr.fer.unifier.backend.db.AdvertDao;
@@ -11,6 +12,7 @@ import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.AdvertMapper;
 import hr.fer.unifier.backend.service.AdvertService;
 import hr.fer.unifier.backend.service.UserService;
+import hr.fer.unifier.backend.util.file.FileUtil;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import jakarta.persistence.EntityNotFoundException;
@@ -64,7 +66,7 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Transactional(readOnly = true)
     @Override
-    public UnifierPage<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType,Pageable pageable) {
+    public UnifierPage<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType, Pageable pageable) {
         Specification<Advert> filters = Specification
                 .where(StringUtils.isBlank(city) ? null : inCity(city))
                 .and(StringUtils.isBlank(category) ? null : hasCategory(category))
@@ -100,6 +102,20 @@ public class AdvertServiceImpl implements AdvertService {
         final User user = userService.getUserById(userId);
         final Page<Advert> adverts = advertDao.findAllByUserOrderByAdvertIdDesc(user, pageable);
         return PageUtil.map(adverts, advertMapper::toAdvertsInfoDTO);
+    }
+
+    @Override
+    public AdvertImageDTO getAdvertImageDTO(Long advertId) {
+        final Advert advert = advertDao.findById(advertId).orElseThrow(
+                () -> new EntityNotFoundException("Ne postoji advert s id " + advertId)
+        );
+
+        return new AdvertImageDTO(
+                advert.getAdvertImage() == null
+                        ? null
+                        : FileUtil.convertToBase64(advert.getAdvertImage()
+                )
+        );
     }
 
     private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {
