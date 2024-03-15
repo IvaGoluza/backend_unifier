@@ -69,4 +69,10 @@ public class AdvertResource {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{advertId}/remove-helpers/{userId}")
+    public ResponseEntity<Void> addHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId){
+        advertService.addHelperVolunteer(advertId, userId);
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -21,4 +21,6 @@ public interface AdvertService {
   AdvertImageDTO getAdvertImageDTO(Long advertId);
 
   void removeHelperVolunteer(Long advertId, Long userId);
+
+  void addHelperVolunteer(Long advertId, Long userId);
 }

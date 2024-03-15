@@ -133,6 +133,18 @@ public class AdvertServiceImpl implements AdvertService {
         advert.getHelperVolunteers().remove(user);
     }
 
+    @Override
+    public void addHelperVolunteer(Long advertId, Long userId) {
+        //TODO: Validation if user is owner of advert
+        final Advert advert = advertDao.findById(advertId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
+        );
+
+        final User user = userService.getUserById(userId);
+
+        advert.getHelperVolunteers().add(user);
+    }
+
     private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {
         User advertUser = userDao.findById(advertDTO.getUserId()).orElseThrow(() ->
                 new EntityNotFoundException("User with id " + advertDTO.getUserId() + " does not exist.")
