@@ -139,6 +139,14 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    public List<UserSearchResultsDTO> searchVolunteers(Long userId, String name) {
+        return userDao.getUserVolunteerSearchResult(userId, name != null ? name : "")
+                .stream()
+                .map(userMapper::toUserSearchResultsDTO)
+                .toList();
+    }
+
     private PasswordResetToken createToken(User user) {
         final PasswordResetToken passwordResetToken = new PasswordResetToken();
 

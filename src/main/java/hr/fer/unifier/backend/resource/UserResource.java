@@ -3,12 +3,15 @@ package hr.fer.unifier.backend.resource;
 import hr.fer.unifier.backend.api.user.AllUsersDTO;
 import hr.fer.unifier.backend.api.user.PasswordResetTokenRequestDTO;
 import hr.fer.unifier.backend.api.user.ResetPasswordRequestDTO;
+import hr.fer.unifier.backend.api.user.UserSearchResultsDTO;
 import hr.fer.unifier.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.util.List;
 
 
 @RestController
@@ -50,5 +53,10 @@ public class UserResource {
   public ResponseEntity<Void> updatePassword(@RequestBody ResetPasswordRequestDTO resetPasswordRequestDTO) {
     userService.updatePassword(resetPasswordRequestDTO);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping(value = "/search-volunteers/{userId}")
+  public ResponseEntity<List<UserSearchResultsDTO>> searchVolunteers(@PathVariable Long userId, @RequestParam(required = false) String name){
+      return ResponseEntity.ok(userService.searchVolunteers(userId, name));
   }
 }
