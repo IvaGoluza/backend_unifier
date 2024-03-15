@@ -21,45 +21,52 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AdvertResource {
 
-  private final AdvertService advertService;
+    private final AdvertService advertService;
 
-  @PostMapping
-  public ResponseEntity<AdvertResponseDTO> saveAdvert(@RequestBody AdvertDTO advertDTO) {
-    return ResponseEntity.ok(advertService.saveAdvert(advertDTO));
-  }
+    @PostMapping
+    public ResponseEntity<AdvertResponseDTO> saveAdvert(@RequestBody AdvertDTO advertDTO) {
+        return ResponseEntity.ok(advertService.saveAdvert(advertDTO));
+    }
 
-  @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<AdvertResponseDTO> saveAdvert(@RequestPart AdvertDTO advertDTO, @RequestPart MultipartFile file) {
-    return ResponseEntity.ok(advertService.saveAdvert(advertDTO,file));
-  }
+    @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdvertResponseDTO> saveAdvert(@RequestPart AdvertDTO advertDTO, @RequestPart MultipartFile file) {
+        return ResponseEntity.ok(advertService.saveAdvert(advertDTO, file));
+    }
 
-  @PutMapping("/change-delete-status/{advertId}")
-  public void changeDeleteStatus(@PathVariable Long advertId) {
-    advertService.changeDeleteStatus(advertId);
-  }
+    @PutMapping("/change-delete-status/{advertId}")
+    public void changeDeleteStatus(@PathVariable Long advertId) {
+        advertService.changeDeleteStatus(advertId);
+    }
 
-  @GetMapping("/my-adverts-info/{userId}")
-  public ResponseEntity<UnifierPage<AdvertsInfoDTO>> getAdverts(@PathVariable Long userId, @ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(advertService.getAdvertsInfo(userId, pageable));
-  }
+    @GetMapping("/my-adverts-info/{userId}")
+    public ResponseEntity<UnifierPage<AdvertsInfoDTO>> getAdverts(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(advertService.getAdvertsInfo(userId, pageable));
+    }
 
-  @GetMapping("/{advertId}/my-advert/{userId}")
-  public ResponseEntity<AdvertResponseDTO> getAdvert(@PathVariable Long userId, @PathVariable Long advertId) {
-    return ResponseEntity.ok(advertService.getAdvert(userId,advertId));
-  }
+    @GetMapping("/{advertId}/my-advert/{userId}")
+    public ResponseEntity<AdvertResponseDTO> getAdvert(@PathVariable Long userId, @PathVariable Long advertId) {
+        return ResponseEntity.ok(advertService.getAdvert(userId, advertId));
+    }
 
-  @GetMapping("/all-adverts")
-  public ResponseEntity<UnifierPage<AdvertResponseDTO>> getAllAdverts(
-          @RequestParam(required = false, name = "grad") String city,
-          @RequestParam(required = false, name = "kategorija") String category,
-          @RequestParam(required = false, name = "vrstaPomoci") String helpType,
-          @ParameterObject Pageable pageable
-  ) {
-    return ResponseEntity.ok(advertService.getAllAdverts(city,category,helpType,pageable));
-  }
- @GetMapping("/{advertId}/advert-image")
-  public ResponseEntity<AdvertImageDTO> getAllAdverts(@PathVariable Long advertId) {
-    return ResponseEntity.ok(advertService.getAdvertImageDTO(advertId));
-  }
+    @GetMapping("/all-adverts")
+    public ResponseEntity<UnifierPage<AdvertResponseDTO>> getAllAdverts(
+            @RequestParam(required = false, name = "grad") String city,
+            @RequestParam(required = false, name = "kategorija") String category,
+            @RequestParam(required = false, name = "vrstaPomoci") String helpType,
+            @ParameterObject Pageable pageable
+    ) {
+        return ResponseEntity.ok(advertService.getAllAdverts(city, category, helpType, pageable));
+    }
+
+    @GetMapping("/{advertId}/advert-image")
+    public ResponseEntity<AdvertImageDTO> getAllAdverts(@PathVariable Long advertId) {
+        return ResponseEntity.ok(advertService.getAdvertImageDTO(advertId));
+    }
+
+    @PostMapping("/{advertId}/remove-helpers/{userId}")
+    public ResponseEntity<Void> removeHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId){
+        advertService.removeHelperVolunteer(advertId, userId);
+        return ResponseEntity.ok().build();
+    }
 
 }

@@ -20,4 +20,5 @@ public interface AdvertService {
 
   AdvertImageDTO getAdvertImageDTO(Long advertId);
 
+  void removeHelperVolunteer(Long advertId, Long userId);
 }
