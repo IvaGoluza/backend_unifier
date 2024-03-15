@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,4 +28,6 @@ public class AdvertDTO {
   private String time;
 
   private Long userId;
+
+  private List<Long> helpersId;
 }

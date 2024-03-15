@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import java.util.List;
+import java.util.Set;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
@@ -67,4 +68,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Advert> adverts;
+
+    @ManyToMany
+    private Set<Advert> subAdverts;
 }

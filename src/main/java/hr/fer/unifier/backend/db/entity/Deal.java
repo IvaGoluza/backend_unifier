@@ -2,9 +2,7 @@ package hr.fer.unifier.backend.db.entity;
 
 import hr.fer.unifier.backend.db.user.entity.User;
 import hr.fer.unifier.backend.enums.Sender;
-import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,6 +50,6 @@ public class Deal {
     private User senderId;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(name = "RECEIVER_ID")
     private User receiver;
 }

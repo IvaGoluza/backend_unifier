@@ -28,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 import static hr.fer.unifier.backend.util.specification.AdvertSpecification.*;
@@ -134,9 +136,12 @@ public class AdvertServiceImpl implements AdvertService {
         if (advertUser.getUserType().equals(UserType.PERSON_IN_NEED)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Nemate prava za stvaranje volonterskih oglasa!");
         }
+        final Set<User> helpers = advertDTO.getHelpersId().stream()
+                .map(userService::getUserById)
+                .collect(Collectors.toSet());
 
-        Advert advert = advertDao.save(advertMapper.toAdvert(advertDTO, advertUser));
-
+        final Advert advert = advertDao.save(advertMapper.toAdvert(advertDTO, advertUser));
+        advert.setHelperVolunteers(helpers);
         if (file != null && !file.isEmpty()) {
             try {
                 validateImage(file);
