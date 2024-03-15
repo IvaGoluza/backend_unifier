@@ -1,9 +1,6 @@
 package hr.fer.unifier.backend.service.impl;
 
-import hr.fer.unifier.backend.api.advert.AdvertDTO;
-import hr.fer.unifier.backend.api.advert.AdvertImageDTO;
-import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
-import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
+import hr.fer.unifier.backend.api.advert.*;
 import hr.fer.unifier.backend.db.AdvertDao;
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.user.UserDao;
@@ -28,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static hr.fer.unifier.backend.util.file.FileUtil.validateImage;
 import static hr.fer.unifier.backend.util.specification.AdvertSpecification.*;
@@ -80,20 +80,26 @@ public class AdvertServiceImpl implements AdvertService {
                         .toList(),
                 pageable
         );
-        //TODO riješit ovaj problem
-//        return PageUtil.map(advertDao.findAdvertsByDeletedFalse(pageable), advertMapper::toAdvertResponseDTO);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public AdvertResponseDTO getAdvert(Long userId, Long advertId) {
+    public MyAdvertResponse getAdvert(Long userId, Long advertId) {
         userService.getUserById(userId);
 
         final Advert advert = advertDao.findById(advertId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
         );
 
-        return advertMapper.toAdvertResponseDTO(advert);
+        final MyAdvertResponse myAdvertResponse = advertMapper.toMyAdvertResponse(advert);
+        Set<MyAdvertResponse.UserHelperVolunteerDTO> helperVolunteerDTOS = advert.getHelperVolunteers().stream()
+                .map(User::getId)
+                .map(userService::getUserCardInfo)
+                .map(advertMapper::toUserHelperVolunteerDTO)
+                .collect(Collectors.toSet());
+
+        myAdvertResponse.setHelperVolunteers(helperVolunteerDTOS);
+        return myAdvertResponse;
     }
 
     @Transactional(readOnly = true)
@@ -118,6 +124,34 @@ public class AdvertServiceImpl implements AdvertService {
         );
     }
 
+    @Transactional
+    @Override
+    public void removeHelperVolunteer(Long advertId, Long userId) {
+        //TODO: Validation if user is owner of advert
+        final Advert advert = advertDao.findById(advertId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
+        );
+
+        final User user = userService.getUserById(userId);
+
+        advert.getHelperVolunteers().remove(user);
+    }
+
+    @Transactional
+    @Override
+    public void addHelperVolunteer(Long advertId, Long userId) {
+        //TODO: Validation if user is owner of advert
+        final Advert advert = advertDao.findById(advertId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
+        );
+
+        final User user = userService.getUserById(userId);
+        if (user.getUserType().equals(UserType.PERSON_IN_NEED)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested person is not a volunteer");
+        }
+        advert.getHelperVolunteers().add(user);
+    }
+
     private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {
         User advertUser = userDao.findById(advertDTO.getUserId()).orElseThrow(() ->
                 new EntityNotFoundException("User with id " + advertDTO.getUserId() + " does not exist.")
@@ -134,9 +168,18 @@ public class AdvertServiceImpl implements AdvertService {
         if (advertUser.getUserType().equals(UserType.PERSON_IN_NEED)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Nemate prava za stvaranje volonterskih oglasa!");
         }
+        final Set<User> helpers = advertDTO.getHelpersId().stream()
+                .map(userService::getUserById)
+                .collect(Collectors.toSet());
 
-        Advert advert = advertDao.save(advertMapper.toAdvert(advertDTO, advertUser));
+        helpers.stream()
+                .map(user -> user.getUserType().equals(UserType.PERSON_IN_NEED) ? user : null)
+                .filter(Objects::nonNull).findFirst().ifPresent(user -> {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested person is not a volunteer");
+                });
 
+        final Advert advert = advertDao.save(advertMapper.toAdvert(advertDTO, advertUser));
+        advert.setHelperVolunteers(helpers);
         if (file != null && !file.isEmpty()) {
             try {
                 validateImage(file);

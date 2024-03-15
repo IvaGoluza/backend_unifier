@@ -3,13 +3,11 @@ package hr.fer.unifier.backend.mapper;
 import hr.fer.unifier.backend.api.user.OrganizationDTO;
 import hr.fer.unifier.backend.api.user.PersonDTO;
 import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
+import hr.fer.unifier.backend.api.user.UserSearchResultsDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
 import hr.fer.unifier.backend.api.user.register.UserResponseDTO;
-import hr.fer.unifier.backend.db.user.entity.Organization;
-import hr.fer.unifier.backend.db.user.entity.Person;
-import hr.fer.unifier.backend.db.user.entity.User;
-import hr.fer.unifier.backend.db.user.entity.UserCardInfo;
+import hr.fer.unifier.backend.db.user.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -21,4 +19,6 @@ public interface UserMapper {
     OrganizationProfileDTO toOrganizationProfileDTO(Organization organization);
     OrganizationDTO toOrganizationDTO(Organization organization);
     PersonDTO toPersonDTO(Person person);
+
+    UserSearchResultsDTO toUserSearchResultsDTO(UserSearchResults userSearchResults);
 }

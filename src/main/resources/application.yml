@@ -26,12 +26,12 @@ spring:
     url: <enter-db>
   jpa:
     database: POSTGRESQL
-    ##show-sql: true
+    show-sql: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        ##format_sql: true
+        format_sql: true
         default_schema: public
   servlet:
     multipart:
