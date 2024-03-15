@@ -1,9 +1,6 @@
 package hr.fer.unifier.backend.resource;
 
-import hr.fer.unifier.backend.api.advert.AdvertDTO;
-import hr.fer.unifier.backend.api.advert.AdvertImageDTO;
-import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
-import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
+import hr.fer.unifier.backend.api.advert.*;
 import hr.fer.unifier.backend.service.AdvertService;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +41,7 @@ public class AdvertResource {
     }
 
     @GetMapping("/{advertId}/my-advert/{userId}")
-    public ResponseEntity<AdvertResponseDTO> getAdvert(@PathVariable Long userId, @PathVariable Long advertId) {
+    public ResponseEntity<MyAdvertResponse> getAdvert(@PathVariable Long userId, @PathVariable Long advertId) {
         return ResponseEntity.ok(advertService.getAdvert(userId, advertId));
     }
 
