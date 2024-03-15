@@ -133,9 +133,6 @@ public class AdvertServiceImpl implements AdvertService {
         );
 
         final User user = userService.getUserById(userId);
-        if (user.getUserType().equals(UserType.PERSON_IN_NEED)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested person is not a volunteer");
-        }
 
         advert.getHelperVolunteers().remove(user);
     }
@@ -149,7 +146,9 @@ public class AdvertServiceImpl implements AdvertService {
         );
 
         final User user = userService.getUserById(userId);
-
+        if (user.getUserType().equals(UserType.PERSON_IN_NEED)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested person is not a volunteer");
+        }
         advert.getHelperVolunteers().add(user);
     }
 

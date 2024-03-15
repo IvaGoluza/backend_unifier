@@ -30,7 +30,7 @@ public class AdvertResource {
         return ResponseEntity.ok(advertService.saveAdvert(advertDTO, file));
     }
 
-    @PutMapping("/change-delete-status/{advertId}")
+    @PutMapping("/archive/{advertId}")
     public void changeDeleteStatus(@PathVariable Long advertId) {
         advertService.changeDeleteStatus(advertId);
     }
@@ -60,13 +60,13 @@ public class AdvertResource {
         return ResponseEntity.ok(advertService.getAdvertImageDTO(advertId));
     }
 
-    @PostMapping("/{advertId}/remove-helpers/{userId}")
+    @PutMapping("/{advertId}/remove-helpers/{userId}")
     public ResponseEntity<Void> removeHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId){
         advertService.removeHelperVolunteer(advertId, userId);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{advertId}/remove-helpers/{userId}")
+    @PutMapping("/{advertId}/add-helpers/{userId}")
     public ResponseEntity<Void> addHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId){
         advertService.addHelperVolunteer(advertId, userId);
         return ResponseEntity.ok().build();
