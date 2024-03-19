@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class AcceptedDealAdvertResponseDTO {
+    private Long advertId;
+
     private String advertTitle;
 
     private String location;
