@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -168,7 +169,9 @@ public class AdvertServiceImpl implements AdvertService {
         if (advertUser.getUserType().equals(UserType.PERSON_IN_NEED)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Nemate prava za stvaranje volonterskih oglasa!");
         }
-        final Set<User> helpers = advertDTO.getHelpersId().stream()
+        final Set<User> helpers = advertDTO == null
+                ? Collections.emptySet()
+                : advertDTO.getHelpersId().stream()
                 .map(userService::getUserById)
                 .collect(Collectors.toSet());
 
