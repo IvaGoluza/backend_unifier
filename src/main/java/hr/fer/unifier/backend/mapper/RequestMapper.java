@@ -37,5 +37,6 @@ public interface RequestMapper {
     }
 
     @Mapping(target = "volunteerCenter", source = "request.user.volunteerCenter")
+    @Mapping(target = "typeOfAction", expression = "java(hr.fer.unifier.backend.enums.UserActionType.getActionDescription(request.getOneTime()))")
     AcceptedDealRequestResponseDTO toAcceptedDealRequestResponseDTO(Request request);
 }
