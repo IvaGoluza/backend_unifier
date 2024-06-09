@@ -22,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class ProfileResource {
 
