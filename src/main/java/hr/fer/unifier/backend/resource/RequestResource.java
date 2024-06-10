@@ -1,13 +1,13 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.request.RequestDTO;
-import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
+import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
+import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
 import hr.fer.unifier.backend.service.RequestService;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +46,10 @@ public class RequestResource {
     return ResponseEntity.ok(requestService.getRequestInfo(userId, pageable));
   }
 
+  @GetMapping("/my-requests/{userId}/titles")
+  public ResponseEntity<UnifierPage<RequestsTitlesDTO>> getRequestsTitles(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(requestService.getRequestTitles(userId, pageable));
+  }
   @GetMapping(value = {"/all-requests"})
   public ResponseEntity<UnifierPage<RequestResponseDTO>> getAllRequests(
           @RequestParam(required = false, name = "grad") String city,
