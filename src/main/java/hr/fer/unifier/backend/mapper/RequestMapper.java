@@ -4,6 +4,7 @@ import hr.fer.unifier.backend.api.deal.AcceptedDealRequestResponseDTO;
 import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
+import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.entity.User;
 import org.mapstruct.Mapper;
@@ -35,8 +36,11 @@ public interface RequestMapper {
 
         return requestsInfoDTO;
     }
+    
 
     @Mapping(target = "volunteerCenter", source = "request.user.volunteerCenter")
     @Mapping(target = "typeOfAction", expression = "java(hr.fer.unifier.backend.enums.UserActionType.getActionDescription(request.getOneTime()))")
     AcceptedDealRequestResponseDTO toAcceptedDealRequestResponseDTO(Request request);
+
+    RequestsTitlesDTO toRequestsTitlesDTO(Request request);
 }

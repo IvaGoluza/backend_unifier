@@ -3,6 +3,7 @@ package hr.fer.unifier.backend.service.impl;
 import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
+import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
 import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.UserDao;
@@ -117,6 +118,13 @@ public class RequestServiceImpl implements RequestService {
         final User user = userService.getUserById(userId);
         Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user, pageable);
         return PageUtil.map(allRequests, requestMapper::toRequestsInfoDTO);
+    }
+
+    @Override
+    public UnifierPage<RequestsTitlesDTO> getRequestTitles(Long userId, Pageable pageable) {
+        final User user = userService.getUserById(userId);
+        Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user, pageable);
+        return PageUtil.map(allRequests, requestMapper::toRequestsTitlesDTO);
     }
 
     private RequestResponseDTO toRequestResponseDTO(Request request) {
