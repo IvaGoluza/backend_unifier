@@ -45,14 +45,15 @@ public class AdvertResource {
         return ResponseEntity.ok(advertService.getAdvert(userId, advertId));
     }
 
-    @GetMapping("/all-adverts")
+    @GetMapping("/all-adverts/{userId}")
     public ResponseEntity<UnifierPage<AdvertResponseDTO>> getAllAdverts(
             @RequestParam(required = false, name = "grad") String city,
             @RequestParam(required = false, name = "kategorija") String category,
             @RequestParam(required = false, name = "vrstaPomoci") String helpType,
+            @PathVariable Long userId,
             @ParameterObject Pageable pageable
     ) {
-        return ResponseEntity.ok(advertService.getAllAdverts(city, category, helpType, pageable));
+        return ResponseEntity.ok(advertService.getAllAdverts(city, category, helpType, userId,pageable));
     }
 
     @GetMapping("/{advertId}/advert-image")
