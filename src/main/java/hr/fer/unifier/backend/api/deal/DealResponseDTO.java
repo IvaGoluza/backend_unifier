@@ -16,7 +16,7 @@ public class DealResponseDTO {
 
     private Long dealId;
 
-    private boolean accepted;
+    private Boolean accepted;
 
     private Sender sender;
 
