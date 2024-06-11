@@ -76,7 +76,7 @@ public class DealServiceImpl implements DealService {
 
         final Deal deal = dealDao.findById(dealId).orElseThrow();
 
-        if (deal.isAccepted()) {
+        if (deal.getAccepted() != null && deal.getAccepted())  {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Deal is already accepted");
         }
 
@@ -177,6 +177,16 @@ public class DealServiceImpl implements DealService {
         deal.setVolunteerWorkDescription(volunteerDealDescriptionDTO.getVolunteerWorkDescription());
     }
 
+    @Transactional
+    @Override
+    public void rejectDeal(Long dealId) {
+        final Deal deal = dealDao.findById(dealId).orElseThrow(
+                () -> new EntityNotFoundException("Deal with id " + dealId + " does not exist.")
+        );
+
+        deal.setAccepted(false);
+    }
+
     private boolean filterDealForPersonInNeed(Deal deal, Long personInNeedId) {
         boolean isPersonInNeed = false;
 
@@ -188,7 +198,7 @@ public class DealServiceImpl implements DealService {
             isPersonInNeed = deal.getRequest().getUser().getId().equals(personInNeedId);
         }
 
-        return isPersonInNeed && deal.isAccepted();
+        return isPersonInNeed && deal.getAccepted() != null && deal.getAccepted();
     }
 
     private boolean filterDealForVolunteer(Deal deal, Long volunteerId) {
@@ -202,7 +212,7 @@ public class DealServiceImpl implements DealService {
             isVolunter = deal.getAdvert().getUser().getId().equals(volunteerId);
         }
 
-        return isVolunter && deal.isAccepted();
+        return isVolunter && deal.getAccepted() != null && deal.getAccepted();
     }
 
     private AcceptedPersonInNeedDealsDTO toAcceptedPersonInNeedDealsDTO(Deal deal, Long personInNeedId) {
@@ -296,7 +306,7 @@ public class DealServiceImpl implements DealService {
             }
         } else {
             if (dealDTO.getRequestId() == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nedostaje advert id!");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nedostaje request id!");
             }
 
             if (dealDTO.getMessage() == null && dealDTO.getAdvertId() == null) {

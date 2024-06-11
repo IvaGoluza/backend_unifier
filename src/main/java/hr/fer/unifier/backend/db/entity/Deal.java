@@ -22,7 +22,7 @@ public class Deal {
     private Long dealId;
 
     @Column
-    private boolean accepted = false;
+    private Boolean accepted = null;
 
     @Column
     @Enumerated(EnumType.STRING)
