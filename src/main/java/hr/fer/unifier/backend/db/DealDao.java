@@ -26,4 +26,6 @@ public interface DealDao extends JpaRepository<Deal, Long> {
 
   Optional<List<Deal>> findAllBySenderIdOrRequest_UserOrderByDealIdDesc(User user, User requestUser);
   Optional<List<Deal>> findAllBySenderIdOrAdvert_UserOrderByDealIdDesc(User user, User advertUser);
+
+  Optional<Deal> findByAdvertAndSenderId(Advert advert, User sender);
 }

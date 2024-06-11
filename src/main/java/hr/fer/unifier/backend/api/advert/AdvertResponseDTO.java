@@ -33,6 +33,8 @@ public class AdvertResponseDTO {
 
   private boolean archived;
 
+  private String dealStatus;
+
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private UserResponseDTO user;
 }

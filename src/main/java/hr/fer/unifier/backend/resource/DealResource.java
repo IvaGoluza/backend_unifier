@@ -33,6 +33,11 @@ public class DealResource {
     dealService.deleteDeal(dealId);
   }
 
+  @PutMapping("/reject/{dealId}")
+  public void rejectDeal(@PathVariable Long dealId){
+    dealService.rejectDeal(dealId);
+  }
+
   @GetMapping("/{requestId}/volunteer-applications")
   public UnifierPage<VolunteerHelpApplicationDTO> getVolunteerApplications(@PathVariable Long requestId, @ParameterObject Pageable pageable){
     return dealService.getVolunteersHelpApplications(requestId,pageable);

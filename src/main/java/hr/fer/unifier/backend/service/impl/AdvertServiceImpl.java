@@ -2,9 +2,15 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.advert.*;
 import hr.fer.unifier.backend.db.AdvertDao;
+import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.entity.Advert;
+import hr.fer.unifier.backend.db.entity.Deal;
+import hr.fer.unifier.backend.db.user.OrganizationDao;
+import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.UserDao;
+import hr.fer.unifier.backend.db.user.entity.Person;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.enums.DealStatusEnum;
 import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.AdvertMapper;
 import hr.fer.unifier.backend.service.AdvertService;
@@ -41,6 +47,11 @@ public class AdvertServiceImpl implements AdvertService {
 
     private final UserDao userDao;
 
+    private final PersonDao personDao;
+    private final DealDao dealDao;
+
+    private final OrganizationDao organizationDao;
+
     private final AdvertMapper advertMapper;
 
     private final UserService userService;
@@ -67,7 +78,7 @@ public class AdvertServiceImpl implements AdvertService {
 
     @Transactional(readOnly = true)
     @Override
-    public UnifierPage<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType, Pageable pageable) {
+    public UnifierPage<AdvertResponseDTO> getAllAdverts(String city, String category, String helpType, Long userId, Pageable pageable) {
         Specification<Advert> filters = Specification
                 .where(StringUtils.isBlank(city) ? null : inCity(city))
                 .and(StringUtils.isBlank(category) ? null : hasCategory(category))
@@ -78,9 +89,35 @@ public class AdvertServiceImpl implements AdvertService {
                         .stream()
                         .filter(advert -> !advert.getDeleted())
                         .map(advertMapper::toAdvertResponseDTO)
+                        .peek(this::addUserName)
+                        .peek(advertResponseDTO -> addDealStatus(userId, advertResponseDTO))
                         .toList(),
                 pageable
         );
+    }
+
+    private void addDealStatus(final Long userId, final AdvertResponseDTO advertResponseDTO) {
+        final Deal deal = dealDao.findByAdvertAndSenderId(
+                advertDao.getReferenceById(advertResponseDTO.getAdvertId()),
+                userDao.getReferenceById(userId)
+        ).orElse(null);
+
+        if(deal != null){
+            final String dealStatus = DealStatusEnum.getDealStatus(deal.getAccepted()).name();
+            advertResponseDTO.setDealStatus(dealStatus);
+        }
+    }
+
+    private void addUserName(final AdvertResponseDTO advertResponseDTO) {
+        final Long userId = advertResponseDTO.getUser().getId();
+        if (personDao.existsById(userId)) {
+            final Person person = personDao.findById(userId).orElseThrow();
+            final String fullName = String.format("%s %s", person.getFirstName(), person.getLastName());
+            advertResponseDTO.getUser().setFullName(fullName);
+        } else {
+            organizationDao.findById(userId)
+                    .ifPresent(organization -> advertResponseDTO.getUser().setFullName(organization.getName()));
+        }
     }
 
     @Transactional(readOnly = true)
