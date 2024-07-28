@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service;
 
 
 import hr.fer.unifier.backend.api.advert.*;
+import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,4 +26,7 @@ public interface AdvertService {
     void removeHelperVolunteer(Long advertId, Long userId);
 
     void addHelperVolunteer(Long advertId, Long userId);
+
+    UnifierPage<AdvertsTitlesDTO> getAdvertTitles(Long userId, Pageable pageable);
+
 }

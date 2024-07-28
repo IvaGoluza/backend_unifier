@@ -5,6 +5,7 @@ import hr.fer.unifier.backend.db.AdvertDao;
 import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.entity.Advert;
 import hr.fer.unifier.backend.db.entity.Deal;
+import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.UserDao;
@@ -48,6 +49,7 @@ public class AdvertServiceImpl implements AdvertService {
     private final UserDao userDao;
 
     private final PersonDao personDao;
+
     private final DealDao dealDao;
 
     private final OrganizationDao organizationDao;
@@ -188,6 +190,14 @@ public class AdvertServiceImpl implements AdvertService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Requested person is not a volunteer");
         }
         advert.getHelperVolunteers().add(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UnifierPage<AdvertsTitlesDTO> getAdvertTitles(Long userId, Pageable pageable) {
+        final User user = userService.getUserById(userId);
+        Page<Advert> allRequests = advertDao.findAllByUserOrderByAdvertIdDesc(user, pageable);
+        return PageUtil.map(allRequests, advertMapper::toAdvertTitlesDTO);
     }
 
     private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {

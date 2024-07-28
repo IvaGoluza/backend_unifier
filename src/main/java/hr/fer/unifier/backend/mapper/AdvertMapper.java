@@ -1,9 +1,6 @@
 package hr.fer.unifier.backend.mapper;
 
-import hr.fer.unifier.backend.api.advert.AdvertDTO;
-import hr.fer.unifier.backend.api.advert.AdvertResponseDTO;
-import hr.fer.unifier.backend.api.advert.AdvertsInfoDTO;
-import hr.fer.unifier.backend.api.advert.MyAdvertResponse;
+import hr.fer.unifier.backend.api.advert.*;
 import hr.fer.unifier.backend.api.deal.AcceptedDealAdvertResponseDTO;
 import hr.fer.unifier.backend.api.user.UserCardInfoDTO;
 import hr.fer.unifier.backend.db.entity.Advert;
@@ -47,4 +44,6 @@ public interface AdvertMapper {
     MyAdvertResponse toMyAdvertResponse(Advert advert);
 
     MyAdvertResponse.UserHelperVolunteerDTO toUserHelperVolunteerDTO(UserCardInfoDTO userCardInfoDTO);
+
+    AdvertsTitlesDTO toAdvertTitlesDTO(Advert advert);
 }

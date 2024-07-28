@@ -1,6 +1,7 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.advert.*;
+import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
 import hr.fer.unifier.backend.service.AdvertService;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,11 @@ public class AdvertResource {
     public ResponseEntity<Void> addHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId) {
         advertService.addHelperVolunteer(advertId, userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/my-adverts/{userId}/titles")
+    public ResponseEntity<UnifierPage<AdvertsTitlesDTO>> getRequestsTitles(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(advertService.getAdvertTitles(userId, pageable));
     }
 
 }
