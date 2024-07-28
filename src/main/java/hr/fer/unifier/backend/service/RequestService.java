@@ -15,6 +15,5 @@ public interface RequestService {
   UnifierPage<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Long userId,Pageable pageable);
   RequestResponseDTO getRequest(Long userId, Long requestId);
   UnifierPage<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable);
-
-    UnifierPage<RequestsTitlesDTO> getRequestTitles(Long userId, Pageable pageable);
+  UnifierPage<RequestsTitlesDTO> getRequestTitles(Long userId, Pageable pageable);
 }

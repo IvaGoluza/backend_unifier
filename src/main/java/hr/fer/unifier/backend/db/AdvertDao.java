@@ -12,5 +12,4 @@ import org.springframework.stereotype.Repository;
 public interface AdvertDao extends JpaRepository<Advert, Long>, JpaSpecificationExecutor<Advert> {
 
   Page<Advert> findAllByUserOrderByAdvertIdDesc(User user, Pageable pageable);
-
 }
