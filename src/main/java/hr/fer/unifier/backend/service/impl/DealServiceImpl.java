@@ -76,7 +76,7 @@ public class DealServiceImpl implements DealService {
 
         final Deal deal = dealDao.findById(dealId).orElseThrow();
 
-        if (deal.getAccepted() != null && deal.getAccepted())  {
+        if (deal.getAccepted() != null && deal.getAccepted()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Deal is already accepted");
         }
 
@@ -125,35 +125,35 @@ public class DealServiceImpl implements DealService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Ne postoji volonterski oglas s id = %d", advertId))
         );
 
-        return PageUtil.map(dealDao.findAllByAdvertAndSender(advert, Sender.PERSON_IN_NEED, pageable),this::createPersonInNeedApplicationDTO);
+        return PageUtil.map(dealDao.findAllByAdvertAndSender(advert, Sender.PERSON_IN_NEED, pageable), this::createPersonInNeedApplicationDTO);
     }
 
     @Transactional
     @Override
     public UnifierPage<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
-        final List<AcceptedPersonInNeedDealsDTO> acceptedDeals = dealDao.findAllBySenderIdOrRequest_UserOrderByDealIdDesc(user,user)
+        final List<AcceptedPersonInNeedDealsDTO> acceptedDeals = dealDao.findAllBySenderIdOrRequest_UserOrderByDealIdDesc(user, user)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(deal -> filterDealForPersonInNeed(deal, userId))
-                .map(deal ->toAcceptedPersonInNeedDealsDTO(deal, userId))
+                .map(deal -> toAcceptedPersonInNeedDealsDTO(deal, userId))
                 .toList();
 
-        return PageUtil.toPage(acceptedDeals,pageable);
+        return PageUtil.toPage(acceptedDeals, pageable);
     }
 
     @Transactional
     @Override
     public UnifierPage<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
-        final List<AcceptedDealsVolunteerDTO> acceptedDeals = dealDao.findAllBySenderIdOrAdvert_UserOrderByDealIdDesc(user,user)
+        final List<AcceptedDealsVolunteerDTO> acceptedDeals = dealDao.findAllBySenderIdOrAdvert_UserOrderByDealIdDesc(user, user)
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter(deal -> filterDealForVolunteer(deal, userId))
-                .map(deal ->toAcceptedDealsVolunteerDTO(deal, userId))
+                .map(deal -> toAcceptedDealsVolunteerDTO(deal, userId))
                 .toList();
 
-        return PageUtil.toPage(acceptedDeals,pageable);
+        return PageUtil.toPage(acceptedDeals, pageable);
     }
 
     @Transactional
@@ -164,12 +164,12 @@ public class DealServiceImpl implements DealService {
         );
 
         final String workDescription = volunteerDealDescriptionDTO.getVolunteerWorkDescription();
-        if (workDescription == null || workDescription.isBlank()){
+        if (workDescription == null || workDescription.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Nedostaje opis volonterskog posla!");
         }
 
         final String volunteerPosition = volunteerDealDescriptionDTO.getVolunteerPosition();
-        if (volunteerPosition == null || volunteerPosition.isBlank()){
+        if (volunteerPosition == null || volunteerPosition.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Nedostaje volonterska pozicija!");
         }
 
@@ -190,11 +190,11 @@ public class DealServiceImpl implements DealService {
     private boolean filterDealForPersonInNeed(Deal deal, Long personInNeedId) {
         boolean isPersonInNeed = false;
 
-        if (deal.getSenderId().getId().equals(personInNeedId)){
-            if (deal.getAdvert() != null && !deal.getAdvert().getUser().getId().equals(personInNeedId)){
+        if (deal.getSenderId().getId().equals(personInNeedId)) {
+            if (deal.getAdvert() != null && !deal.getAdvert().getUser().getId().equals(personInNeedId)) {
                 isPersonInNeed = true;
             }
-        }else {
+        } else {
             isPersonInNeed = deal.getRequest().getUser().getId().equals(personInNeedId);
         }
 
@@ -204,11 +204,11 @@ public class DealServiceImpl implements DealService {
     private boolean filterDealForVolunteer(Deal deal, Long volunteerId) {
         boolean isVolunter = false;
 
-        if (deal.getSenderId().getId().equals(volunteerId)){
-            if (!deal.getRequest().getUser().getId().equals(volunteerId)){
+        if (deal.getSenderId().getId().equals(volunteerId)) {
+            if (!deal.getRequest().getUser().getId().equals(volunteerId)) {
                 isVolunter = true;
             }
-        }else {
+        } else {
             isVolunter = deal.getAdvert().getUser().getId().equals(volunteerId);
         }
 
@@ -218,19 +218,19 @@ public class DealServiceImpl implements DealService {
     private AcceptedPersonInNeedDealsDTO toAcceptedPersonInNeedDealsDTO(Deal deal, Long personInNeedId) {
         final AcceptedPersonInNeedDealsDTO acceptedDeal = new AcceptedPersonInNeedDealsDTO();
         acceptedDeal.setDealId(deal.getDealId());
-        if (deal.getAdvert() != null){
+        if (deal.getAdvert() != null) {
             acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAcceptedDealAdvertResponseDTO(deal.getAdvert()));
             acceptedDeal.getVolunteerApplicationAdvert().setHasImage(deal.getAdvert().getAdvertImage() != null);
         }
 
-        if (deal.getRequest() != null){
+        if (deal.getRequest() != null) {
             acceptedDeal.setPersonInNeedRequest(requestMapper.toAcceptedDealRequestResponseDTO(deal.getRequest()));
         }
 
-        if (deal.getMessage() != null){
-            if (deal.getSender().equals(Sender.VOLUNTEER)){
+        if (deal.getMessage() != null) {
+            if (deal.getSender().equals(Sender.VOLUNTEER)) {
                 acceptedDeal.setVolunteerApplicationMessage(deal.getMessage());
-            }else {
+            } else {
                 acceptedDeal.setPersonInNeedMessage(deal.getMessage());
             }
         }
@@ -241,10 +241,10 @@ public class DealServiceImpl implements DealService {
         );
         final String volunteerName;
         final Long volunteerId;
-        if (!deal.getSenderId().getId().equals(personInNeedId)){
+        if (!deal.getSenderId().getId().equals(personInNeedId)) {
             volunteerId = deal.getSenderId().getId();
             volunteerName = userDao.getUserCardInfo(deal.getSenderId().getId()).getName();
-        }else {
+        } else {
             volunteerId = deal.getAdvert().getUser().getId();
             volunteerName = userDao.getUserCardInfo(deal.getAdvert().getUser().getId()).getName();
         }
@@ -259,19 +259,19 @@ public class DealServiceImpl implements DealService {
         final AcceptedDealsVolunteerDTO acceptedDeal = new AcceptedDealsVolunteerDTO();
         acceptedDeal.setDealId(deal.getDealId());
 
-        if (deal.getAdvert() != null){
+        if (deal.getAdvert() != null) {
             acceptedDeal.setVolunteerApplicationAdvert(advertMapper.toAcceptedDealAdvertResponseDTO(deal.getAdvert()));
             acceptedDeal.getVolunteerApplicationAdvert().setHasImage(deal.getAdvert().getAdvertImage() != null);
         }
 
-        if (deal.getRequest() != null){
+        if (deal.getRequest() != null) {
             acceptedDeal.setPersonInNeedRequest(requestMapper.toAcceptedDealRequestResponseDTO(deal.getRequest()));
         }
 
-        if (deal.getMessage() != null){
-            if (deal.getSender().equals(Sender.VOLUNTEER)){
+        if (deal.getMessage() != null) {
+            if (deal.getSender().equals(Sender.VOLUNTEER)) {
                 acceptedDeal.setVolunteerApplicationMessage(deal.getMessage());
-            }else {
+            } else {
                 acceptedDeal.setPersonInNeedMessage(deal.getMessage());
             }
         }
@@ -282,15 +282,16 @@ public class DealServiceImpl implements DealService {
         );
         final String personInNeedName;
 
-        if (!deal.getSenderId().getId().equals(personInNeedId)){
+        if (!deal.getSenderId().getId().equals(personInNeedId)) {
             personInNeedName = userDao.getUserCardInfo(deal.getSenderId().getId()).getName();
-        }else {
+        } else {
             personInNeedName = userDao.getUserCardInfo(deal.getRequest().getUser().getId()).getName();
         }
 
         acceptedDeal.setPersonInNeedName(personInNeedName);
         return acceptedDeal;
     }
+
     private void validateDealRequest(DealDTO dealDTO) {
         if (dealDTO.getSender() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nedostaje sender!");
@@ -319,7 +320,9 @@ public class DealServiceImpl implements DealService {
         final PersonInNeedApplicationDTO personInNeedApplicationDTO = dealMapper.toPersonInNeedApplicationDTO(deal);
 
         personInNeedApplicationDTO.setUser(userService.getUserCardInfo(deal.getSenderId().getId()));
-        personInNeedApplicationDTO.getRequest().setUser(null);
+        if (personInNeedApplicationDTO.getRequest() != null) {
+            personInNeedApplicationDTO.getRequest().setUser(null);
+        }
 
         return personInNeedApplicationDTO;
     }
@@ -328,8 +331,9 @@ public class DealServiceImpl implements DealService {
         final VolunteerHelpApplicationDTO volunteerHelpApplicationDTO = dealMapper.toVolunteerHelpApplicationDTO(deal);
 
         volunteerHelpApplicationDTO.setUser(userService.getUserCardInfo(deal.getSenderId().getId()));
-        volunteerHelpApplicationDTO.getAdvert().setUser(null);
-
+        if (volunteerHelpApplicationDTO.getAdvert() != null) {
+            volunteerHelpApplicationDTO.getAdvert().setUser(null);
+        }
         return volunteerHelpApplicationDTO;
     }
 }
