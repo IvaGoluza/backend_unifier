@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,5 +28,8 @@ public interface DealDao extends JpaRepository<Deal, Long> {
   Optional<List<Deal>> findAllBySenderIdOrRequest_UserOrderByDealIdDesc(User user, User requestUser);
   Optional<List<Deal>> findAllBySenderIdOrAdvert_UserOrderByDealIdDesc(User user, User advertUser);
 
-  Optional<Deal> findByAdvertAndSenderId(Advert advert, User sender);
+  @Query("SELECT d FROM Deal d where d.advert = :advert AND (d.senderId = :user or d.receiver = :user)")
+  Optional<Deal> findDealByAdvert(Advert advert, User user);
+  @Query("SELECT d FROM Deal d where d.request = :request AND (d.senderId = :user or d.receiver = :user)")
+  Optional<Deal> findDealByRequest(Request request, User user);
 }

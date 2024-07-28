@@ -20,44 +20,47 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class RequestResource {
 
-  private final RequestService requestService;
+    private final RequestService requestService;
 
-  @PostMapping
-  public ResponseEntity<RequestResponseDTO> saveRequest(@RequestBody RequestDTO requestDTO) {
-    return ResponseEntity.ok(requestService.saveRequest(requestDTO));
-  }
+    @PostMapping
+    public ResponseEntity<RequestResponseDTO> saveRequest(@RequestBody RequestDTO requestDTO) {
+        return ResponseEntity.ok(requestService.saveRequest(requestDTO));
+    }
 
-  @PutMapping("/archive/{id}")
-  public void archiveRequest(@PathVariable Long id) {
-    requestService.archive(id);
-  }
-  @PutMapping("/undo-archive/{id}")
-  public void undoArchive(@PathVariable Long id) {
-    requestService.undoArchive(id);
-  }
+    @PutMapping("/archive/{id}")
+    public void archiveRequest(@PathVariable Long id) {
+        requestService.archive(id);
+    }
 
-  @GetMapping("/{requestId}/my-request/{userId}")
-  public ResponseEntity<RequestResponseDTO> getRequests(@PathVariable Long userId, @PathVariable Long requestId) {
-    return ResponseEntity.ok(requestService.getRequest(userId,requestId));
-  }
+    @PutMapping("/undo-archive/{id}")
+    public void undoArchive(@PathVariable Long id) {
+        requestService.undoArchive(id);
+    }
 
-  @GetMapping("/my-requests-info/{userId}")
-  public ResponseEntity<UnifierPage<RequestsInfoDTO>> getRequests(@PathVariable Long userId, @ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(requestService.getRequestInfo(userId, pageable));
-  }
+    @GetMapping("/{requestId}/my-request/{userId}")
+    public ResponseEntity<RequestResponseDTO> getRequests(@PathVariable Long userId, @PathVariable Long requestId) {
+        return ResponseEntity.ok(requestService.getRequest(userId, requestId));
+    }
 
-  @GetMapping("/my-requests/{userId}/titles")
-  public ResponseEntity<UnifierPage<RequestsTitlesDTO>> getRequestsTitles(@PathVariable Long userId, @ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(requestService.getRequestTitles(userId, pageable));
-  }
-  @GetMapping(value = {"/all-requests"})
-  public ResponseEntity<UnifierPage<RequestResponseDTO>> getAllRequests(
-          @RequestParam(required = false, name = "grad") String city,
-          @RequestParam(required = false, name = "kategorija") String category,
-          @RequestParam(required = false, name = "vrstaPomoci") String helpType,
-          @ParameterObject Pageable pageable
-  ) {
-    return ResponseEntity.ok(requestService.getAllRequests(city,category,helpType,pageable));
-  }
+    @GetMapping("/my-requests-info/{userId}")
+    public ResponseEntity<UnifierPage<RequestsInfoDTO>> getRequests(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(requestService.getRequestInfo(userId, pageable));
+    }
+
+    @GetMapping("/my-requests/{userId}/titles")
+    public ResponseEntity<UnifierPage<RequestsTitlesDTO>> getRequestsTitles(@PathVariable Long userId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(requestService.getRequestTitles(userId, pageable));
+    }
+
+    @GetMapping(value = {"/all-requests/{sender-id}"})
+    public ResponseEntity<UnifierPage<RequestResponseDTO>> getAllRequests(
+            @RequestParam(required = false, name = "grad") String city,
+            @RequestParam(required = false, name = "kategorija") String category,
+            @RequestParam(required = false, name = "vrstaPomoci") String helpType,
+            Long senderId,
+            @ParameterObject Pageable pageable
+    ) {
+        return ResponseEntity.ok(requestService.getAllRequests(city, category, helpType, senderId, pageable));
+    }
 
 }

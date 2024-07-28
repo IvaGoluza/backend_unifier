@@ -28,6 +28,8 @@ public class RequestResponseDTO {
 
     private Integer numOfVolunteers;
 
+    private String dealStatus;
+
     private boolean archived;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

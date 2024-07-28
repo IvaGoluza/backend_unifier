@@ -12,7 +12,7 @@ public interface RequestService {
   RequestResponseDTO saveRequest(RequestDTO requestDTO);
   void archive(Long id);
   void undoArchive(Long id);
-  UnifierPage<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Pageable pageable);
+  UnifierPage<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Long userId,Pageable pageable);
   RequestResponseDTO getRequest(Long userId, Long requestId);
   UnifierPage<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable);
 
