@@ -52,15 +52,15 @@ public class RequestResource {
         return ResponseEntity.ok(requestService.getRequestTitles(userId, pageable));
     }
 
-    @GetMapping(value = {"/all-requests/{sender-id}"})
+    @GetMapping(value = {"/all-requests/{userId}"})
     public ResponseEntity<UnifierPage<RequestResponseDTO>> getAllRequests(
             @RequestParam(required = false, name = "grad") String city,
             @RequestParam(required = false, name = "kategorija") String category,
             @RequestParam(required = false, name = "vrstaPomoci") String helpType,
-            Long senderId,
+            Long userId,
             @ParameterObject Pageable pageable
     ) {
-        return ResponseEntity.ok(requestService.getAllRequests(city, category, helpType, senderId, pageable));
+        return ResponseEntity.ok(requestService.getAllRequests(city, category, helpType, userId, pageable));
     }
 
 }
