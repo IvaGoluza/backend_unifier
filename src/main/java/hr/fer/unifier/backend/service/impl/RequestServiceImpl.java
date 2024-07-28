@@ -4,10 +4,13 @@ import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
 import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
+import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.RequestDao;
+import hr.fer.unifier.backend.db.entity.Deal;
 import hr.fer.unifier.backend.db.entity.Request;
 import hr.fer.unifier.backend.db.user.UserDao;
 import hr.fer.unifier.backend.db.user.entity.User;
+import hr.fer.unifier.backend.enums.DealStatusEnum;
 import hr.fer.unifier.backend.enums.UserActionType;
 import hr.fer.unifier.backend.enums.UserType;
 import hr.fer.unifier.backend.mapper.RequestMapper;
@@ -32,6 +35,7 @@ import static hr.fer.unifier.backend.util.specification.RequestSpecification.*;
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
 
+    private final DealDao dealDao;
     private final RequestDao requestDao;
     private final RequestMapper requestMapper;
     private final UserDao userDao;
@@ -92,7 +96,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public UnifierPage<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Pageable pageable) {
+    public UnifierPage<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Long userId, Pageable pageable) {
         Specification<Request> filters = Specification
                 .where(StringUtils.isBlank(city) ? null : inCity(city))
                 .and(StringUtils.isBlank(category) ? null : hasCategory(category))
@@ -102,6 +106,7 @@ public class RequestServiceImpl implements RequestService {
                         .stream()
                         .filter(request -> request.getActive() && !request.getDeleted())
                         .map(this::toRequestResponseDTO)
+                        .peek(advertResponseDTO -> addDealStatus(userId, advertResponseDTO))
                         .toList(),
                 pageable
         );
@@ -110,6 +115,18 @@ public class RequestServiceImpl implements RequestService {
 //                requestDao.findAllByActiveTrueAndDeletedFalse(filters, pageable),
 //                this::toRequestResponseDTO
 //        );
+    }
+
+    private void addDealStatus(final Long userId, final RequestResponseDTO requestResponseDTO) {
+        final Deal deal = dealDao.findDealByRequest(
+                requestDao.getReferenceById(requestResponseDTO.getRequestId()),
+                userDao.getReferenceById(userId)
+        ).orElse(null);
+
+        if (deal != null) {
+            final String dealStatus = DealStatusEnum.getDealStatus(deal.getAccepted()).name();
+            requestResponseDTO.setDealStatus(dealStatus);
+        }
     }
 
     @Transactional(readOnly = true)

@@ -97,7 +97,7 @@ public class AdvertServiceImpl implements AdvertService {
     }
 
     private void addDealStatus(final Long userId, final AdvertResponseDTO advertResponseDTO) {
-        final Deal deal = dealDao.findByAdvertAndSenderId(
+        final Deal deal = dealDao.findDealByAdvert(
                 advertDao.getReferenceById(advertResponseDTO.getAdvertId()),
                 userDao.getReferenceById(userId)
         ).orElse(null);

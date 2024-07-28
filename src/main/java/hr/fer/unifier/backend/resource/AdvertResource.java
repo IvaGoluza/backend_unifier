@@ -53,7 +53,7 @@ public class AdvertResource {
             @PathVariable Long userId,
             @ParameterObject Pageable pageable
     ) {
-        return ResponseEntity.ok(advertService.getAllAdverts(city, category, helpType, userId,pageable));
+        return ResponseEntity.ok(advertService.getAllAdverts(city, category, helpType, userId, pageable));
     }
 
     @GetMapping("/{advertId}/advert-image")
@@ -62,13 +62,13 @@ public class AdvertResource {
     }
 
     @PutMapping("/{advertId}/remove-helpers/{userId}")
-    public ResponseEntity<Void> removeHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId){
+    public ResponseEntity<Void> removeHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId) {
         advertService.removeHelperVolunteer(advertId, userId);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{advertId}/add-helpers/{userId}")
-    public ResponseEntity<Void> addHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId){
+    public ResponseEntity<Void> addHelperVolunteer(@PathVariable Long advertId, @PathVariable Long userId) {
         advertService.addHelperVolunteer(advertId, userId);
         return ResponseEntity.ok().build();
     }
