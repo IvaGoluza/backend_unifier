@@ -24,7 +24,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String extractUsername(String jwt, boolean isRefreshToken) {
-        return extractAuthClaims(jwt, Claims::getSubject,isRefreshToken);
+        return extractAuthClaims(jwt, Claims::getSubject, isRefreshToken);
     }
 
 
@@ -35,7 +35,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getAuthSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -71,8 +71,14 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public Long extractUserId(String jwt) {
+        Claims claims = extractAuthClaims(jwt);
+        return claims.get("id", Long.class);
+    }
+
+    @Override
     public boolean isTokenExpired(String jwt, boolean isRefreshToken) {
-        return extractExpiration(jwt,isRefreshToken).before(new Date());
+        return extractExpiration(jwt, isRefreshToken).before(new Date());
     }
 
     private Date extractExpiration(String jwt, boolean isRefreshToken) {
@@ -80,7 +86,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
 
-    public <T> T extractAuthClaims(String jwt, Function<Claims, T> claimsResolver, boolean isRefreshToken){
+    public <T> T extractAuthClaims(String jwt, Function<Claims, T> claimsResolver, boolean isRefreshToken) {
         final Claims claims = isRefreshToken ? extractRefreshClaims(jwt) : extractAuthClaims(jwt);
         return claimsResolver.apply(claims);
     }
