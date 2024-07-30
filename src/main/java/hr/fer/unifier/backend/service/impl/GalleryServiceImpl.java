@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.user.profile.gallery.GalleryDTO;
 import hr.fer.unifier.backend.api.user.profile.gallery.GalleryRequestDTO;
+import hr.fer.unifier.backend.config.core.UserLocalThread;
 import hr.fer.unifier.backend.db.GalleryDao;
 import hr.fer.unifier.backend.db.entity.Gallery;
 import hr.fer.unifier.backend.db.user.entity.User;

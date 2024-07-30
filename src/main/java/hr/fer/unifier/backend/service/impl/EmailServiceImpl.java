@@ -34,20 +34,6 @@ public class EmailServiceImpl implements EmailService {
     private final UnifierProperties.EmailProperties emailProperties;
 
     private final UnifierProperties.UnifierFrontendUrlProperties unifierFrontendUrlProperties;
-    @Override
-    public void testEmail() {
-        log.info("Into email service.");
-
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom(emailProperties.getUsername());
-        simpleMailMessage.setTo("deantrkulja2001@gmail.com");
-        simpleMailMessage.setSubject("Ovo je test!");
-        simpleMailMessage.setText("Poštovani, \novo je testna poruka.\nS poštovanjem, Vaš Unifier");
-
-        emailSender.send(simpleMailMessage);
-        log.info("Email sent!!");
-
-    }
 
     @Override
     public void sendRecoveryMail(String email, String token) {

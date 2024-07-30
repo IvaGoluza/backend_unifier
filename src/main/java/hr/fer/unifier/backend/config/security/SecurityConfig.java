@@ -1,5 +1,6 @@
 package hr.fer.unifier.backend.config.security;
 
+import hr.fer.unifier.backend.config.filters.AddUserLocalFilter;
 import hr.fer.unifier.backend.config.filters.ExceptionFilter;
 import hr.fer.unifier.backend.config.filters.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,8 @@ public class SecurityConfig {
 
     private final ExceptionFilter exceptionFilter;
 
+    private final AddUserLocalFilter addUserLocalFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -40,6 +43,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(exceptionFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(addUserLocalFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

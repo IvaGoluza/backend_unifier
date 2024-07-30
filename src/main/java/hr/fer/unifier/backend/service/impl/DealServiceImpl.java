@@ -2,6 +2,7 @@ package hr.fer.unifier.backend.service.impl;
 
 
 import hr.fer.unifier.backend.api.deal.*;
+import hr.fer.unifier.backend.config.core.UserLocalThread;
 import hr.fer.unifier.backend.db.AdvertDao;
 import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.RecensionDao;
@@ -44,16 +45,18 @@ public class DealServiceImpl implements DealService {
     private final RecensionDao recensionDao;
     private final UserDao userDao;
 
-    @Transactional
     @Override
+    @Transactional
     public DealResponseDTO saveDeal(final DealDTO dealDTO) {
         validateDealRequest(dealDTO);
         final Request request = dealDTO.getRequestId() != null ? requestDao.findById(dealDTO.getRequestId()).orElseThrow(() ->
                 new EntityNotFoundException("Request with id " + dealDTO.getRequestId() + " does not exist.")
         ) : null;
+
         final Advert advert = dealDTO.getAdvertId() != null ? advertDao.findById(dealDTO.getAdvertId()).orElseThrow(() ->
                 new EntityNotFoundException("Advert with id " + dealDTO.getAdvertId() + " does not exist.")
         ) : null;
+
         final User sender = userService.getUserById(dealDTO.getSenderId());
         final User receiver = userService.getUserById(dealDTO.getReceiverId());
         final Deal deal = dealDao.save(dealMapper.toDeal(dealDTO));
@@ -67,8 +70,8 @@ public class DealServiceImpl implements DealService {
     }
 
 
-    @Transactional
     @Override
+    @Transactional
     public void updateAccepted(Long dealId) {
         dealDao.findById(dealId).orElseThrow(() ->
                 new EntityNotFoundException("Deal with id " + dealId + " does not exist.")
@@ -80,6 +83,9 @@ public class DealServiceImpl implements DealService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Deal is already accepted");
         }
 
+        if (!UserLocalThread.getUserId().equals(deal.getReceiver().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission! You can't accept deal that doesn't belong to you!");
+        }
         deal.setAccepted(true);
 
         final Request request = deal.getRequest();
@@ -91,18 +97,22 @@ public class DealServiceImpl implements DealService {
         request.setNumOfVolunteers(newVolunteerNumber);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteDeal(Long dealId) {
         final Deal deal = dealDao.findById(dealId).orElseThrow(() ->
                 new EntityNotFoundException("Deal with id " + dealId + " does not exist.")
         );
 
+        if (!(UserLocalThread.getUserId().equals(deal.getReceiver().getId()) || UserLocalThread.getUserId().equals(deal.getSenderId().getId()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission! You can't delete this deal!");
+        }
+
         dealDao.delete(deal);
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public UnifierPage<VolunteerHelpApplicationDTO> getVolunteersHelpApplications(Long requestId, Pageable pageable) {
         final Request request = requestDao.findById(requestId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Ne postoji zahtjev s id = %d", requestId))
@@ -118,8 +128,8 @@ public class DealServiceImpl implements DealService {
 
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public UnifierPage<PersonInNeedApplicationDTO> getPersonInNeedApplications(Long advertId, Pageable pageable) {
         final Advert advert = advertDao.findById(advertId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Ne postoji volonterski oglas s id = %d", advertId))
@@ -128,8 +138,8 @@ public class DealServiceImpl implements DealService {
         return PageUtil.map(dealDao.findAllByAdvertAndSender(advert, Sender.PERSON_IN_NEED, pageable), this::createPersonInNeedApplicationDTO);
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public UnifierPage<AcceptedPersonInNeedDealsDTO> getAcceptedDealsForPersonInNeed(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         final List<AcceptedPersonInNeedDealsDTO> acceptedDeals = dealDao.findAllBySenderIdOrRequest_UserOrderByDealIdDesc(user, user)
@@ -142,8 +152,8 @@ public class DealServiceImpl implements DealService {
         return PageUtil.toPage(acceptedDeals, pageable);
     }
 
-    @Transactional
     @Override
+    @Transactional(readOnly = true)
     public UnifierPage<AcceptedDealsVolunteerDTO> getAcceptedDealsForVolunteer(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         final List<AcceptedDealsVolunteerDTO> acceptedDeals = dealDao.findAllBySenderIdOrAdvert_UserOrderByDealIdDesc(user, user)
@@ -156,8 +166,8 @@ public class DealServiceImpl implements DealService {
         return PageUtil.toPage(acceptedDeals, pageable);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void updateVolunteerDealDescription(Long dealId, VolunteerDealDescriptionDTO volunteerDealDescriptionDTO) {
         final Deal deal = dealDao.findById(dealId).orElseThrow(
                 () -> new EntityNotFoundException("Deal with id " + dealId + " does not exist.")
@@ -177,12 +187,16 @@ public class DealServiceImpl implements DealService {
         deal.setVolunteerWorkDescription(volunteerDealDescriptionDTO.getVolunteerWorkDescription());
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void rejectDeal(Long dealId) {
         final Deal deal = dealDao.findById(dealId).orElseThrow(
                 () -> new EntityNotFoundException("Deal with id " + dealId + " does not exist.")
         );
+
+        if (!UserLocalThread.getUserId().equals(deal.getReceiver().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission!");
+        }
 
         deal.setAccepted(false);
     }

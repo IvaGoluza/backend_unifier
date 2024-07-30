@@ -4,6 +4,7 @@ import hr.fer.unifier.backend.api.request.RequestDTO;
 import hr.fer.unifier.backend.api.request.RequestResponseDTO;
 import hr.fer.unifier.backend.api.request.RequestsInfoDTO;
 import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
+import hr.fer.unifier.backend.config.core.UserLocalThread;
 import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.RequestDao;
 import hr.fer.unifier.backend.db.entity.Deal;
@@ -41,8 +42,8 @@ public class RequestServiceImpl implements RequestService {
     private final UserDao userDao;
     private final UserService userService;
 
-    @Transactional
     @Override
+    @Transactional
     public RequestResponseDTO saveRequest(final RequestDTO requestDTO) {
         final User requestUser = userDao.findById(requestDTO.getUserId()).orElseThrow(() ->
                 new EntityNotFoundException("User with id " + requestDTO.getUserId() + " does not exist.")
@@ -60,30 +61,38 @@ public class RequestServiceImpl implements RequestService {
         return requestMapper.toRequestResponseDTO(request);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void archive(Long id) {
         final Request request = requestDao.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Request with id: " + id + " doesn't exists.")
         );
 
+        if (!UserLocalThread.getUserId().equals(request.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission! You don't own this request to change it's status!");
+        }
+
         request.setDeleted(true);
         request.setActive(false);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void undoArchive(Long id) {
         final Request request = requestDao.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Request with id: " + id + " doesn't exists.")
         );
 
+        if (!UserLocalThread.getUserId().equals(request.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission! You don't own this request to change it's status!");
+        }
+
         request.setDeleted(false);
         request.setActive(true);
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public RequestResponseDTO getRequest(Long userId, Long requestId) {
         userService.getUserById(userId);
 
@@ -94,8 +103,8 @@ public class RequestServiceImpl implements RequestService {
 
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public UnifierPage<RequestResponseDTO> getAllRequests(String city, String category, String helpType, Long userId, Pageable pageable) {
         Specification<Request> filters = Specification
                 .where(StringUtils.isBlank(city) ? null : inCity(city))
@@ -129,8 +138,8 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    @Transactional(readOnly = true)
     @Override
+    @Transactional(readOnly = true)
     public UnifierPage<RequestsInfoDTO> getRequestInfo(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user, pageable);
@@ -138,6 +147,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UnifierPage<RequestsTitlesDTO> getRequestTitles(Long userId, Pageable pageable) {
         final User user = userService.getUserById(userId);
         Page<Request> allRequests = requestDao.findAllByUserOrderByRequestIdDesc(user, pageable);

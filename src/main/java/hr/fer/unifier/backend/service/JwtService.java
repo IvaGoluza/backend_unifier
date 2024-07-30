@@ -10,4 +10,6 @@ public interface JwtService {
     boolean isTokenExpired(String jwt, boolean isRefreshToken);
     Long extractRefreshUserId(String jwt);
     String generateRefreshToken(Map<String, Object> extraClaims, String username);
+
+    Long extractUserId(String jwt);
 }

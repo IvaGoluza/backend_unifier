@@ -4,6 +4,7 @@ import hr.fer.unifier.backend.api.user.profile.OrganizationProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.OrganizationUpdateProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.PersonProfileDTO;
 import hr.fer.unifier.backend.api.user.profile.UserUpdateProfileDTO;
+import hr.fer.unifier.backend.config.core.UserLocalThread;
 import hr.fer.unifier.backend.db.user.OrganizationDao;
 import hr.fer.unifier.backend.db.user.PersonDao;
 import hr.fer.unifier.backend.db.user.entity.Organization;
@@ -46,6 +47,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     @Override
     public void updateProfileImage(Long userId, MultipartFile file) {
+        if (!UserLocalThread.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission!");
+        }
         final User user = userService.getUserById(userId);
         validateImage(file);
         try {
@@ -58,6 +62,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     @Override
     public void uploadHealthCertificate(Long userId, MultipartFile file) {
+        if (!UserLocalThread.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission!");
+        }
         final Person person = personDao.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Volunteer with id = %d doesn't exists!", userId))
         );
@@ -104,6 +111,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     @Override
     public void updateUserProfile(Long userId, UserUpdateProfileDTO userUpdateProfileDTO) {
+        if (!UserLocalThread.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission for updating profile!");
+        }
         final Person person = personDao.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("User with id %d doesn't exists", userId))
         );
@@ -115,6 +125,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     @Override
     public void updateOrganizationProfile(Long userId, OrganizationUpdateProfileDTO organizationUpdateProfileDTO) {
+        if (!UserLocalThread.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission!");
+        }
+
         final Organization organization = organizationDao.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Organization with id %d doesn't exists", userId))
         );
@@ -132,7 +146,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private <T> void updateEntityAttribute(Optional<T> updateValue, Consumer<T> setter) {
-        if (updateValue == null) return;
+        if (updateValue == null ) return;
         setter.accept(updateValue.orElse(null));
     }
 }

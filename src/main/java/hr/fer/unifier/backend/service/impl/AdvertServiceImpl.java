@@ -1,6 +1,7 @@
 package hr.fer.unifier.backend.service.impl;
 
 import hr.fer.unifier.backend.api.advert.*;
+import hr.fer.unifier.backend.config.core.UserLocalThread;
 import hr.fer.unifier.backend.db.AdvertDao;
 import hr.fer.unifier.backend.db.DealDao;
 import hr.fer.unifier.backend.db.entity.Advert;
@@ -74,6 +75,11 @@ public class AdvertServiceImpl implements AdvertService {
     @Override
     public void changeDeleteStatus(Long id) {
         Advert advert = advertDao.findById(id).orElseThrow(() -> new EntityNotFoundException("Advert with id:" + id + " does not exist."));
+
+        if (!UserLocalThread.getUserId().equals(advert.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Can't delete advert that does not belong to creator of advert!");
+        }
+
         advert.setDeleted(true);
     }
 
@@ -104,7 +110,7 @@ public class AdvertServiceImpl implements AdvertService {
                 userDao.getReferenceById(userId)
         ).orElse(null);
 
-        if(deal != null){
+        if (deal != null) {
             final String dealStatus = DealStatusEnum.getDealStatus(deal.getAccepted()).name();
             advertResponseDTO.setDealStatus(dealStatus);
         }
@@ -131,6 +137,10 @@ public class AdvertServiceImpl implements AdvertService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
         );
 
+        if (!UserLocalThread.getUserId().equals(advert.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Can't access advert that does not belong to creator of advert in this case!");
+        }
+
         final MyAdvertResponse myAdvertResponse = advertMapper.toMyAdvertResponse(advert);
         Set<MyAdvertResponse.UserHelperVolunteerDTO> helperVolunteerDTOS = advert.getHelperVolunteers().stream()
                 .map(User::getId)
@@ -145,6 +155,9 @@ public class AdvertServiceImpl implements AdvertService {
     @Transactional(readOnly = true)
     @Override
     public UnifierPage<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable) {
+        if (!UserLocalThread.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Requested userId and auth token don't match!");
+        }
         final User user = userService.getUserById(userId);
         final Page<Advert> adverts = advertDao.findAllByUserOrderByAdvertIdDesc(user, pageable);
         return PageUtil.map(adverts, advertMapper::toAdvertsInfoDTO);
@@ -167,10 +180,13 @@ public class AdvertServiceImpl implements AdvertService {
     @Transactional
     @Override
     public void removeHelperVolunteer(Long advertId, Long userId) {
-        //TODO: Validation if user is owner of advert
         final Advert advert = advertDao.findById(advertId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
         );
+
+        if (!UserLocalThread.getUserId().equals(advert.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Can't remove volunteers if you are not creator of advert!");
+        }
 
         final User user = userService.getUserById(userId);
 
@@ -180,10 +196,13 @@ public class AdvertServiceImpl implements AdvertService {
     @Transactional
     @Override
     public void addHelperVolunteer(Long advertId, Long userId) {
-        //TODO: Validation if user is owner of advert
         final Advert advert = advertDao.findById(advertId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Advert with id: %d not found.", advertId))
         );
+
+        if (!UserLocalThread.getUserId().equals(advert.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Can't remove volunteers if you are not creator of advert!");
+        }
 
         final User user = userService.getUserById(userId);
         if (user.getUserType().equals(UserType.PERSON_IN_NEED)) {
@@ -201,6 +220,9 @@ public class AdvertServiceImpl implements AdvertService {
     }
 
     private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {
+        if (!UserLocalThread.getUserId().equals(advertDTO.getUserId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User id on advert and auth token don't match!");
+        }
         User advertUser = userDao.findById(advertDTO.getUserId()).orElseThrow(() ->
                 new EntityNotFoundException("User with id " + advertDTO.getUserId() + " does not exist.")
         );
