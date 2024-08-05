@@ -88,13 +88,15 @@ public class DealServiceImpl implements DealService {
         }
         deal.setAccepted(true);
 
-        final Request request = deal.getRequest();
-        int newVolunteerNumber = request.getNumOfVolunteers() - 1;
-        if (newVolunteerNumber == 0) {
-            request.setActive(false);
-            dealDao.deleteByAcceptedFalseAndRequest(request);
+        if (deal.getRequest() != null) {
+            final Request request = deal.getRequest();
+            int newVolunteerNumber = request.getNumOfVolunteers() - 1;
+            if (newVolunteerNumber == 0) {
+                request.setActive(false);
+                dealDao.deleteByAcceptedFalseAndRequest(request);
+            }
+            request.setNumOfVolunteers(newVolunteerNumber);
         }
-        request.setNumOfVolunteers(newVolunteerNumber);
     }
 
     @Override
