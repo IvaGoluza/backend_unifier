@@ -11,14 +11,14 @@ import hr.fer.unifier.backend.service.ProfileService;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.util.List;
+import java.sql.SQLException;
 
 @RestController
 @RequestMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,25 +42,30 @@ public class ProfileResource {
 
     @GetMapping("/user-gallery/{userId}")
     public ResponseEntity<UnifierPage<GalleryDTO>> getProfileGallery(@PathVariable Long userId, @ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(galleryService.getGallery(userId,pageable));
+        return ResponseEntity.ok(galleryService.getGallery(userId, pageable));
+    }
+
+    @GetMapping("/user-gallery/image/{imageId}")
+    public ResponseEntity<StreamingResponseBody> getImage(@PathVariable Long imageId) throws SQLException {
+        return galleryService.getImage(imageId);
     }
 
     @PostMapping(value = "/user-gallery", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> addToGallery(@RequestPart GalleryRequestDTO gallery, @RequestPart MultipartFile file) {
-        galleryService.saveToGallery(gallery,file);
+        galleryService.saveToGallery(gallery, file);
         return ResponseEntity.noContent().build();
     }
 
 
     @PutMapping("/user-profile/{userId}")
-    public ResponseEntity<Void> updateUserProfile(@PathVariable Long userId,@RequestBody UserUpdateProfileDTO userUpdateProfileDTO) {
-        profileService.updateUserProfile(userId,userUpdateProfileDTO);
+    public ResponseEntity<Void> updateUserProfile(@PathVariable Long userId, @RequestBody UserUpdateProfileDTO userUpdateProfileDTO) {
+        profileService.updateUserProfile(userId, userUpdateProfileDTO);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/organization-profile/{userId}")
-    public ResponseEntity<Void> updateOrganizationProfile(@PathVariable Long userId,@RequestBody OrganizationUpdateProfileDTO userProfileDTO) {
-        profileService.updateOrganizationProfile(userId,userProfileDTO);
+    public ResponseEntity<Void> updateOrganizationProfile(@PathVariable Long userId, @RequestBody OrganizationUpdateProfileDTO userProfileDTO) {
+        profileService.updateOrganizationProfile(userId, userProfileDTO);
         return ResponseEntity.noContent().build();
     }
 

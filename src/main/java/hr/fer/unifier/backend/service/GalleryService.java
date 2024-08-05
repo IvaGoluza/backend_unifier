@@ -4,9 +4,15 @@ import hr.fer.unifier.backend.api.user.profile.gallery.GalleryDTO;
 import hr.fer.unifier.backend.api.user.profile.gallery.GalleryRequestDTO;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.sql.SQLException;
 
 public interface GalleryService {
     void saveToGallery(GalleryRequestDTO galleryRequestDTO, MultipartFile file);
     UnifierPage<GalleryDTO> getGallery(Long userId, Pageable pageable);
+
+    ResponseEntity<StreamingResponseBody> getImage(Long imageId) throws SQLException;
 }

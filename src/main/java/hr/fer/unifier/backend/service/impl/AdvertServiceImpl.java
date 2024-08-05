@@ -260,9 +260,8 @@ public class AdvertServiceImpl implements AdvertService {
         final AdvertResponseDTO advertResponseDTO = advertMapper.toAdvertResponseDTO(advert);
         if (advert.getAdvertImage() != null) {
             final String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/advert/")
+                    .path("/advert/image/")
                     .path(advert.getAdvertId().toString())
-                    .path("/image")
                     .toUriString();
             advertResponseDTO.setAdvertImageUrl(imageUrl);
         }

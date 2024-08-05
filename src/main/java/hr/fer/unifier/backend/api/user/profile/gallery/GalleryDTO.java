@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class GalleryDTO {
     private String description;
-    private String image;
+    private String imageUrl;
 }

@@ -38,7 +38,8 @@ public class SecurityConfig {
                 .cors()
                 .and()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("advert/image/**").permitAll() // Correct usage of wildcards
+                        .requestMatchers("/advert/image/**").permitAll()
+                        .requestMatchers("profile/user-gallery/image/**").permitAll()
                         .anyRequest().authenticated()
                 ).csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
