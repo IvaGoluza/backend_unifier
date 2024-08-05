@@ -36,6 +36,11 @@ public class AdvertResource {
         advertService.changeDeleteStatus(advertId);
     }
 
+    @PutMapping("/undo-archive/{id}")
+    public void undoArchive(@PathVariable Long id) {
+        advertService.undoArchive(id);
+    }
+
     @GetMapping("/my-adverts-info/{userId}")
     public ResponseEntity<UnifierPage<AdvertsInfoDTO>> getAdverts(@PathVariable Long userId, @ParameterObject Pageable pageable) {
         return ResponseEntity.ok(advertService.getAdvertsInfo(userId, pageable));

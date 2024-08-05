@@ -219,6 +219,24 @@ public class AdvertServiceImpl implements AdvertService {
         return PageUtil.map(allRequests, advertMapper::toAdvertTitlesDTO);
     }
 
+    @Override
+    @Transactional
+    public void undoArchive(Long id) {
+        final Advert advert = advertDao.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Advert with id: " + id + " doesn't exists.")
+        );
+
+        if (advert.getDeleted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Advert already archived!");
+        }
+
+        if (!UserLocalThread.getUserId().equals(advert.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient permission! You don't own this advert to archive it!");
+        }
+
+        advert.setDeleted(false);
+    }
+
     private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {
         if (!UserLocalThread.getUserId().equals(advertDTO.getUserId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User id on advert and auth token don't match!");
