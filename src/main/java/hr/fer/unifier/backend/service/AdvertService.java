@@ -29,4 +29,5 @@ public interface AdvertService {
 
     UnifierPage<AdvertsTitlesDTO> getAdvertTitles(Long userId, Pageable pageable);
 
+    void undoArchive(Long id);
 }
