@@ -19,7 +19,7 @@ public class MyAdvertResponse {
 
     private String description;
 
-    private String advertImage;
+    private String advertImageUrl;
 
     private String volunteerCenter;
 

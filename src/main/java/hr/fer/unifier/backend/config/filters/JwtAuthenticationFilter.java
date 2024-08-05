@@ -9,10 +9,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,6 +28,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     private final UserDetailsService userDetailsService;
+
+    private final RequestAttributeSecurityContextRepository repo;
 
 
     @Override
@@ -62,8 +65,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+//                final SecurityContext securityContext = SecurityContextHolder.getContext();
+//                securityContext.setAuthentication(authToken);
+//                final SecurityContextChangedListener securityContextChangedListener = new ObservationSecurityContextChangedListener()
+//                final SecurityContextHolderStrategy securityContextHolderStrategy = new ListeningSecurityContextHolderStrategy();
+//                securityContextHolderStrategy.setContext(securityContext);
+//                securityContextHolderStrategy.setDeferredContext(() -> securityContext);
+//                repo.setSecurityContextHolderStrategy(securityContextHolderStrategy);
             }
             filterChain.doFilter(request, response);
         }

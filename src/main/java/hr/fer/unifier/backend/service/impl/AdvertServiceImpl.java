@@ -18,6 +18,7 @@ import hr.fer.unifier.backend.mapper.AdvertMapper;
 import hr.fer.unifier.backend.service.AdvertService;
 import hr.fer.unifier.backend.service.UserService;
 import hr.fer.unifier.backend.util.file.FileUtil;
+import hr.fer.unifier.backend.util.file.StreamingUtil;
 import hr.fer.unifier.backend.util.pagination.PageUtil;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,12 +28,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -59,16 +67,18 @@ public class AdvertServiceImpl implements AdvertService {
 
     private final UserService userService;
 
+    private final StreamingUtil streamingUtil;
+
     @Transactional
     @Override
     public AdvertResponseDTO saveAdvert(AdvertDTO advertDTO, MultipartFile file) {
-        return advertMapper.toAdvertResponseDTO(createAdvert(advertDTO, file));
+        return toAdvertResponseDTO(createAdvert(advertDTO, file));
     }
 
     @Transactional
     @Override
     public AdvertResponseDTO saveAdvert(AdvertDTO advertDTO) {
-        return advertMapper.toAdvertResponseDTO(createAdvert(advertDTO, null));
+        return toAdvertResponseDTO(createAdvert(advertDTO, null));
     }
 
     @Transactional
@@ -96,7 +106,7 @@ public class AdvertServiceImpl implements AdvertService {
                 advertDao.findAll(filters)
                         .stream()
                         .filter(advert -> !advert.getDeleted())
-                        .map(advertMapper::toAdvertResponseDTO)
+                        .map(this::toAdvertResponseDTO)
                         .peek(this::addUserName)
                         .peek(advertResponseDTO -> addDealStatus(userId, advertResponseDTO))
                         .toList(),
@@ -149,6 +159,14 @@ public class AdvertServiceImpl implements AdvertService {
                 .collect(Collectors.toSet());
 
         myAdvertResponse.setHelperVolunteers(helperVolunteerDTOS);
+        if (advert.getAdvertImage() != null) {
+            final String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/adverts/")
+                    .path(advert.getAdvertId().toString())
+                    .path("/image")
+                    .toUriString();
+            myAdvertResponse.setAdvertImageUrl(imageUrl);
+        }
         return myAdvertResponse;
     }
 
@@ -164,17 +182,18 @@ public class AdvertServiceImpl implements AdvertService {
     }
 
     @Override
-    public AdvertImageDTO getAdvertImageDTO(Long advertId) {
+    public ResponseEntity<StreamingResponseBody> getAdvertImageDTO(Long advertId) throws SQLException {
         final Advert advert = advertDao.findById(advertId).orElseThrow(
                 () -> new EntityNotFoundException("Ne postoji advert s id " + advertId)
         );
 
-        return new AdvertImageDTO(
-                advert.getAdvertImage() == null
-                        ? null
-                        : FileUtil.convertToBase64(advert.getAdvertImage()
-                )
-        );
+        if (advert.getAdvertImage() == null) {
+            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Advert doesn't have an image!");
+        }
+
+        final String fileName = String.format("advert_%d.jpg", advert.getAdvertId());
+        final Blob blob = new SerialBlob(advert.getAdvertImage());
+        return streamingUtil.getBlobStreamingResponse(fileName, blob);
     }
 
     @Transactional
@@ -235,6 +254,19 @@ public class AdvertServiceImpl implements AdvertService {
         }
 
         advert.setDeleted(false);
+    }
+
+    private AdvertResponseDTO toAdvertResponseDTO(final Advert advert) {
+        final AdvertResponseDTO advertResponseDTO = advertMapper.toAdvertResponseDTO(advert);
+        if (advert.getAdvertImage() != null) {
+            final String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/advert/")
+                    .path(advert.getAdvertId().toString())
+                    .path("/image")
+                    .toUriString();
+            advertResponseDTO.setAdvertImageUrl(imageUrl);
+        }
+        return advertResponseDTO;
     }
 
     private Advert createAdvert(AdvertDTO advertDTO, MultipartFile file) {

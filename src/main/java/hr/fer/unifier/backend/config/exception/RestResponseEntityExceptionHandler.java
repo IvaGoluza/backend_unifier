@@ -27,8 +27,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         }
     }
 
-    @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
-        return handleExceptionInternal(ex, "An unexpected error occurred", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
+//        return handleExceptionInternal(ex, "An unexpected error occurred", new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+//    }
 }

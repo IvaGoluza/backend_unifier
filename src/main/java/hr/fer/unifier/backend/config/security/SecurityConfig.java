@@ -37,8 +37,10 @@ public class SecurityConfig {
         return httpSecurity
                 .cors()
                 .and()
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("advert/image/**").permitAll() // Correct usage of wildcards
+                        .anyRequest().authenticated()
+                ).csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(exceptionFilter, UsernamePasswordAuthenticationFilter.class)
@@ -46,6 +48,7 @@ public class SecurityConfig {
                 .addFilterAfter(addUserLocalFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)

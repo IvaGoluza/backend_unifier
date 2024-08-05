@@ -5,7 +5,11 @@ import hr.fer.unifier.backend.api.advert.*;
 import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.sql.SQLException;
 
 public interface AdvertService {
 
@@ -21,7 +25,7 @@ public interface AdvertService {
 
     UnifierPage<AdvertsInfoDTO> getAdvertsInfo(Long userId, Pageable pageable);
 
-    AdvertImageDTO getAdvertImageDTO(Long advertId);
+    ResponseEntity<StreamingResponseBody> getAdvertImageDTO(Long advertId) throws SQLException;
 
     void removeHelperVolunteer(Long advertId, Long userId);
 

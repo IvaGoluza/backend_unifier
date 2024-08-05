@@ -25,7 +25,7 @@ public class AdvertResponseDTO {
 
   private String description;
 
-  private String advertImage;
+  private String advertImageUrl;
 
   private String volunteerCenter;
 

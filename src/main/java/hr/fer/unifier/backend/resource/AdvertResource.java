@@ -1,7 +1,6 @@
 package hr.fer.unifier.backend.resource;
 
 import hr.fer.unifier.backend.api.advert.*;
-import hr.fer.unifier.backend.api.request.RequestsTitlesDTO;
 import hr.fer.unifier.backend.service.AdvertService;
 import hr.fer.unifier.backend.util.pagination.UnifierPage;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,12 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import java.sql.SQLException;
 
 
 @RestController
@@ -52,7 +55,7 @@ public class AdvertResource {
     }
 
     @GetMapping("/all-adverts/{userId}")
-    public ResponseEntity<UnifierPage<AdvertResponseDTO>> getAllAdverts(
+    public ResponseEntity<UnifierPage<AdvertResponseDTO>> getAdvertImage(
             @RequestParam(required = false, name = "grad") String city,
             @RequestParam(required = false, name = "kategorija") String category,
             @RequestParam(required = false, name = "vrstaPomoci") String helpType,
@@ -62,9 +65,10 @@ public class AdvertResource {
         return ResponseEntity.ok(advertService.getAllAdverts(city, category, helpType, userId, pageable));
     }
 
-    @GetMapping("/{advertId}/advert-image")
-    public ResponseEntity<AdvertImageDTO> getAllAdverts(@PathVariable Long advertId) {
-        return ResponseEntity.ok(advertService.getAdvertImageDTO(advertId));
+
+    @GetMapping("/image/{advertId}")
+    public ResponseEntity<StreamingResponseBody> getAdvertImage(@PathVariable Long advertId) throws SQLException {
+        return advertService.getAdvertImageDTO(advertId);
     }
 
     @PutMapping("/{advertId}/remove-helpers/{userId}")
